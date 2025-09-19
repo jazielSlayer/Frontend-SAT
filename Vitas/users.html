@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios</title>
+    <link href="output.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-4">Lista de Usuarios</h1>
+        <div id="error-message" class="hidden text-red-600 mb-4"></div>
+        <div class="grid grid-cols-7 gap-4 bg-gray-100 p-4 font-semibold border-b">
+            <div>ID</div>
+            <div>Usuario</div>
+            <div>Email</div>
+            <div>Nombres</div>
+            <div>Apellido Paterno</div>
+            <div>Apellido Materno</div>
+            <div>Carnet</div>
+        </div>
+        <div id="users-content"></div>
+    </div>
+    <script>
+        async function fetchUsers() {
+            try {
+                const response = await fetch('http://localhost:3000/users');
+                if (!response.ok) {
+                    throw new Error('Error al obtener los usuarios: ' + response.statusText);
+                }
+                const users = await response.json();
+                displayUsers(users);
+            } catch (error) {
+                console.error('Error:', error);
+                const errorMsg = document.getElementById('error-message');
+                if (errorMsg) {
+                    errorMsg.innerText = 'No se pudieron cargar los usuarios. Por favor, verifica que el servidor esté corriendo.';
+                    errorMsg.classList.remove('hidden');
+                }
+            }
+        }
+
+        function displayUsers(users) {
+            const usersContent = document.getElementById('users-content');
+            usersContent.innerHTML = '';
+            if (!users || users.length === 0) {
+                usersContent.innerHTML = '<div class="p-4 text-center text-gray-500">No se encontraron usuarios.</div>';
+                return;
+            }
+            users.forEach(user => {
+                const userRow = document.createElement('div');
+                userRow.className = 'grid grid-cols-7 gap-4 p-4 border-b hover:bg-gray-50';
+                userRow.innerHTML = `
+                    <div>${user.id ?? ''}</div>
+                    <div>${user.user_name ?? ''}</div>
+                    <div>${user.email ?? ''}</div>
+                    <div>${user.nombres ?? ''}</div>
+                    <div>${user.apellidopat ?? ''}</div>
+                    <div>${user.apellidomat ?? ''}</div>
+                    <div>${user.carnet ?? ''}</div>
+                `;
+                usersContent.appendChild(userRow);
+            });
+        }
+
+        // Cargar los usuarios al iniciar la página
+        window.addEventListener('DOMContentLoaded', fetchUsers);
+    </script>
+</body>
+</html>
