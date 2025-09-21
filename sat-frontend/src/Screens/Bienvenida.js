@@ -1,78 +1,83 @@
 import React, { useEffect, useRef } from "react";
 
+const PARTICLE_COUNT = 20;
+const PARTICLE_SIZE = 8; // Más pequeñas
+
 function Bienvenida() {
-	const mountRef = useRef(null);
+	const containerRef = useRef(null);
+	const particlesRef = useRef([]);
 
+	useEffect(() => {
+		const particles = [];
+		let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
+		// Crear partículas como divs
+		for (let i = 0; i < PARTICLE_COUNT; i++) {
+			const p = document.createElement("div");
+			p.style.position = "fixed";
+			p.style.width = `${PARTICLE_SIZE}px`;
+			p.style.height = `${PARTICLE_SIZE}px`;
+			p.style.borderRadius = "50%";
+			// Inicialmente rojo
+			p.style.background = `rgb(255,0,0)`;
+			p.style.pointerEvents = "none";
+			p.style.zIndex = 0;
+			p.style.left = `${mouse.x}px`;
+			p.style.top = `${mouse.y}px`;
+			p.style.opacity = 0.7;
+			document.body.appendChild(p);
+			// Guardar color phase para animar gradiente
+			particles.push({ el: p, x: mouse.x, y: mouse.y, colorPhase: i / PARTICLE_COUNT });
+		}
+		particlesRef.current = particles;
 
-			useEffect(() => {
-				let renderer, scene, camera, cube, animationId;
-				const mountNode = mountRef.current;
+		// Seguir el mouse
+		function onMouseMove(e) {
+			mouse.x = e.clientX;
+			mouse.y = e.clientY;
+		}
+		window.addEventListener("mousemove", onMouseMove);
 
+		// Animar partículas
+		let animationId;
+		function animateParticles(time) {
+			let prev = { x: mouse.x, y: mouse.y };
+			for (let i = 0; i < particles.length; i++) {
+				const p = particles[i];
+				// Seguir suavemente al anterior
+				p.x += (prev.x - p.x) * 0.2;
+				p.y += (prev.y - p.y) * 0.2;
+				p.el.style.left = `${p.x - PARTICLE_SIZE / 2}px`;
+				p.el.style.top = `${p.y - PARTICLE_SIZE / 2}px`;
+				// Animar color de rojo a azul
+				// Oscila entre 0 y 1 con el tiempo y la fase de la partícula
+				const t = ((time || 0) / 1000 + p.colorPhase) % 1;
+				const r = Math.round(255 * (1 - t));
+				const g = 0;
+				const b = Math.round(255 * t);
+				p.el.style.background = `rgb(${r},${g},${b})`;
+				prev = p;
+			}
+			animationId = requestAnimationFrame(animateParticles);
+		}
+		animateParticles();
 
-					// Cargar three.js dinámicamente
-						import('three').then(THREE => {
-							const width = 600;
-							const height = 500;
-							renderer = new THREE.WebGLRenderer({ alpha: true });
-							renderer.setSize(width, height);
-							renderer.setClearColor(0x000000, 0.2);
-							mountNode.appendChild(renderer.domElement);
+		return () => {
+			window.removeEventListener("mousemove", onMouseMove);
+			particles.forEach(p => document.body.removeChild(p.el));
+			if (animationId) cancelAnimationFrame(animationId);
+		};
+	}, []);
 
-							scene = new THREE.Scene();
-							camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-							camera.position.z = 7; // Alejar la cámara para un cubo más grande
-
-							// Cubo grande
-							const geometry = new THREE.BoxGeometry(3, 3, 3); // Tamaño del cubo aumentado
-							const material = new THREE.MeshStandardMaterial({ color: 0x00ff99 });
-							cube = new THREE.Mesh(geometry, material);
-							scene.add(cube);
-
-							const light = new THREE.PointLight(0xffffff, 1, 100);
-							light.position.set(10, 10, 10);
-							scene.add(light);
-
-							function animateFrame() {
-								animationId = requestAnimationFrame(animateFrame);
-								cube.rotation.x += 0.01;
-								cube.rotation.y += 0.01;
-								renderer.render(scene, camera);
-							}
-							animateFrame();
-						});
-
-				return () => {
-					if (renderer && renderer.domElement && mountNode) {
-						mountNode.removeChild(renderer.domElement);
-					}
-					if (animationId) cancelAnimationFrame(animationId);
-				};
-			}, []);
-
-		return (
-				<div style={{ textAlign: 'center', marginTop: '3rem', position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
-					{/* Canvas animado solo en el centro, no cubre la navegación */}
-					<div
-						ref={mountRef}
-						style={{
-							position: 'absolute',
-							top: '120px', // debajo de la navegación
-							left: '50%',
-							transform: 'translateX(-50%)',
-							width: '600px',
-							height: '500px',
-							zIndex: 0,
-							pointerEvents: 'none', // permite clics a través del canvas
-						}}
-					/>
-					<div style={{ position: 'relative', zIndex: 1 }}>
-						<h1>¡Bienvenido al Sistema SAT!</h1>
-						<p>Selecciona una opción en la barra de navegación para comenzar.</p>
-						<img src="/logo192.png" alt="Logo" style={{ width: 120, margin: '2rem auto' }} />
-					</div>
-				</div>
-		);
+	return (
+		<div ref={containerRef} style={{ textAlign: 'center', marginTop: '3rem', position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
+			<div style={{ position: 'relative', zIndex: 1 }}>
+				<h1>¡Bienvenido al Sistema SAT!</h1>
+				<p>Selecciona una opción en la barra de navegación para comenzar.</p>
+				<img src="/logo192.png" alt="Logo" style={{ width: 120, margin: '2rem auto' }} />
+			</div>
+		</div>
+	);
 }
 
 export default Bienvenida;

@@ -1,6 +1,6 @@
 
 import React from "react";
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navegacion from "./Navegacion";
 
@@ -11,18 +11,15 @@ import Docente from "./Screens/Users/Docente/Docente";
 import Estudiante from "./Screens/Users/Estudiante/Estudiante";
 import Login from "./Screens/Login/Login";
 
-function Home() {
-	return <div><h2>Bienvenido al sistema</h2></div>;
-}
 
-// creamos rutas
-ReactDOM.createRoot(document.getElementById("Nav-model")).render(
+
+// Renderizar navegación y rutas bajo un solo BrowserRouter en root
+createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
 		<BrowserRouter>
 			<Navegacion />
 			<Routes>
 				<Route path="/" element={<Bienvenida />} />
-				<Route path="/Home" element={<Home />} />
 				<Route path="/admin" element={<Admin />} />
 				<Route path="/docente" element={<Docente />} />
 				<Route path="/estudiante" element={<Estudiante />} />
