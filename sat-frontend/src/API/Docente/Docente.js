@@ -1,42 +1,17 @@
-//Este archivo contiene los procesos que realiza el docente
 import { API_URL } from "../Api.js";
-
-// Obtener proyecto(s) de un docente por su ID
-export async function getProyectoDocente(id_docente) {
-    const res = await fetch(`${API_URL}/proyectos/docente/${id_docente}`);
-    if (!res.ok) throw new Error("Error al obtener el/los proyecto(s) del docente");
+// Obtener todos los usuarios
+export async function getUsers() {
+    const res = await fetch(`${API_URL}/users`);
+    if (!res.ok) throw new Error("Error al obtener usuarios");
     return res.json();
 }
 
-// Obtener un docente por ID
-export async function getDocente(id) {
-    const res = await fetch(`${API_URL}/docentes/${id}`);
-    if (!res.ok) throw new Error("Error al obtener el docente");
+// Obtener el número total de usuarios
+export async function getUserCount() {
+    const res = await fetch(`${API_URL}/users/count`);
+    if (!res.ok) throw new Error("Error al obtener el conteo de usuarios");
     return res.json();
 }
-
-// Crear un nuevo docente
-export async function createDocente(docente) {
-    const res = await fetch(`${API_URL}/docentes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(docente),
-    });
-    if (!res.ok) throw new Error("Error al crear el docente");
-    return res.json();
-}
-
-// Actualizar un docente
-export async function updateDocente(id, docente) {
-    const res = await fetch(`${API_URL}/docentes/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(docente),
-    });
-    if (!res.ok) throw new Error("Error al actualizar el docente");
-    return res.json();
-}
-
 
 // Obtener un usuario por ID
 export async function getUser(id) {
@@ -56,6 +31,65 @@ export async function saveUser(user) {
     return res.json();
 }
 
+// Eliminar un usuario por ID
+export async function deleteUser(id) {
+    const res = await fetch(`${API_URL}/users/${id}`, {
+        method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Error al eliminar el usuario");
+    return res.json();
+}
 
+// Actualizar un usuario por ID
+export async function updateUser(id, user) {
+    const res = await fetch(`${API_URL}/users/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user),
+    });
+    if (!res.ok) throw new Error("Error al actualizar el usuario");
+    return res.json();
+}
 
+// Registrar un nuevo usuario
+export async function registerUser(user) {
+    const res = await fetch(`${API_URL}/users/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user),
+    });
+    if (!res.ok) throw new Error("Error al registrar el usuario");
+    return res.json();
+}
 
+// Login de usuario
+export async function loginUser(credentials) {
+    const res = await fetch(`${API_URL}/users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+    });
+    if (!res.ok) throw new Error("Error al iniciar sesión");
+    return res.json();
+}
+
+// Reporte de avance de laboratorio de usuario
+export async function getUserLabReservas(id) {
+    const res = await fetch(`${API_URL}/users/${id}/avance-report`);
+    if (!res.ok) throw new Error("Error al obtener el reporte de avance");
+    return res.json();
+}
+
+// Reporte de préstamos de usuario
+export async function getUserLoanReport(id) {
+    const res = await fetch(`${API_URL}/users/${id}/loan-report`);
+    if (!res.ok) throw new Error("Error al obtener el reporte de préstamos");
+    return res.json();
+}
+
+// Dashboard de administrador
+export async function getAdminDashboardData(id) {
+    const res = await fetch(`${API_URL}/users/${id}/admin/dashboard`);
+    if (!res.ok) throw new Error("Error al obtener datos del dashboard");
+    return res.json();
+}
