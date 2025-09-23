@@ -8,7 +8,7 @@ import Navegacion from "./Navegacion";
 import Bienvenida from "./Screens/Bienvenida";
 import Admin from "./Screens/Admin/Admin";
 import AdminEstudiantes from "./Screens/Admin/Admin-Ventanas/Estudiante-Admin";
-import Docente from "./Screens/Users/Docente/Docente";
+import DocenteAdmin from "./Screens/Admin/Admin-Ventanas/Docente-Admin";
 import Estudiante from "./Screens/Users/Estudiante/Estudiante";
 import Login from "./Screens/Login/Login";
 import Register from "./Screens/Login/Register";
@@ -24,7 +24,7 @@ createRoot(document.getElementById("root")).render(
 				<Route path="/" element={<Bienvenida />} />
 				<Route path="/admin" element={<Admin />} />
 				<Route path="/Estudiante-Admin" element={<AdminEstudiantes />} />
-				<Route path="/docente" element={<Docente />} />
+				<Route path="/docenteadmin" element={<DocenteAdmin />} />
 				<Route path="/estudiante" element={<Estudiante />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />

@@ -12,6 +12,7 @@ function Navegacion() {
 
   const navStyle = {
     background: "#07053b8e",
+    borderRadius: "8px",
     padding: "1rem",
     display: "flex",
     alignItems: "center",
@@ -32,7 +33,7 @@ function Navegacion() {
   };
 
   // Rutas admin / estudiante-admin
-  if (location.pathname === "/admin" || location.pathname === "/Estudiante-Admin") {
+  if (location.pathname === "/admin" || location.pathname === "/Estudiante-Admin"|| location.pathname === "/docenteadmin") {
     return (
       <nav style={navStyle}>
         <div>
@@ -40,7 +41,7 @@ function Navegacion() {
         </div>
         <ul style={ulStyle}>
           <li><Link style={linkStyle} to="/admin">Admin</Link></li>
-          <li><Link style={linkStyle} to="/docente">Docente</Link></li>
+          <li><Link style={linkStyle} to="/docenteadmin">Docente</Link></li>
           <li><Link style={linkStyle} to="/Estudiante-Admin">Estudiante</Link></li>
         </ul>
       </nav>
