@@ -1,22 +1,28 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom"; // Importar Link
-
-function Login() {
+function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("Las contraseñas no coinciden");
+      return;
+    }
+    // Aquí puedes llamar a tu API de registro
     console.log("Email:", email);
     console.log("Password:", password);
+    alert("Usuario registrado exitosamente");
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.formWrapper}>
-        <h2 style={styles.title}>Login</h2>
-        <p style={styles.subtitle}>Por favor, ingresa tus credenciales.</p>
-        <form onSubmit={handleSubmit} style={styles.form}>
+        <h2 style={styles.title}>Registro</h2>
+        <p style={styles.subtitle}>Crea tu nueva cuenta</p>
+        <form onSubmit={handleRegister} style={styles.form}>
           <input
             type="email"
             placeholder="Correo electrónico"
@@ -33,15 +39,23 @@ function Login() {
             style={styles.input}
             required
           />
+          <input
+            type="password"
+            placeholder="Confirmar Contraseña"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            style={styles.input}
+            required
+          />
           <button type="submit" style={styles.button}>
-            Iniciar Sesión
+            Registrarse
           </button>
         </form>
-        <p style={styles.registerText}>
-          ¿No tienes una cuenta?{" "}
-          <Link to="/register" style={styles.registerLink}>
-            Regístrate
-          </Link>
+        <p style={styles.loginText}>
+          ¿Ya tienes una cuenta?{" "}
+            <Link to="/login" style={styles.registerLink}>
+                      iniciarsecion
+            </Link>
         </p>
       </div>
     </div>
@@ -53,10 +67,10 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh"
+    height: "100vh",
   },
   formWrapper: {
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // negro semi-transparente
     padding: "40px",
     borderRadius: "12px",
     boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
@@ -96,16 +110,16 @@ const styles = {
     cursor: "pointer",
     transition: "0.3s",
   },
-  registerText: {
+  loginText: {
     color: "#fff",
     marginTop: "15px",
     fontSize: "14px",
   },
-  registerLink: {
-    color: "#6c63ff",
-    textDecoration: "underline",
+  loginLink: {
+    color: "#950707ff",
     cursor: "pointer",
+    textDecoration: "underline",
   },
 };
 
-export default Login;
+export default Register;

@@ -1,72 +1,51 @@
-
-import React, { useEffect, useState } from "react";
-import { getUsers } from "../../API/Admin/Users_Admin";	
+import React, { useEffect, useRef } from "react";
+import { GridStack } from 'gridstack';
+import 'gridstack/dist/gridstack.min.css';
 
 function Admin() {
-	const [users, setUsers] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
+  const gridRef = useRef(null);
+  const gridContainerRef = useRef(null);
 
-	useEffect(() => {
-		getUsers()
-			.then((data) => {
-				setUsers(data);
-				setLoading(false);
-			})
-			.catch((err) => {
-				setError(err.message);
-				setLoading(false);
-			});
-	}, []);
+  useEffect(() => {
+    const gridContainer = gridContainerRef.current;
+    if (!gridContainer) {
+      console.error("El contenedor grid-stack no se encontró en el DOM.");
+      return;
+    }
 
-	return (
-		<div>
-			<h2>Pantalla de Administrador</h2>
-			<p>Bienvenido, Administrador.</p>
-			{loading && <div>Cargando usuarios...</div>}
-			{error && <div style={{color: 'red'}}>Error: {error}</div>}
-			{!loading && !error && (
-				<table border="1" cellPadding="5" style={{ borderCollapse: 'collapse', width: '100%' }}>
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th>User Name</th>
-							<th>Per ID</th>
-							<th>Status</th>
-							<th>Email</th>
-							<th>Email Verified At</th>
-							<th>Password</th>
-							<th>Remember Token</th>
-							<th>Created At</th>
-							<th>Updated At</th>
-						</tr>
-					</thead>
-					<tbody>
-						{Array.isArray(users) && users.length > 0 ? (
-							users.map((user, idx) => (
-								<tr key={user.id || idx}>
-									<td>{user.id}</td>
-									<td>{user.user_name}</td>
-									<td>{user.per_id}</td>
-									<td>{user.status}</td>
-									<td>{user.email}</td>
-									<td>{user.email_verified_at}</td>
-									<td>{user.password}</td>
-									<td>{user.remember_token}</td>
-									<td>{user.created_at}</td>
-									<td>{user.updated_at}</td>
-								</tr>
-							))
-						) : (
-							<tr>
-								<td colSpan="10">No hay usuarios</td>
-							</tr>
-						)}
-					</tbody>
-				</table>
-			)}
-		</div>
-	);
+    try {
+      // Inicializar GridStack solo si no está inicializado
+      if (!gridRef.current) {
+        gridRef.current = GridStack.init({
+          cellHeight: 100,
+          float: true,
+          disableOneColumnMode: true,
+        }, gridContainer);
+      }
+
+      const grid = gridRef.current;
+
+      // Remover todos los widgets existentes
+      grid.removeAll();
+
+      // Agregar widgets con colores únicos
+      grid.addWidget({ x: 0, y: 0, w: 2, h: 1, content: 'Dashboard' });
+      grid.addWidget({ x: 3, y: 0, w: 2, h: 1, content: 'Configuración' });
+      grid.addWidget({ x: 6, y: 0, w: 2, h: 1, content: 'Users' });
+
+      // Limpieza al desmontar
+      
+    } catch (error) {
+      console.error("Error al inicializar GridStack:", error);
+    }
+  }, []); // Ejecuta solo al montar
+
+  return (
+    <div>
+      <h1 style={{ textAlign: "center", marginBottom: "20px", color: "white" }}>Admin Panel</h1>
+      <div ref={gridContainerRef} className="grid-stack" style={{ minHeight: "1000px", color: "white" }}></div>
+    </div>
+  );
 }
 
 export default Admin;

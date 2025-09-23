@@ -70,11 +70,11 @@ function Bienvenida() {
 	}, []);
 
 	return (
-		<div ref={containerRef} style={{ textAlign: 'center', marginTop: '3rem', position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
-			<div style={{ position: 'relative', zIndex: 1 }}>
-				<h1>¡Bienvenido al Sistema SAT!</h1>
-				<p>Selecciona una opción en la barra de navegación para comenzar.</p>
-				<img src="/logo192.png" alt="Logo" style={{ width: 120, margin: '2rem auto' }} />
+		<div ref={containerRef} style={{ textAlign: 'center', marginTop: '3rem', position: 'relative', minHeight: '100vh', overflow: 'hidden', justifyContent: "flex-end" }}>
+			<div style={{ position: 'relative', zIndex: 1, justifyContent: "flex-start" }}>
+				<h1 style={{ color: 'white' }}>¡Bienvenido al Sistema SAT!</h1>
+				<p style={{ color: 'white' }}>Selecciona una opción en la barra de navegación para comenzar.</p>
+				<img src="/Splash-screen3.png" alt="Logo" style={{ width: 120, margin: '2rem auto' }} />
 			</div>
 		</div>
 	);
