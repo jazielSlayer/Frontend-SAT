@@ -48,6 +48,40 @@ function Navegacion() {
     );
   }
 
+  if (location.pathname === "/docente") {
+    return (
+      <nav style={navStyle}>
+        <div>
+          <img src={logo} alt="Logo" style={{ height: "40px" }} />
+        </div>
+        <ul style={ulStyle}>
+          <li><Link style={linkStyle} to="/docente">Home</Link></li>
+          <li><Link style={linkStyle} to="/docente">cerrar cesion</Link></li>
+          <li><Link style={linkStyle} to="/docente">Proyectos</Link></li>
+          <li><Link style={linkStyle} to="/docente">Modulos</Link></li>
+          <li><Link style={linkStyle} to="/docente">Seguimiento</Link></li>
+        </ul>
+      </nav>
+    );
+  }
+
+  if (location.pathname === "/estudiante") {
+    return (
+      <nav style={navStyle}>
+        <div>
+          <img src={logo} alt="Logo" style={{ height: "40px" }} />
+        </div>
+        <ul style={ulStyle}>
+          <li><Link style={linkStyle} to="/estudiante">Home</Link></li>
+          <li><Link style={linkStyle} to="/estudiante">cerrar cesion</Link></li>
+          <li><Link style={linkStyle} to="/estudiante">Proyectos</Link></li>
+          <li><Link style={linkStyle} to="/estudiante">Modulos</Link></li>
+          <li><Link style={linkStyle} to="/estudiante">Seguimiento</Link></li>
+        </ul>
+      </nav>
+    );
+  }
+
   // Ruta raíz
   if (location.pathname === "/") {
     return (
@@ -71,7 +105,6 @@ function Navegacion() {
       </div>
       <ul style={ulStyle}>
         <li><Link style={linkStyle} to="/">Bienvenida</Link></li>
-        <li><Link style={linkStyle} to="/admin">Admin</Link></li>
         <li><Link style={linkStyle} to="/docente">Docente</Link></li>
         <li><Link style={linkStyle} to="/estudiante">Estudiante</Link></li>
         <li><Link style={linkStyle} to="/login">Login</Link></li>

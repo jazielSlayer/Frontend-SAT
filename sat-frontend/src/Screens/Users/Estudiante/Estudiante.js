@@ -36,7 +36,7 @@ function Estudiante() {
   if (!estudiante) return <div className="text-center mt-8">No se encontró el estudiante</div>;
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4" style={{ color: 'white' }}>
       <h2 className="text-2xl font-bold mb-4">Información del Estudiante</h2>
       <div className="bg-white shadow-md rounded-lg p-6 mb-6">
         <h3 className="text-xl font-semibold">Detalles</h3>
