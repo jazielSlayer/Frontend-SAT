@@ -214,9 +214,9 @@ function RegisterUsuario() {
             style={styles.input}
             required
           >
-            <option value="">Seleccionar rol</option>
-            <option value="estudiante">Estudiante</option>
-            <option value="docente">Docente</option>
+            <option style={ styles.SelectContainer } value="">Seleccionar rol</option>
+            <option style={ styles.SelectContainer } value="estudiante">Estudiante</option>
+            <option style={ styles.SelectContainer } value="docente">Docente</option>
           </select>
 
           {/* Campos específicos para estudiante */}
@@ -231,9 +231,9 @@ function RegisterUsuario() {
                 style={styles.input}
                 required
               >
-                <option value="">Seleccionar programa académico</option>
+                <option style={ styles.SelectContainer } value="">Seleccionar programa académico</option>
                 {programas.map((programa) => (
-                  <option key={programa.id} value={programa.id}>
+                  <option style={ styles.SelectContainer } key={programa.id} value={programa.id}>
                     {programa.nombre_programa} - {programa.modalidad}
                   </option>
                 ))}
@@ -291,9 +291,9 @@ function RegisterUsuario() {
                 onChange={handleRoleChange}
                 style={styles.input}
               >
-                <option value="permanente">Permanente</option>
-                <option value="temporal">Temporal</option>
-                <option value="interino">Interino</option>
+                <option style={ styles.SelectContainer } value="permanente">Permanente</option>
+                <option style={ styles.SelectContainer } value="temporal">Temporal</option>
+                <option style={ styles.SelectContainer } value="interino">Interino</option>
               </select>
             </div>
           )}
@@ -322,6 +322,9 @@ function RegisterUsuario() {
 }
 
 const styles = {
+  SelectContainer: {
+    backgroundColor: "#040a2cc1", color: "#fff6f6ff"
+  },
   container: {
     display: "flex",
     justifyContent: "center",
@@ -380,7 +383,7 @@ const styles = {
     gap: "15px"
   },
   roleSectionTitle: {
-    color: "#fff",
+    color: "#ffffffff",
     fontSize: "18px",
     fontWeight: "bold",
     marginBottom: "10px",
@@ -391,7 +394,7 @@ const styles = {
     borderRadius: "8px",
     border: "none",
     backgroundColor: "#950707ff",
-    color: "#fff",
+    color: "#ffffffff",
     fontWeight: "bold",
     cursor: "pointer",
     transition: "all 0.3s ease",
