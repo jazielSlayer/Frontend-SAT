@@ -1,4 +1,3 @@
-
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -12,9 +11,8 @@ import DocenteAdmin from "./Screens/Admin/Admin-Ventanas/Docente-Admin";
 import Estudiante from "./Screens/Users/Estudiante/Estudiante";
 import Docente from "./Screens/Users/Docente/Docente";
 import Login from "./Screens/Login/Login";
-import Register from "./Screens/Login/Register";
-
-
+import RegisterPersona from "./Screens/Login/Register/RegisterPersona";
+import RegisterUsuario from "./Screens/Login/Register/RegisterUsuario";
 
 // Renderizar navegación y rutas bajo un solo BrowserRouter en root
 createRoot(document.getElementById("root")).render(
@@ -29,13 +27,9 @@ createRoot(document.getElementById("root")).render(
 				<Route path="/docente" element={<Docente />} />
 				<Route path="/estudiante" element={<Estudiante />} />
 				<Route path="/login" element={<Login />} />
-				<Route path="/register" element={<Register />} />
+				<Route path="/register" element={<RegisterPersona />} />
+				<Route path="/register-step2" element={<RegisterUsuario />} />
 			</Routes>
 		</BrowserRouter>
 	</React.StrictMode>
 );
-
-
-
-
-
