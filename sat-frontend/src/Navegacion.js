@@ -72,7 +72,8 @@ function Navegacion() {
   // Rutas admin / estudiante-admin / docente-admin
   if (location.pathname === "/admin" || 
       location.pathname === "/Estudiante-Admin" || 
-      location.pathname === "/docenteadmin") {
+      location.pathname === "/docenteadmin" ||
+      location.pathname === "/roles-admin") {
     return (
       <nav style={navStyle}>
         <div>
@@ -82,6 +83,7 @@ function Navegacion() {
           <li><Link style={linkStyle} to="/admin">Dashboard</Link></li>
           <li><Link style={linkStyle} to="/docenteadmin">Docentes</Link></li>
           <li><Link style={linkStyle} to="/Estudiante-Admin">Estudiantes</Link></li>
+          <li><Link style={linkStyle} to="/roles-admin">Roles</Link></li>
           {user && (
             <li>
               <span style={{color: "#fff", marginRight: "1rem"}}>

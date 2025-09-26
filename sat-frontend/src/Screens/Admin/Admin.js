@@ -1,217 +1,323 @@
-import React, { useEffect, useRef, useState } from "react";
-import { GridStack } from 'gridstack';
-import 'gridstack/dist/gridstack.min.css';
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { Chart } from 'chart.js/auto';
 import { getDocentes } from "../../API/Admin/Docente_admin";
+import { getEstudiantes } from "../../API/Admin/Estudiante_admin";
+import { getAllTalleres } from "../../API/Admin/Taller.js";
+import { getUserCount } from "../../API/Admin/Users_Admin.js";
+import { getAllMetodologias } from "../../API/Admin/Metodologia.js";
+import { getAllModulos } from "../../API/Admin/Modulo.js";
 
 function Admin() {
-  const gridRef = useRef(null);
-  const gridContainerRef = useRef(null);
   const [docentes, setDocentes] = useState([]);
+  const [estudiantes, setEstudiantes] = useState([]);
+  const [modulos, setModulos] = useState([]);
+  const [talleres, setTalleres] = useState([]);
+  const [userCount, setUserCount] = useState(0);
+  const [metodologias, setMetodologias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch docentes
-  useEffect(() => {
-    console.log("Starting fetchDocentes...");
-    const fetchDocentes = async () => {
-      try {
-        const data = await getDocentes();
-        console.log("Docentes data:", data);
-        setDocentes(Array.isArray(data) ? data : []);
-        setLoading(false);
-      } catch (err) {
-        console.error("Fetch docentes error:", err);
-        setError(err.message || "Failed to fetch docentes");
-        setLoading(false);
-      }
-    };
-    fetchDocentes();
+  // Fetch data
+  const fetchData = useCallback(async () => {
+    try {
+      const [docentesData, estudiantesData, modulosData, talleresData, usersCount, metodologiasData] = await Promise.all([
+        getDocentes(),
+        getEstudiantes(),
+        getAllModulos(), // Añadido
+        getAllTalleres(),
+        getUserCount(),
+        getAllMetodologias()
+      ]);
+
+      setDocentes(docentesData);
+      setEstudiantes(estudiantesData);
+      setModulos(modulosData);
+      setTalleres(talleresData);
+      setUserCount(usersCount);
+      setMetodologias(metodologiasData);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
   }, []);
 
-  // Initialize GridStack
+  // Initial data fetch
   useEffect(() => {
-    console.log("Checking grid container...");
-    const gridContainer = gridContainerRef.current;
-    if (!gridContainer) {
-      console.error("Grid container not found in DOM");
-      return;
-    }
+    fetchData();
+  }, [fetchData]);
 
-    console.log("Initializing GridStack...");
-    try {
-      // Initialize GridStack
-      if (!gridRef.current) {
-        gridRef.current = GridStack.init({
-          cellHeight: 80,
-          float: true,
-          disableOneColumnMode: true,
-          margin: 15,
-          column: 12, // 12 column grid for better layout control
-        }, gridContainer);
-        console.log("GridStack initialized successfully");
+  // Memoize chart initialization
+  const initializeCharts = useCallback(() => {
+    if (loading) return;
+
+    // Cleanup existing charts
+    ['userDistribution', 'talleresChart', 'metodologiasChart'].forEach(id => {
+      const chart = Chart.getChart(id);
+      if (chart) {
+        chart.destroy();
       }
+    });
 
-      const grid = gridRef.current;
+    const talleresArray = Array.isArray(talleres) ? talleres : [];
 
-      // Remove existing widgets
-      console.log("Removing existing widgets...");
-      grid.removeAll();
-
-      // Add navigation widgets (top row - fixed position, not draggable)
-      console.log("Adding navigation widgets...");
-      
-      // Dashboard widget - Navigation
-      grid.addWidget({
-        x: 0,
-        y: 0,
-        w: 2,
-        h: 1,
-        content: 'Dashboard',
-        noResize: true,
-        noMove: true,
-        id: 'dashboard-nav'
-      });
-
-      // Docentes widget - Navigation
-      grid.addWidget({
-        x: 2,
-        y: 0,
-        w: 2,
-        h: 1,
-        content: 'Docentes',
-        noResize: true,
-        noMove: true,
-        id: 'docentes-nav'
-      });
-
-      // Estudiantes widget - Navigation
-      grid.addWidget({
-        x: 4,
-        y: 0,
-        w: 2,
-        h: 1,
-        content: 'Estudiantes',
-        noResize: true,
-        noMove: true,
-        id: 'estudiantes-nav'
-      });
-
-      // Spacer for future navigation widgets
-      grid.addWidget({
-        x: 6,
-        y: 0,
-        w: 6,
-        h: 1,
-        content: 'Espacio para más navegación',
-        noResize: true,
-        noMove: true,
-        id: 'nav-spacer'
-      });
-
-      // Main content area - Graphics widget (large central area)
-      grid.addWidget({
-        x: 0,
-        y: 1,
-        w: 8,
-        h: 4,
-        content: '📊 Área destinada para gráficas',
-        noResize: true,
-        noMove: true,
-        id: 'graphics-area'
-      });
-
-      // Side panel for additional widgets
-      grid.addWidget({
-        x: 8,
-        y: 1,
-        w: 4,
-        h: 2,
-        content: `Panel de Control ${docentes.length} ${loading ? 'Cargando...' : 'Activo'}`,
-        noResize: true,
-        noMove: true,
-        id: 'control-panel'
-      });
-
-      // Additional widget space 1
-      grid.addWidget({
-        x: 8,
-        y: 3,
-        w: 4,
-        h: 2,
-        content: '➕Espacio para widget adicional',
-        noResize: true,
-        noMove: true,
-        id: 'widget-space-1'
-      });
-
-      // Bottom row for more widgets
-      grid.addWidget({
-        x: 0,
-        y: 5,
-        w: 4,
-        h: 2,
-        content: '📈Métricas adicionales',
-        noResize: true,
-        noMove: true,
-        id: 'metrics-widget'
-      });
-
-      grid.addWidget({
-        x: 4,
-        y: 5,
-        w: 4,
-        h: 2,
-        content: '⚙️',
-        noResize: true,
-        noMove: true,
-        id: 'settings-widget'
-      });
-
-      grid.addWidget({
-        x: 8,
-        y: 5,
-        w: 4,
-        h: 2,
-        content: '📋',
-        noResize: true,
-        noMove: true,
-        id: 'reports-widget'
-      });
-
-      // Cleanup
-      return () => {
-        console.log("Cleaning up GridStack...");
-        if (gridRef.current) {
-          gridRef.current.destroy(false);
-          gridRef.current = null;
+    // User Distribution Chart
+    const userCtx = document.getElementById('userDistribution');
+    if (userCtx) {
+      new Chart(userCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Estudiantes', 'Docentes'],
+          datasets: [{
+            data: [estudiantes.length, docentes.length],
+            backgroundColor: ['#4CAF50', '#2196F3']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { 
+                color: '#fff',
+                padding: 10
+              }
+            }
+          }
         }
-      };
-    } catch (error) {
-      console.error("GridStack initialization error:", error);
+      });
     }
-  }, [docentes, loading, error]);
 
-  console.log("Rendering Admin component...");
+    // Talleres Chart
+    const talleresCtx = document.getElementById('talleresChart');
+    if (talleresCtx) {
+      new Chart(talleresCtx, {
+        type: 'bar',
+        data: {
+          labels: ['En Curso', 'Finalizados', 'Próximos'],
+          datasets: [{
+            data: [
+              talleresArray.filter(t => t.estado === 'activo').length,
+              talleresArray.filter(t => t.estado === 'finalizado').length,
+              talleresArray.filter(t => t.estado === 'pendiente').length
+            ],
+            backgroundColor: ['#FFA726', '#66BB6A', '#42A5F5']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { 
+            legend: { display: false }
+          },
+          scales: {
+            y: { 
+              beginAtZero: true,
+              ticks: { color: '#fff' }
+            },
+            x: { 
+              ticks: { color: '#fff' }
+            }
+          }
+        }
+      });
+    }
+
+    // Metodologias Chart
+    const metodologiasCtx = document.getElementById('metodologiasChart');
+    if (metodologiasCtx) {
+      new Chart(metodologiasCtx, {
+        type: 'bar',
+        data: {
+          labels: metodologias.map(m => m.nombre),
+          datasets: [{
+            label: 'Número de Módulos',
+            data: metodologias.map(m => m.numero_modulos),
+            backgroundColor: '#7d0f0fff',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: '#fff' }
+            },
+            tooltip: {
+              callbacks: {
+                afterBody: function(tooltipItems) {
+                  const idx = tooltipItems[0].dataIndex;
+                  const metodologia = metodologias[idx];
+                  return [
+                    `Descripción: ${metodologia.descripcion}`,
+                    `Objetivos: ${metodologia.objetivos}`,
+                    `Inicio: ${new Date(metodologia.fecha_inicio).toLocaleDateString()}`,
+                    `Fin: ${new Date(metodologia.fecha_finalizacion).toLocaleDateString()}`
+                  ];
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: '#fff' }
+            },
+            x: {
+              ticks: { color: '#fff' }
+            }
+          }
+        }
+      });
+    }
+  }, [loading, estudiantes.length, docentes.length, talleres, metodologias]);
+
+  // Add this useEffect after the initializeCharts definition
+  useEffect(() => {
+    if (!loading) {
+      initializeCharts();
+    }
+    // Cleanup function
+    return () => {
+      ['userDistribution', 'talleresChart', 'metodologiasChart'].forEach(id => {
+        const chart = Chart.getChart(id);
+        if (chart) {
+          chart.destroy();
+        }
+      });
+    };
+  }, [initializeCharts, loading]);
+
+  // Memoize components
+  const StatWidget = useMemo(() => ({ title, value, description, bgColor }) => (
+    <div style={{
+      padding: '5px',
+      background: bgColor,
+      borderRadius: '10px',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
+      <h3 style={{ color: '#fff', marginBottom: '15px', fontSize: '18px' }}>{title}</h3>
+      <p style={{ fontSize: '32px', color: '#fff', margin: '10px 0' }}>{value}</p>
+      <p style={{ color: '#aaa', fontSize: '14px' }}>{description}</p>
+    </div>
+  ), []);
+
+  const ChartWidget = useMemo(() => ({ title, id, bgColor, customHeight, customWidth }) => (
+    <div style={{
+      padding: '30px',
+      background: bgColor,
+      borderRadius: '10px',
+      width: customWidth || '92%',
+      height: customHeight || '350px'
+    }}>
+      <h3 style={{ color: '#fff', marginBottom: '15px' }}>{title}</h3>
+      <div style={{ 
+        width: '100%',
+        height: customHeight ? `${parseInt(customHeight) - 80}px` : '220px',
+        position: 'relative'
+      }}>
+        <canvas id={id} style={{ width: '100%', height: '100%' }} />
+      </div>
+    </div>
+  ), []);
+
+  // Memoize grid layout
+  const renderGrid = useMemo(() => (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(4, 1fr)',
+      gridAutoRows: 'minmax(100px, auto)',
+      gap: '20px',
+      padding: '20px',
+      borderRadius: '15px',
+    }}>
+      {/* Stats Widgets */}
+      <StatWidget
+        title="Usuarios"
+        value={userCount}
+        description="Total de usuarios registrados"
+        bgColor="rgba(4, 22, 70, 0.55)"
+      />
+      <StatWidget
+        title="Estudiantes"
+        value={estudiantes.length}
+        description="Estudiantes activos"
+        bgColor="rgba(4, 22, 70, 0.55)"
+      />
+      <StatWidget
+        title="Docentes"
+        value={docentes.length}
+        description="Docentes registrados"
+        bgColor="rgba(4, 22, 70, 0.55)"
+      />
+      <StatWidget
+        title="Módulos"
+        value={modulos.length}
+        description="Módulos activos"
+        bgColor="rgba(4, 22, 70, 0.55)"
+      />
+
+      {/* Chart Widgets with updated spans */}
+      <div style={{ gridColumn: 'span 2' }}>
+        <ChartWidget
+          title="Distribución de Usuarios"
+          id="userDistribution"
+          bgColor="rgba(41, 98, 255, 0.2)"
+        />
+      </div>
+      <div style={{ gridColumn: 'span 2' }}>
+        <ChartWidget
+          title="Estado de Talleres"
+          id="talleresChart"
+          bgColor="rgba(255, 152, 0, 0.2)"
+        />
+      </div>
+      <div style={{ 
+        gridColumn: 'span 4',
+        minHeight: '500px' // Increased container height
+      }}>
+        <ChartWidget
+          title="Metodologías"
+          id="metodologiasChart"
+          bgColor="rgba(153, 0, 8, 0.36)"
+          customHeight="450px"
+          customWidth="96%"
+        />
+      </div>
+    </div>
+  ), [userCount, estudiantes.length, docentes.length, modulos.length]);
 
   return (
     <div className="bg-gray-900 min-h-screen p-4">
       <h1 className="text-center text-3xl font-bold mb-6" style={{ color: "white", textShadow: "2px 2px 4px rgba(0, 0, 0, 1)" }}>
-        Admin Panel
+        Panel de Administración
       </h1>
-      <div
-        ref={gridContainerRef}
-        className="grid-stack bg-gray-700 rounded-lg"
-        style={{ 
-          minHeight: "700px", 
-          color: "white", 
-          background: "#0c0a877b", 
-          borderRadius: "15px", 
-          height: "85vh",
-          padding: "10px"
-        }}
-      ></div>
+      
+      {error && (
+        <div style={{ 
+          backgroundColor: "rgba(244, 67, 54, 0.2)", 
+          color: "#fff", 
+          padding: "15px", 
+          borderRadius: "8px",
+          marginBottom: "20px",
+          textAlign: "center"
+        }}>
+          Error: {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div style={{ textAlign: "center", color: "#fff", padding: "20px" }}>
+          Cargando...
+        </div>
+      ) : renderGrid}
     </div>
   );
 }
 
-export default Admin;
+export default React.memo(Admin);
