@@ -1,40 +1,43 @@
-// Componente Login.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../index";
 import { loginUser } from "../../API/Login/Login";
 
 function Login() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return;  // Evita submits múltiples
+    if (loading) return;
     setLoading(true);
     setError('');
 
     try {
-      const userData = await loginUser(credentials);
-      
-      // Guardar datos del usuario en localStorage
-      localStorage.setItem('user', JSON.stringify(userData));
-      
-      // Redireccionar basado en el rol (asumiendo que el backend ahora devuelve 'role')
-      if (userData.role === 'Admin') {
+      if (typeof login !== 'function') {
+        throw new Error('Contexto de autenticación no está configurado correctamente');
+      }
+      const userData = await loginUser(credentials, login);
+      console.log('userData in Login.js:', userData);
+
+      if (userData.roles.some(role => role.name.toLowerCase() === 'admin')) {
         navigate('/admin');
-      } else if (userData.role === 'Docente') {
+      } else if (userData.roles.some(role => role.name.toLowerCase() === 'docente')) {
         navigate('/docente');
-      } else if (userData.role === 'Estudiante') {
+      } else if (userData.roles.some(role => role.name.toLowerCase() === 'estudiante')) {
         navigate('/estudiante');
       } else {
-        setError('Rol de usuario no válido. Contacta al administrador.');
+        setError('No tienes un rol válido. Contacta al administrador.');
         localStorage.removeItem('user');
+        localStorage.removeItem('authToken');
         return;
       }
     } catch (err) {

@@ -73,23 +73,3 @@ export async function loginUser(credentials) {
 	return res.json();
 }
 
-// Reporte de avance de laboratorio de usuario
-export async function getUserLabReservas(id) {
-	const res = await fetch(`${API_URL}/users/${id}/avance-report`);
-	if (!res.ok) throw new Error("Error al obtener el reporte de avance");
-	return res.json();
-}
-
-// Reporte de préstamos de usuario
-export async function getUserLoanReport(id) {
-	const res = await fetch(`${API_URL}/users/${id}/loan-report`);
-	if (!res.ok) throw new Error("Error al obtener el reporte de préstamos");
-	return res.json();
-}
-
-// Dashboard de administrador
-export async function getAdminDashboardData(id) {
-	const res = await fetch(`${API_URL}/users/${id}/admin/dashboard`);
-	if (!res.ok) throw new Error("Error al obtener datos del dashboard");
-	return res.json();
-}

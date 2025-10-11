@@ -1,7 +1,8 @@
-import React from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import Navegacion from "./Navegacion";
+import ProtectedRoute from "./ProtectedRout";
 
 // Llamamos a las ventanas
 import Bienvenida from "./Screens/Bienvenida";
@@ -16,24 +17,112 @@ import RegisterUsuario from "./Screens/Login/Register/RegisterUsuario";
 import RolesAdmin from "./Screens/Admin/Admin-Ventanas/AdminRoles";
 import Talleres from "./Screens/Admin/Admin-Ventanas/Tallerres";
 
+// Contexto de autenticación
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+    setLoading(false);
+  }, []);
+
+  const login = (userData) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('authToken');
+    navigate('/login');
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);
+
 // Renderizar navegación y rutas bajo un solo BrowserRouter en root
 createRoot(document.getElementById("root")).render(
-	<React.StrictMode>
-		<BrowserRouter>
-			<Navegacion />
-			<Routes>
-				<Route path="/" element={<Bienvenida />} />
-				<Route path="/admin" element={<Admin />} />
-				<Route path="/Estudiante-Admin" element={<AdminEstudiantes />} />
-				<Route path="/docenteadmin" element={<DocenteAdmin />} />
-				<Route path="/docente" element={<Docente />} />
-				<Route path="/estudiante" element={<Estudiante />} />
-				<Route path="/login" element={<Login />} />
-				<Route path="/register" element={<RegisterPersona />} />
-				<Route path="/register-step2" element={<RegisterUsuario />} />
-				<Route path="/roles-admin" element={<RolesAdmin />} />
-				<Route path="/talleres" element={<Talleres />} />
-			</Routes>
-		</BrowserRouter>
-	</React.StrictMode>
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <Navegacion />
+        <Routes>
+          <Route path="/" element={<Bienvenida />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Estudiante-Admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminEstudiantes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/docenteadmin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <DocenteAdmin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/docente"
+            element={
+              <ProtectedRoute requiredRole="docente">
+                <Docente />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/estudiante"
+            element={
+              <ProtectedRoute requiredRole="estudiante">
+                <Estudiante />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<RegisterPersona />} />
+          <Route path="/register-step2" element={<RegisterUsuario />} />
+          <Route
+            path="/roles-admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <RolesAdmin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/talleres"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Talleres />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 );

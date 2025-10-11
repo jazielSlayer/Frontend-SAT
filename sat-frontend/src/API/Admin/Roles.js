@@ -1,9 +1,6 @@
-// sat-frontend/src/API/Admin/Roles.js
 import { API_URL } from "../Api.js";
 
-// ========== ROLES ==========
-
-// Get all roles
+// Obtener todos los roles
 export async function getAllRoles() {
   try {
     const response = await fetch(`${API_URL}/roles`, {
@@ -13,16 +10,16 @@ export async function getAllRoles() {
       },
     });
     if (!response.ok) {
-      throw new Error(`Error fetching roles: ${response.statusText}`);
+      throw new Error(`Error al obtener roles: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in getAllRoles:', error);
+    console.error('Error en getAllRoles:', error);
     throw error;
   }
 }
 
-// Get a specific role by ID
+// Obtener un rol específico por ID
 export async function getRole(id) {
   try {
     const response = await fetch(`${API_URL}/roles/${id}`, {
@@ -33,18 +30,18 @@ export async function getRole(id) {
     });
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error('Role not found');
+        throw new Error('Rol no encontrado');
       }
-      throw new Error(`Error fetching role: ${response.statusText}`);
+      throw new Error(`Error al obtener rol: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in getRole:', error);
+    console.error('Error en getRole:', error);
     throw error;
   }
 }
 
-// Create a new role
+// Crear un nuevo rol
 export async function createRole(data) {
   try {
     const response = await fetch(`${API_URL}/roles`, {
@@ -54,6 +51,7 @@ export async function createRole(data) {
       },
       body: JSON.stringify({
         name: data.name,
+        descripcion: data.descripcion || null,
         start_path: data.start_path,
         is_default: data.is_default || false,
         guard_name: data.guard_name || 'web',
@@ -61,16 +59,22 @@ export async function createRole(data) {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || `Error creating role: ${response.statusText}`);
+      if (response.status === 400) {
+        throw new Error(errorData.message || 'Campos obligatorios faltantes');
+      }
+      if (response.status === 409) {
+        throw new Error(errorData.message || 'Ya existe un rol con este nombre y guard_name');
+      }
+      throw new Error(errorData.message || `Error al crear rol: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in createRole:', error);
+    console.error('Error en createRole:', error);
     throw error;
   }
 }
 
-// Update a role by ID
+// Actualizar un rol por ID
 export async function updateRole(id, data) {
   try {
     const response = await fetch(`${API_URL}/roles/${id}`, {
@@ -80,6 +84,7 @@ export async function updateRole(id, data) {
       },
       body: JSON.stringify({
         name: data.name,
+        descripcion: data.descripcion || null,
         start_path: data.start_path,
         is_default: data.is_default,
         guard_name: data.guard_name || 'web',
@@ -87,16 +92,22 @@ export async function updateRole(id, data) {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || `Error updating role: ${response.statusText}`);
+      if (response.status === 404) {
+        throw new Error(errorData.message || 'Rol no encontrado');
+      }
+      if (response.status === 409) {
+        throw new Error(errorData.message || 'Ya existe un rol con este nombre y guard_name');
+      }
+      throw new Error(errorData.message || `Error al actualizar rol: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in updateRole:', error);
+    console.error('Error en updateRole:', error);
     throw error;
   }
 }
 
-// Delete a role by ID
+// Eliminar un rol por ID
 export async function deleteRole(id) {
   try {
     const response = await fetch(`${API_URL}/roles/${id}`, {
@@ -107,18 +118,22 @@ export async function deleteRole(id) {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || `Error deleting role: ${response.statusText}`);
+      if (response.status === 404) {
+        throw new Error(errorData.message || 'Rol no encontrado');
+      }
+      if (response.status === 400) {
+        throw new Error(errorData.message || 'No se puede eliminar el rol porque está asignado a usuarios o permisos');
+      }
+      throw new Error(errorData.message || `Error al eliminar rol: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in deleteRole:', error);
+    console.error('Error en deleteRole:', error);
     throw error;
   }
 }
 
-// ========== PERMISSIONS ==========
-
-// Get all permissions
+// Obtener todos los permisos
 export async function getAllPermissions() {
   try {
     const response = await fetch(`${API_URL}/permissions`, {
@@ -128,16 +143,16 @@ export async function getAllPermissions() {
       },
     });
     if (!response.ok) {
-      throw new Error(`Error fetching permissions: ${response.statusText}`);
+      throw new Error(`Error al obtener permisos: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in getAllPermissions:', error);
+    console.error('Error en getAllPermissions:', error);
     throw error;
   }
 }
 
-// Get permissions for a specific role
+// Obtener permisos para un rol específico
 export async function getPermissionsByRole(roleId) {
   try {
     const response = await fetch(`${API_URL}/roles/${roleId}/permissions`, {
@@ -147,16 +162,19 @@ export async function getPermissionsByRole(roleId) {
       },
     });
     if (!response.ok) {
-      throw new Error(`Error fetching permissions for role: ${response.statusText}`);
+      if (response.status === 404) {
+        throw new Error('Rol no encontrado');
+      }
+      throw new Error(`Error al obtener permisos para el rol: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in getPermissionsByRole:', error);
+    console.error('Error en getPermissionsByRole:', error);
     throw error;
   }
 }
 
-// Assign a permission to a role
+// Asignar un permiso a un rol
 export async function assignPermissionToRole(roleId, permissionId) {
   try {
     const response = await fetch(`${API_URL}/roles/${roleId}/permissions`, {
@@ -170,16 +188,22 @@ export async function assignPermissionToRole(roleId, permissionId) {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || `Error assigning permission to role: ${response.statusText}`);
+      if (response.status === 404) {
+        throw new Error(errorData.message || 'Rol o permiso no encontrado');
+      }
+      if (response.status === 409) {
+        throw new Error(errorData.message || 'El permiso ya está asignado a este rol');
+      }
+      throw new Error(errorData.message || `Error al asignar permiso al rol: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in assignPermissionToRole:', error);
+    console.error('Error en assignPermissionToRole:', error);
     throw error;
   }
 }
 
-// Remove a permission from a role
+// Eliminar un permiso de un rol
 export async function removePermissionFromRole(roleId, permissionId) {
   try {
     const response = await fetch(`${API_URL}/roles/${roleId}/permissions`, {
@@ -193,18 +217,19 @@ export async function removePermissionFromRole(roleId, permissionId) {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || `Error removing permission from role: ${response.statusText}`);
+      if (response.status === 404) {
+        throw new Error(errorData.message || 'Rol o permiso no encontrado');
+      }
+      throw new Error(errorData.message || `Error al eliminar permiso del rol: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in removePermissionFromRole:', error);
+    console.error('Error en removePermissionFromRole:', error);
     throw error;
   }
 }
 
-// ========== USER ROLES ==========
-
-// Get users with their roles
+// Obtener usuarios con sus roles
 export async function getUsersWithRoles() {
   try {
     const response = await fetch(`${API_URL}/users`, {
@@ -214,16 +239,21 @@ export async function getUsersWithRoles() {
       },
     });
     if (!response.ok) {
-      throw new Error(`Error fetching users: ${response.statusText}`);
+      throw new Error(`Error al obtener usuarios: ${response.statusText}`);
     }
-    return await response.json();
+    const users = await response.json();
+    // Asegurar que cada usuario tenga un array de roles
+    return users.map(user => ({
+      ...user,
+      roles: user.role_name ? [{ id: user.id_roles, name: user.role_name }] : []
+    }));
   } catch (error) {
-    console.error('Error in getUsersWithRoles:', error);
+    console.error('Error en getUsersWithRoles:', error);
     throw error;
   }
 }
 
-// Assign a role to a user (this would need to be implemented in your backend)
+// Asignar un rol a un usuario
 export async function assignRoleToUser(userId, roleId) {
   try {
     const response = await fetch(`${API_URL}/users/${userId}/roles`, {
@@ -237,16 +267,22 @@ export async function assignRoleToUser(userId, roleId) {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || `Error assigning role to user: ${response.statusText}`);
+      if (response.status === 404) {
+        throw new Error(errorData.message || 'Usuario o rol no encontrado');
+      }
+      if (response.status === 400) {
+        throw new Error(errorData.message || 'El usuario ya tiene asignado este rol');
+      }
+      throw new Error(errorData.message || `Error al asignar rol al usuario: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in assignRoleToUser:', error);
+    console.error('Error en assignRoleToUser:', error);
     throw error;
   }
 }
 
-// Remove a role from a user (this would need to be implemented in your backend)
+// Eliminar un rol de un usuario
 export async function removeRoleFromUser(userId, roleId) {
   try {
     const response = await fetch(`${API_URL}/users/${userId}/roles`, {
@@ -260,11 +296,47 @@ export async function removeRoleFromUser(userId, roleId) {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || `Error removing role from user: ${response.statusText}`);
+      if (response.status === 404) {
+        throw new Error(errorData.message || 'Usuario o rol no encontrado');
+      }
+      throw new Error(errorData.message || `Error al eliminar rol del usuario: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error in removeRoleFromUser:', error);
+    console.error('Error en removeRoleFromUser:', error);
+    throw error;
+  }
+}
+
+// Obtener rol de un usuario por correo
+export async function getUserRoleByEmail(email) {
+  try {
+    const response = await fetch(`${API_URL}/users/role-by-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (response.status === 400) {
+        throw new Error(errorData.message || 'Correo requerido');
+      }
+      if (response.status === 404) {
+        throw new Error(errorData.message || 'Usuario no encontrado');
+      }
+      throw new Error(errorData.message || `Error al obtener rol: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('getUserRoleByEmail response:', data);
+    return data.role && data.role !== 'Sin rol asignado' 
+      ? [{ name: data.role.toLowerCase() }]
+      : [];
+  } catch (error) {
+    console.error('Error en getUserRoleByEmail:', error);
     throw error;
   }
 }

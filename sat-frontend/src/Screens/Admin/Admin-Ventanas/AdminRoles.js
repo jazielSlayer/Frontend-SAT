@@ -1,4 +1,3 @@
-// sat-frontend/src/Screens/Admin/Admin-Ventanas/Roles-Admin.js
 import React, { useState, useEffect } from "react";
 import {
   getAllRoles,
@@ -27,6 +26,7 @@ function RolesAdmin() {
   const [showUserRolesModal, setShowUserRolesModal] = useState(null);
   const [newRole, setNewRole] = useState({
     name: "",
+    descripcion: "",
     start_path: "",
     is_default: false,
     guard_name: "web",
@@ -57,13 +57,13 @@ function RolesAdmin() {
           const rolePerms = await getPermissionsByRole(role.id);
           rolePermsMap[role.id] = rolePerms;
         } catch (err) {
-          console.warn(`Error loading permissions for role ${role.id}:`, err);
+          console.warn(`Error al cargar permisos para el rol ${role.id}:`, err);
           rolePermsMap[role.id] = [];
         }
       }
       setRolePermissions(rolePermsMap);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Error al cargar datos');
     } finally {
       setLoading(false);
     }
@@ -90,6 +90,7 @@ function RolesAdmin() {
         await createRole(newRole);
         setNewRole({
           name: "",
+          descripcion: "",
           start_path: "",
           is_default: false,
           guard_name: "web",
@@ -97,7 +98,7 @@ function RolesAdmin() {
       }
       fetchAllData();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Error al procesar el rol');
     }
   };
 
@@ -115,7 +116,7 @@ function RolesAdmin() {
         await deleteRole(id);
         fetchAllData();
       } catch (err) {
-        setError(err.message);
+        setError(err.message || 'Error al eliminar el rol');
       }
     }
   };
@@ -135,7 +136,7 @@ function RolesAdmin() {
         [roleId]: rolePerms
       }));
     } catch (err) {
-      alert('Error al actualizar permisos: ' + err.message);
+      setError(err.message || 'Error al actualizar permisos');
     }
   };
 
@@ -156,7 +157,7 @@ function RolesAdmin() {
       const usersData = await getUsersWithRoles();
       setUsers(usersData);
     } catch (err) {
-      alert('Error al actualizar roles de usuario: ' + err.message);
+      setError(err.message || 'Error al actualizar roles de usuario');
     }
   };
 
@@ -226,6 +227,7 @@ function RolesAdmin() {
                     />
                     <div>
                       <span className="text-white font-medium">{role.name}</span>
+                      <p className="text-gray-400 text-sm">{role.descripcion || 'Sin descripción'}</p>
                       <p className="text-gray-400 text-sm">Ruta: {role.start_path}</p>
                     </div>
                   </div>
@@ -297,7 +299,7 @@ function RolesAdmin() {
                   <td style={{ padding: "12px", fontWeight: "bold" }}>{user.user_name}</td>
                   <td style={{ padding: "12px" }}>{user.email || 'Sin email'}</td>
                   <td style={{ padding: "12px" }}>
-                    {user.nombres} {user.apellidopat} {user.apellidomat}
+                    {user.nombres} {user.apellidopat} {user.apellidomat || ''}
                   </td>
                   <td style={{ padding: "12px" }}>
                     <span style={{
@@ -545,295 +547,318 @@ function RolesAdmin() {
           {activeTab === 'roles' && (
             <div>
               {/* Tabla de Roles */}
-          <div style={{ overflowX: "auto", marginBottom: "30px" }}>
-            <table style={{ 
-              width: "100%", 
-              borderCollapse: "collapse", 
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
-              borderRadius: "8px",
-              overflow: "hidden"
-            }}>
-              <thead style={{ backgroundColor: "#333" }}>
-                <tr>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>ID</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Nombre</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Ruta Inicial</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Guard</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Por Defecto</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Permisos</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "center" }}>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {roles.length > 0 ? (
-                  roles.map((role, index) => (
-                    <tr 
-                      key={role.id} 
-                      style={{ 
-                        borderBottom: "1px solid #555",
-                        backgroundColor: index % 2 === 0 ? "rgba(255,255,255,0.05)" : "transparent"
+              <div style={{ overflowX: "auto", marginBottom: "30px" }}>
+                <table style={{ 
+                  width: "100%", 
+                  borderCollapse: "collapse", 
+                  backgroundColor: "rgba(0, 0, 0, 0.3)",
+                  borderRadius: "8px",
+                  overflow: "hidden"
+                }}>
+                  <thead style={{ backgroundColor: "#333" }}>
+                    <tr>
+                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>ID</th>
+                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Nombre</th>
+                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Descripción</th>
+                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Ruta Inicial</th>
+                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Guard</th>
+                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Por Defecto</th>
+                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Permisos</th>
+                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "center" }}>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {roles.length > 0 ? (
+                      roles.map((role, index) => (
+                        <tr 
+                          key={role.id} 
+                          style={{ 
+                            borderBottom: "1px solid #555",
+                            backgroundColor: index % 2 === 0 ? "rgba(255,255,255,0.05)" : "transparent"
+                          }}
+                        >
+                          <td style={{ padding: "12px" }}>{role.id}</td>
+                          <td style={{ padding: "12px", fontWeight: "bold" }}>{role.name}</td>
+                          <td style={{ padding: "12px" }}>{role.descripcion || 'Sin descripción'}</td>
+                          <td style={{ padding: "12px" }}>
+                            <code style={{ 
+                              backgroundColor: "rgba(255,255,255,0.1)", 
+                              padding: "2px 6px", 
+                              borderRadius: "4px" 
+                            }}>
+                              {role.start_path}
+                            </code>
+                          </td>
+                          <td style={{ padding: "12px" }}>{role.guard_name}</td>
+                          <td style={{ padding: "12px" }}>
+                            <span style={{
+                              padding: "4px 8px",
+                              borderRadius: "4px",
+                              backgroundColor: role.is_default ? "#4CAF50" : "#757575",
+                              color: "white",
+                              fontSize: "12px"
+                            }}>
+                              {role.is_default ? "Sí" : "No"}
+                            </span>
+                          </td>
+                          <td style={{ padding: "12px" }}>
+                            <button
+                              onClick={() => setShowPermissionsModal(role.id)}
+                              style={{
+                                padding: "6px 12px",
+                                backgroundColor: "#9C27B0",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontSize: "12px"
+                              }}
+                            >
+                              Gestionar ({(rolePermissions[role.id] || []).length})
+                            </button>
+                          </td>
+                          <td style={{ padding: "12px", textAlign: "center" }}>
+                            <button
+                              onClick={() => handleEdit(role)}
+                              style={{
+                                padding: "6px 12px",
+                                backgroundColor: "#2196F3",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                marginRight: "8px",
+                                fontSize: "12px"
+                              }}
+                            >
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => handleDelete(role.id)}
+                              style={{
+                                padding: "6px 12px",
+                                backgroundColor: "#F44336",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontSize: "12px"
+                              }}
+                            >
+                              Eliminar
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="8" style={{ padding: "20px", textAlign: "center", fontSize: "16px" }}>
+                          No hay roles registrados
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Formulario de Agregar/Editar Rol */}
+              <div style={{
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                padding: "25px",
+                borderRadius: "8px",
+                marginTop: "20px"
+              }}>
+                <h3 style={{ marginBottom: "20px", fontSize: "22px" }}>
+                  {editingRole ? "Editar Rol" : "Agregar Nuevo Rol"}
+                </h3>
+                <form onSubmit={handleSubmit}>
+                  <div style={{ 
+                    display: "grid", 
+                    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                    gap: "15px",
+                    marginBottom: "20px"
+                  }}>
+                    <div>
+                      <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
+                        Nombre del Rol:
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="Ej: Administrador, Docente, Estudiante"
+                        value={editingRole ? editingRole.name : newRole.name}
+                        onChange={handleChange}
+                        required
+                        style={{
+                          width: "100%",
+                          padding: "10px",
+                          borderRadius: "4px",
+                          border: "1px solid #555",
+                          backgroundColor: "#222",
+                          color: "#fff"
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
+                        Descripción:
+                      </label>
+                      <input
+                        type="text"
+                        name="descripcion"
+                        placeholder="Ej: Rol con acceso completo al sistema"
+                        value={editingRole ? editingRole.descripcion || '' : newRole.descripcion}
+                        onChange={handleChange}
+                        style={{
+                          width: "100%",
+                          padding: "10px",
+                          borderRadius: "4px",
+                          border: "1px solid #555",
+                          backgroundColor: "#222",
+                          color: "#fff"
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
+                        Ruta Inicial:
+                      </label>
+                      <input
+                        type="text"
+                        name="start_path"
+                        placeholder="Ej: /admin, /docente, /estudiante"
+                        value={editingRole ? editingRole.start_path : newRole.start_path}
+                        onChange={handleChange}
+                        required
+                        style={{
+                          width: "100%",
+                          padding: "10px",
+                          borderRadius: "4px",
+                          border: "1px solid #555",
+                          backgroundColor: "#222",
+                          color: "#fff"
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
+                        Guard Name:
+                      </label>
+                      <select
+                        name="guard_name"
+                        value={editingRole ? editingRole.guard_name : newRole.guard_name}
+                        onChange={handleChange}
+                        style={{
+                          width: "100%",
+                          padding: "10px",
+                          borderRadius: "4px",
+                          border: "1px solid #555",
+                          backgroundColor: "#222",
+                          color: "#fff"
+                        }}
+                      >
+                        <option value="web">Web</option>
+                        <option value="api">API</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: "20px" }}>
+                    <label style={{ display: "flex", alignItems: "center", fontSize: "14px" }}>
+                      <input
+                        type="checkbox"
+                        name="is_default"
+                        checked={editingRole ? editingRole.is_default : newRole.is_default}
+                        onChange={handleChange}
+                        style={{ marginRight: "8px", transform: "scale(1.2)" }}
+                      />
+                      Rol por defecto para nuevos usuarios
+                    </label>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <button
+                      type="submit"
+                      style={{
+                        padding: "12px 24px",
+                        backgroundColor: editingRole ? "#FF9800" : "#4CAF50",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "16px",
+                        fontWeight: "bold"
                       }}
                     >
-                      <td style={{ padding: "12px" }}>{role.id}</td>
-                      <td style={{ padding: "12px", fontWeight: "bold" }}>{role.name}</td>
-                      <td style={{ padding: "12px" }}>
-                        <code style={{ 
-                          backgroundColor: "rgba(255,255,255,0.1)", 
-                          padding: "2px 6px", 
-                          borderRadius: "4px" 
-                        }}>
-                          {role.start_path}
-                        </code>
-                      </td>
-                      <td style={{ padding: "12px" }}>{role.guard_name}</td>
-                      <td style={{ padding: "12px" }}>
-                        <span style={{
-                          padding: "4px 8px",
+                      {editingRole ? "Actualizar Rol" : "Crear Rol"}
+                    </button>
+                    
+                    {editingRole && (
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        style={{
+                          padding: "12px 24px",
+                          backgroundColor: "#757575",
+                          color: "#fff",
+                          border: "none",
                           borderRadius: "4px",
-                          backgroundColor: role.is_default ? "#4CAF50" : "#757575",
-                          color: "white",
-                          fontSize: "12px"
-                        }}>
-                          {role.is_default ? "Sí" : "No"}
-                        </span>
-                      </td>
-                      <td style={{ padding: "12px" }}>
-                        <button
-                          onClick={() => setShowPermissionsModal(role.id)}
-                          style={{
-                            padding: "6px 12px",
-                            backgroundColor: "#9C27B0",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            fontSize: "12px"
-                          }}
-                        >
-                          Gestionar ({(rolePermissions[role.id] || []).length})
-                        </button>
-                      </td>
-                      <td style={{ padding: "12px", textAlign: "center" }}>
-                        <button
-                          onClick={() => handleEdit(role)}
-                          style={{
-                            padding: "6px 12px",
-                            backgroundColor: "#2196F3",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            marginRight: "8px",
-                            fontSize: "12px"
-                          }}
-                        >
-                          Editar
-                        </button>
-                        <button
-                          onClick={() => handleDelete(role.id)}
-                          style={{
-                            padding: "6px 12px",
-                            backgroundColor: "#F44336",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            fontSize: "12px"
-                          }}
-                        >
-                          Eliminar
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7" style={{ padding: "20px", textAlign: "center", fontSize: "16px" }}>
-                      No hay roles registrados
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                          cursor: "pointer",
+                          fontSize: "16px"
+                        }}
+                      >
+                        Cancelar
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
 
-          {/* Formulario de Agregar/Editar Rol */}
-          <div style={{
-            backgroundColor: "rgba(0, 0, 0, 0.3)",
-            padding: "25px",
-            borderRadius: "8px",
-            marginTop: "20px"
-          }}>
-            <h3 style={{ marginBottom: "20px", fontSize: "22px" }}>
-              {editingRole ? "Editar Rol" : "Agregar Nuevo Rol"}
-            </h3>
-            <form onSubmit={handleSubmit}>
-              <div style={{ 
-                display: "grid", 
-                gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              {/* Estadísticas */}
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                 gap: "15px",
-                marginBottom: "20px"
+                marginTop: "30px"
               }}>
-                <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Nombre del Rol:
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Ej: Administrador, Docente, Estudiante"
-                    value={editingRole ? editingRole.name : newRole.name}
-                    onChange={handleChange}
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff"
-                    }}
-                  />
+                <div style={{
+                  backgroundColor: "rgba(76, 175, 80, 0.2)",
+                  padding: "20px",
+                  borderRadius: "8px",
+                  textAlign: "center"
+                }}>
+                  <h4 style={{ margin: "0 0 10px 0", color: "#4CAF50" }}>Total Roles</h4>
+                  <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>{roles.length}</p>
                 </div>
-
-                <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Ruta Inicial:
-                  </label>
-                  <input
-                    type="text"
-                    name="start_path"
-                    placeholder="Ej: /admin, /docente, /estudiante"
-                    value={editingRole ? editingRole.start_path : newRole.start_path}
-                    onChange={handleChange}
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff"
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Guard Name:
-                  </label>
-                  <select
-                    name="guard_name"
-                    value={editingRole ? editingRole.guard_name : newRole.guard_name}
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff"
-                    }}
-                  >
-                    <option value="web">Web</option>
-                    <option value="api">API</option>
-                  </select>
-                </div>
-              </div>
-
-              <div style={{ marginBottom: "20px" }}>
-                <label style={{ display: "flex", alignItems: "center", fontSize: "14px" }}>
-                  <input
-                    type="checkbox"
-                    name="is_default"
-                    checked={editingRole ? editingRole.is_default : newRole.is_default}
-                    onChange={handleChange}
-                    style={{ marginRight: "8px", transform: "scale(1.2)" }}
-                  />
-                  Rol por defecto para nuevos usuarios
-                </label>
-              </div>
-
-              <div style={{ display: "flex", gap: "10px" }}>
-                <button
-                  type="submit"
-                  style={{
-                    padding: "12px 24px",
-                    backgroundColor: editingRole ? "#FF9800" : "#4CAF50",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "16px",
-                    fontWeight: "bold"
-                  }}
-                >
-                  {editingRole ? "Actualizar Rol" : "Crear Rol"}
-                </button>
                 
-                {editingRole && (
-                  <button
-                    type="button"
-                    onClick={handleCancelEdit}
-                    style={{
-                      padding: "12px 24px",
-                      backgroundColor: "#757575",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontSize: "16px"
-                    }}
-                  >
-                    Cancelar
-                  </button>
-                )}
+                <div style={{
+                  backgroundColor: "rgba(33, 150, 243, 0.2)",
+                  padding: "20px",
+                  borderRadius: "8px",
+                  textAlign: "center"
+                }}>
+                  <h4 style={{ margin: "0 0 10px 0", color: "#2196F3" }}>Total Permisos</h4>
+                  <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
+                    {permissions.length}
+                  </p>
+                </div>
+                
+                <div style={{
+                  backgroundColor: "rgba(156, 39, 176, 0.2)",
+                  padding: "20px",
+                  borderRadius: "8px",
+                  textAlign: "center"
+                }}>
+                  <h4 style={{ margin: "0 0 10px 0", color: "#9C27B0" }}>Roles por Defecto</h4>
+                  <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
+                    {roles.filter(r => r.is_default).length}
+                  </p>
+                </div>
               </div>
-            </form>
-          </div>
-
-          {/* Estadísticas */}
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "15px",
-            marginTop: "30px"
-          }}>
-            <div style={{
-              backgroundColor: "rgba(76, 175, 80, 0.2)",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center"
-            }}>
-              <h4 style={{ margin: "0 0 10px 0", color: "#4CAF50" }}>Total Roles</h4>
-              <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>{roles.length}</p>
             </div>
-            
-            <div style={{
-              backgroundColor: "rgba(33, 150, 243, 0.2)",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center"
-            }}>
-              <h4 style={{ margin: "0 0 10px 0", color: "#2196F3" }}>Total Permisos</h4>
-              <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
-                {permissions.length}
-              </p>
-            </div>
-            
-            <div style={{
-              backgroundColor: "rgba(156, 39, 176, 0.2)",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center"
-            }}>
-              <h4 style={{ margin: "0 0 10px 0", color: "#9C27B0" }}>Roles por Defecto</h4>
-              <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
-                {roles.filter(r => r.is_default).length}
-              </p>
-            </div>
-          </div>
-        </div>
           )}
 
           {activeTab === 'users' && renderUsersTab()}

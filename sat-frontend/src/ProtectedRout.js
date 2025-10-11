@@ -1,30 +1,84 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './index'; // Ajusta la ruta según la ubicación de index.jsx
+import { getUserRoleByEmail } from './API/Admin/Roles'; // Importar getUserRoleByEmail
 
 const ProtectedRoute = ({ children, requiredRole = null }) => {
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { user, login } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    
-    if (!userData) {
-      navigate('/login');
-      return;
-    }
+    const verifyUser = async () => {
+      console.log('ProtectedRoute: Verificando autenticación...');
+      const userData = localStorage.getItem('user');
+      console.log('ProtectedRoute: userData from localStorage:', userData);
 
-    const parsedUser = JSON.parse(userData);
-    setUser(parsedUser);
+      if (!userData) {
+        console.log('ProtectedRoute: No hay datos de usuario en localStorage, redirigiendo a /login');
+        navigate('/login');
+        setLoading(false);
+        return;
+      }
 
-    // Si se requiere un rol específico, verificarlo
-    if (requiredRole && parsedUser.role !== requiredRole) {
-      navigate('/login');
-      return;
-    }
+      try {
+        const parsedUser = JSON.parse(userData);
+        console.log('ProtectedRoute: parsedUser:', parsedUser);
 
-    setLoading(false);
-  }, [navigate, requiredRole]);
+        if (!parsedUser.email) {
+          console.log('ProtectedRoute: No se encontró email en userData, redirigiendo a /login');
+          localStorage.removeItem('user');
+          localStorage.removeItem('authToken');
+          navigate('/login');
+          setLoading(false);
+          return;
+        }
+
+        // Obtener roles del backend
+        let userRoles = parsedUser.roles || [];
+        try {
+          const backendRoles = await getUserRoleByEmail(parsedUser.email);
+          console.log('ProtectedRoute: backendRoles:', backendRoles);
+          userRoles = backendRoles;
+
+          // Actualizar localStorage y AuthContext con roles del backend
+          const updatedUser = { ...parsedUser, roles: userRoles };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          if (!user || JSON.stringify(user) !== JSON.stringify(updatedUser)) {
+            console.log('ProtectedRoute: Sincronizando usuario con AuthContext');
+            login(updatedUser);
+          }
+        } catch (error) {
+          console.warn('ProtectedRoute: No se pudieron obtener roles del backend, usando roles de localStorage:', error.message);
+        }
+
+        if (requiredRole) {
+          const hasRequiredRole = userRoles.some(role => {
+            const roleName = typeof role === 'string' ? role.toLowerCase() : role.name.toLowerCase();
+            console.log(`ProtectedRoute: Verificando rol ${roleName} contra ${requiredRole}`);
+            return roleName === requiredRole;
+          });
+
+          if (!hasRequiredRole) {
+            console.log(`ProtectedRoute: El usuario no tiene el rol requerido: ${requiredRole}, redirigiendo a /login`);
+            navigate('/login');
+            setLoading(false);
+            return;
+          }
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error('ProtectedRoute: Error al parsear userData:', error);
+        localStorage.removeItem('user');
+        localStorage.removeItem('authToken');
+        navigate('/login');
+        setLoading(false);
+      }
+    };
+
+    verifyUser();
+  }, [navigate, requiredRole, user, login]);
 
   if (loading) {
     return (
@@ -34,14 +88,15 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
         alignItems: 'center',
         height: '100vh',
         color: 'white',
-        fontSize: '18px'
+        fontSize: '18px',
+        backgroundColor: '#f0f2f5'
       }}>
         Verificando autenticación...
       </div>
     );
   }
 
-  return user ? children : null;
+  return children;
 };
 
 export default ProtectedRoute;
