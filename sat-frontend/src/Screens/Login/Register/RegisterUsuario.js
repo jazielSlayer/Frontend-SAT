@@ -97,16 +97,20 @@ function RegisterUsuario() {
     }
 
     try {
-      // CAMBIO IMPORTANTE: Enviar per_id para usar persona existente
+      // Capitalizar el rol para que coincida con la base de datos (asumiendo que en BD es 'Estudiante', 'Docente')
+      const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
+
+      // Enviar per_id y el rol seleccionado para usar persona existente y asignar el rol automáticamente
       const createdUser = await registerUser({
-        per_id: personaId,  // ← CLAVE: Usar persona existente (NO crear nueva)
+        per_id: personaId,
         nombres: nombres,
         apellidopat: '', 
         apellidomat: '',
         carnet: '', 
         email: correo,
         user_name: userData.user_name,
-        password: userData.password
+        password: userData.password,
+        role: capitalizedRole // Enviar el rol para que el backend lo procese
       });
 
       console.log('Usuario creado exitosamente:', createdUser);
@@ -130,7 +134,7 @@ function RegisterUsuario() {
         // Guardar datos del usuario
         localStorage.setItem('user', JSON.stringify({
           ...createdUser,
-          role: 'estudiante'
+          role: capitalizedRole // Usar el rol capitalizado para consistencia
         }));
         
         navigate('/estudiante');
@@ -153,7 +157,7 @@ function RegisterUsuario() {
         // Guardar datos del usuario
         localStorage.setItem('user', JSON.stringify({
           ...createdUser,
-          role: 'docente'
+          role: capitalizedRole // Usar el rol capitalizado para consistencia
         }));
         
         navigate('/docente');
