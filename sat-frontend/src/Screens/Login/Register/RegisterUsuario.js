@@ -70,6 +70,7 @@ function RegisterUsuario() {
 
     // DEBUG: Verificar los datos antes de enviar
     console.log('Datos del formulario:', {
+      per_id: personaId,
       user_name: userData.user_name,
       password: userData.password ? 'presente' : 'FALTANTE',
       confirmPassword: userData.confirmPassword ? 'presente' : 'FALTANTE',
@@ -96,16 +97,19 @@ function RegisterUsuario() {
     }
 
     try {
-      // Crear usuario - AQUÍ ESTABA EL ERROR: FALTABA LA CONTRASEÑA
+      // CAMBIO IMPORTANTE: Enviar per_id para usar persona existente
       const createdUser = await registerUser({
+        per_id: personaId,  // ← CLAVE: Usar persona existente (NO crear nueva)
         nombres: nombres,
         apellidopat: '', 
         apellidomat: '',
         carnet: '', 
         email: correo,
         user_name: userData.user_name,
-        password: userData.password  // ← ESTO FALTABA
+        password: userData.password
       });
+
+      console.log('Usuario creado exitosamente:', createdUser);
 
       // Crear registro específico según el rol
       if (role === 'estudiante') {
@@ -156,6 +160,7 @@ function RegisterUsuario() {
       }
 
     } catch (err) {
+      console.error('Error completo al registrar:', err);
       setError('Error al completar el registro: ' + err.message);
     } finally {
       setLoading(false);
@@ -214,9 +219,9 @@ function RegisterUsuario() {
             style={styles.input}
             required
           >
-            <option style={ styles.SelectContainer } value="">Seleccionar rol</option>
-            <option style={ styles.SelectContainer } value="estudiante">Estudiante</option>
-            <option style={ styles.SelectContainer } value="docente">Docente</option>
+            <option style={styles.SelectContainer} value="">Seleccionar rol</option>
+            <option style={styles.SelectContainer} value="estudiante">Estudiante</option>
+            <option style={styles.SelectContainer} value="docente">Docente</option>
           </select>
 
           {/* Campos específicos para estudiante */}
@@ -231,9 +236,9 @@ function RegisterUsuario() {
                 style={styles.input}
                 required
               >
-                <option style={ styles.SelectContainer } value="">Seleccionar programa académico</option>
+                <option style={styles.SelectContainer} value="">Seleccionar programa académico</option>
                 {programas.map((programa) => (
-                  <option style={ styles.SelectContainer } key={programa.id} value={programa.id}>
+                  <option style={styles.SelectContainer} key={programa.id} value={programa.id}>
                     {programa.nombre_programa} - {programa.modalidad}
                   </option>
                 ))}
@@ -291,9 +296,9 @@ function RegisterUsuario() {
                 onChange={handleRoleChange}
                 style={styles.input}
               >
-                <option style={ styles.SelectContainer } value="permanente">Permanente</option>
-                <option style={ styles.SelectContainer } value="temporal">Temporal</option>
-                <option style={ styles.SelectContainer } value="interino">Interino</option>
+                <option style={styles.SelectContainer} value="permanente">Permanente</option>
+                <option style={styles.SelectContainer} value="temporal">Temporal</option>
+                <option style={styles.SelectContainer} value="interino">Interino</option>
               </select>
             </div>
           )}
@@ -323,7 +328,8 @@ function RegisterUsuario() {
 
 const styles = {
   SelectContainer: {
-    backgroundColor: "#040a2cc1", color: "#fff6f6ff"
+    backgroundColor: "#040a2cc1", 
+    color: "#fff6f6ff"
   },
   container: {
     display: "flex",

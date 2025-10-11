@@ -14,6 +14,7 @@ import Login from "./Screens/Login/Login";
 import RegisterPersona from "./Screens/Login/Register/RegisterPersona";
 import RegisterUsuario from "./Screens/Login/Register/RegisterUsuario";
 import RolesAdmin from "./Screens/Admin/Admin-Ventanas/AdminRoles";
+import Talleres from "./Screens/Admin/Admin-Ventanas/Tallerres";
 
 // Renderizar navegación y rutas bajo un solo BrowserRouter en root
 createRoot(document.getElementById("root")).render(
@@ -31,6 +32,7 @@ createRoot(document.getElementById("root")).render(
 				<Route path="/register" element={<RegisterPersona />} />
 				<Route path="/register-step2" element={<RegisterUsuario />} />
 				<Route path="/roles-admin" element={<RolesAdmin />} />
+				<Route path="/talleres" element={<Talleres />} />
 			</Routes>
 		</BrowserRouter>
 	</React.StrictMode>

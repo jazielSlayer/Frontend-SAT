@@ -1,3 +1,4 @@
+// Componente Login.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../API/Login/Login";
@@ -14,6 +15,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;  // Evita submits múltiples
     setLoading(true);
     setError('');
 
@@ -23,18 +25,26 @@ function Login() {
       // Guardar datos del usuario en localStorage
       localStorage.setItem('user', JSON.stringify(userData));
       
-      // Redireccionar basado en el rol
-      // Por ahora asumimos que todos van a admin, pero puedes ajustar la lógica
-      // cuando implementes el sistema de roles en el backend
-      if (userData.user_name === 'Admin') {
+      // Redireccionar basado en el rol (asumiendo que el backend ahora devuelve 'role')
+      if (userData.role === 'Admin') {
         navigate('/admin');
+      } else if (userData.role === 'Docente') {
+        navigate('/docente');
+      } else if (userData.role === 'Estudiante') {
+        navigate('/estudiante');
       } else {
-        // Aquí podrías agregar lógica para determinar si es docente o estudiante
-        // basándote en los datos que devuelve tu backend
-        navigate('/docente'); // o '/estudiante' según corresponda
+        setError('Rol de usuario no válido. Contacta al administrador.');
+        localStorage.removeItem('user');
+        return;
       }
     } catch (err) {
-      setError('Credenciales incorrectas. Verifica tu email y contraseña.');
+      if (err.message.includes('Usuario no encontrado') || err.message.includes('404')) {
+        setError('Usuario no registrado. Verifica tu correo o regístrate.');
+      } else if (err.message.includes('Contraseña incorrecta') || err.message.includes('401')) {
+        setError('Contraseña incorrecta. Intenta nuevamente.');
+      } else {
+        setError('Error al iniciar sesión: ' + err.message);
+      }
     } finally {
       setLoading(false);
     }

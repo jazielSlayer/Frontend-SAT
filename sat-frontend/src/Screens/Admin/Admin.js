@@ -23,7 +23,7 @@ function Admin() {
       const [docentesData, estudiantesData, modulosData, talleresData, usersCount, metodologiasData] = await Promise.all([
         getDocentes(),
         getEstudiantes(),
-        getAllModulos(), // Añadido
+        getAllModulos(),
         getAllTalleres(),
         getUserCount(),
         getAllMetodologias()
@@ -32,7 +32,7 @@ function Admin() {
       setDocentes(docentesData);
       setEstudiantes(estudiantesData);
       setModulos(modulosData);
-      setTalleres(talleresData);
+      setTalleres(talleresData.data || []);
       setUserCount(usersCount);
       setMetodologias(metodologiasData);
       setLoading(false);
@@ -89,27 +89,43 @@ function Admin() {
       });
     }
 
-    // Talleres Chart
+    // Talleres Chart - Bar chart by tipo_taller with detailed tooltips
     const talleresCtx = document.getElementById('talleresChart');
     if (talleresCtx) {
+      const tipos = ['Teórico', 'Práctico', 'Mixto'];
+      const data = tipos.map(tipo => talleresArray.filter(t => t.tipo_taller === tipo).length);
+
       new Chart(talleresCtx, {
         type: 'bar',
         data: {
-          labels: ['En Curso', 'Finalizados', 'Próximos'],
+          labels: tipos,
           datasets: [{
-            data: [
-              talleresArray.filter(t => t.estado === 'activo').length,
-              talleresArray.filter(t => t.estado === 'finalizado').length,
-              talleresArray.filter(t => t.estado === 'pendiente').length
-            ],
-            backgroundColor: ['#FFA726', '#66BB6A', '#42A5F5']
+            label: 'Número de Talleres',
+            data: data,
+            backgroundColor: ['#FFA726', '#66BB6A', '#42A5F5'],
+            borderWidth: 1
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { 
-            legend: { display: false }
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: '#fff' }
+            },
+            tooltip: {
+              callbacks: {
+                afterBody: function(tooltipItems) {
+                  const idx = tooltipItems[0].dataIndex;
+                  const tipo = tipos[idx];
+                  const filtered = talleresArray.filter(t => t.tipo_taller === tipo);
+                  return filtered.map(t => 
+                    `\n- Título: ${t.titulo || t.nombre || '-'} \n  ID Metodología: ${t.id_metodologia || '-'} \n  Evaluación: ${t.evaluacion_final || '-'} \n  Duración: ${t.duracion || '-'} \n  Resultado: ${t.resultado || '-'} \n  Fecha: ${t.fecha_realizacion ? new Date(t.fecha_realizacion).toLocaleDateString() : '-'}`
+                  ).join('\n');
+                }
+              }
+            }
           },
           scales: {
             y: { 
@@ -272,7 +288,7 @@ function Admin() {
       </div>
       <div style={{ gridColumn: 'span 2' }}>
         <ChartWidget
-          title="Estado de Talleres"
+          title="Distribución de Talleres por Tipo"
           id="talleresChart"
           bgColor="rgba(255, 152, 0, 0.2)"
         />

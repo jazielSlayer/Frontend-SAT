@@ -22,7 +22,7 @@ export async function getAllTalleres() {
 // Get a specific workshop record by ID
 export async function getTaller(id) {
   try {
-    const response = await fetch(`${API_URL}/talleres/${id}`, {
+    const response = await fetch(`${API_URL}/taller/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export async function getTaller(id) {
 // Create a new workshop record
 export async function createTaller(data) {
   try {
-    const response = await fetch(`${API_URL}/talleres`, {
+    const response = await fetch(`${API_URL}/create-taller`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export async function createTaller(data) {
 // Update a workshop record by ID
 export async function updateTaller(id, data) {
   try {
-    const response = await fetch(`${API_URL}/talleres/${id}`, {
+    const response = await fetch(`${API_URL}/update-taller/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export async function updateTaller(id, data) {
 // Delete a workshop record by ID
 export async function deleteTaller(id) {
   try {
-    const response = await fetch(`${API_URL}/talleres/${id}`, {
+    const response = await fetch(`${API_URL}/delete-taller/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
