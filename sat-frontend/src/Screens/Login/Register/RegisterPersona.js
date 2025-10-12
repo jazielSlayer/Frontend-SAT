@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPersona } from "../../../API/Admin/Persona";
+import { sendAuthCode } from "../../../API/Verficacion/Verificacion"; // Ajusta la ruta según tu estructura
 
 function RegisterPersona() {
   const [personaData, setPersonaData] = useState({
@@ -15,30 +16,55 @@ function RegisterPersona() {
     estado: true
   });
   const [loading, setLoading] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setPersonaData({ ...personaData, [e.target.name]: e.target.value });
+    setError('');
+    setSuccess('');
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
+
+    if (!validateEmail(personaData.correo)) {
+      setError('Por favor, ingresa un correo electrónico válido');
+      setLoading(false);
+      return;
+    }
 
     try {
       const createdPersona = await createPersona(personaData);
-      
       console.log('Persona creada:', createdPersona);
-      
-      navigate('/register-step2', { 
-        state: { 
-          personaId: createdPersona.id,
-          correo: personaData.correo,
-          nombres: personaData.nombres 
-        } 
-      });
+
+      setEmailLoading(true);
+      try {
+        await sendAuthCode(personaData.correo);
+        setSuccess(`Código de autenticación enviado a ${personaData.correo}`);
+        
+        navigate('/register-step2', { 
+          state: { 
+            personaId: createdPersona.id,
+            correo: personaData.correo,
+            nombres: personaData.nombres 
+          } 
+        });
+      } catch (emailErr) {
+        setError('Error al enviar el código de autenticación: ' + emailErr.message);
+      } finally {
+        setEmailLoading(false);
+      }
     } catch (err) {
       setError('Error al registrar datos personales: ' + err.message);
     } finally {
@@ -54,6 +80,9 @@ function RegisterPersona() {
         
         {error && (
           <div style={styles.error}>{error}</div>
+        )}
+        {success && (
+          <div style={styles.success}>{success}</div>
         )}
         
         <form onSubmit={handleSubmit} style={styles.form}>
@@ -135,10 +164,10 @@ function RegisterPersona() {
           
           <button 
             type="submit" 
-            style={loading ? {...styles.button, ...styles.buttonDisabled} : styles.button}
-            disabled={loading}
+            style={(loading || emailLoading) ? {...styles.button, ...styles.buttonDisabled} : styles.button}
+            disabled={loading || emailLoading}
           >
-            {loading ? 'Guardando...' : 'Continuar'}
+            {loading ? 'Guardando...' : emailLoading ? 'Enviando código...' : 'Continuar'}
           </button>
         </form>
         
@@ -239,6 +268,16 @@ const styles = {
     backgroundColor: "rgba(244, 67, 54, 0.1)",
     border: "1px solid #f44336",
     color: "#f44336",
+    padding: "12px",
+    borderRadius: "8px",
+    marginBottom: "15px",
+    textAlign: "center",
+    width: "100%"
+  },
+  success: {
+    backgroundColor: "rgba(46, 125, 50, 0.1)",
+    border: "1px solid #2e7d32",
+    color: "#2e7d32",
     padding: "12px",
     borderRadius: "8px",
     marginBottom: "15px",
