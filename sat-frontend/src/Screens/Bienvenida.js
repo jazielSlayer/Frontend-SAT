@@ -191,7 +191,7 @@ function Bienvenida() {
                   Acerca de SAT
                 </h4>
                 <p style={{ color: 'rgba(255, 255, 255, 0.8)', lineHeight: '1.6' }}>
-                  Sistema de Administración de Talleres para instituciones educativas.
+                  SItema Academico Fineciero de Titulacion
                 </p>
               </div>
             </div>

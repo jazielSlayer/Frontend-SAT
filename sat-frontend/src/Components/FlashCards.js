@@ -10,14 +10,14 @@ const FLASH_CARDS = [
   },
   {
     id: 2,
-    title: "Seguimiento de Estudiantes",
-    description: "Monitoreo en tiempo real del avance y participación de los estudiantes.",
+    title: "Gestion de Estudiantes",
+    description: "Monitoreo en tiempo real del estudiante",
     icon: "📊"
   },
   {
     id: 3,
-    title: "Evaluación Continua",
-    description: "Herramientas para evaluar y retroalimentar el proceso de aprendizaje.",
+    title: "Gestion de docentes",
+    description: "Herramientas para la gestion de docentes",
     icon: "✅"
   }
 ];
