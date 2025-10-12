@@ -339,7 +339,7 @@ function RolesAdmin() {
                       onClick={() => setShowUserRolesModal(user.id)}
                       style={{
                         padding: "6px 12px",
-                        backgroundColor: "#9C27B0",
+                        backgroundColor: "#08085fff",
                         color: "#fff",
                         border: "none",
                         borderRadius: "4px",
@@ -395,12 +395,12 @@ function RolesAdmin() {
         </div>
         
         <div style={{
-          backgroundColor: "rgba(156, 39, 176, 0.2)",
+          backgroundColor: "rgba(16, 13, 115, 0.45)",
           padding: "20px",
           borderRadius: "8px",
           textAlign: "center"
         }}>
-          <h4 style={{ margin: "0 0 10px 0", color: "#9C27B0" }}>Con Múltiples Roles</h4>
+          <h4 style={{ margin: "0 0 10px 0", color: "#101889ff" }}>Con Múltiples Roles</h4>
           <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
             {users.filter(u => getUserRoles(u.id).length > 1).length}
           </p>
@@ -504,7 +504,7 @@ function RolesAdmin() {
               transition: "all 0.3s ease"
             }}
           >
-            🛡️ Gestión de Roles
+            Gestión de Roles
           </button>
           <button
             onClick={() => setActiveTab('users')}
@@ -521,7 +521,7 @@ function RolesAdmin() {
               transition: "all 0.3s ease"
             }}
           >
-            👥 Usuarios y Roles
+            Usuarios y Roles
           </button>
         </div>
       </div>
@@ -606,7 +606,7 @@ function RolesAdmin() {
                               onClick={() => setShowPermissionsModal(role.id)}
                               style={{
                                 padding: "6px 12px",
-                                backgroundColor: "#9C27B0",
+                                backgroundColor: "#08085fff",
                                 color: "#fff",
                                 border: "none",
                                 borderRadius: "4px",
@@ -847,12 +847,12 @@ function RolesAdmin() {
                 </div>
                 
                 <div style={{
-                  backgroundColor: "rgba(156, 39, 176, 0.2)",
+                  backgroundColor: "rgba(16, 7, 77, 0.41)",
                   padding: "20px",
                   borderRadius: "8px",
                   textAlign: "center"
                 }}>
-                  <h4 style={{ margin: "0 0 10px 0", color: "#9C27B0" }}>Roles por Defecto</h4>
+                  <h4 style={{ margin: "0 0 10px 0", color: "#2727b0ff" }}>Roles por Defecto</h4>
                   <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
                     {roles.filter(r => r.is_default).length}
                   </p>

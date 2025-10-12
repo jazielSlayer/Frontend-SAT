@@ -50,13 +50,13 @@ export async function createTaller(data) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        nombre: data.nombre,
-        id_docente: data.id_docente,
-        id_programa_academico: data.id_programa_academico,
-        descripcion: data.descripcion,
-        fecha_inicio: data.fecha_inicio,
-        fecha_finalizacion: data.fecha_finalizacion,
-        estado: data.estado,
+        titulo: data.titulo,
+        id_metodologia: data.id_metodologia,
+        tipo_taller: data.tipo_taller,
+        evaluacion_final: data.evaluacion_final,
+        duracion: data.duracion,
+        resultado: data.resultado,
+        fecha_realizacion: data.fecha_realizacion,
       }),
     });
     if (!response.ok) {
@@ -78,13 +78,13 @@ export async function updateTaller(id, data) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        nombre: data.nombre,
-        id_docente: data.id_docente,
-        id_programa_academico: data.id_programa_academico,
-        descripcion: data.descripcion,
-        fecha_inicio: data.fecha_inicio,
-        fecha_finalizacion: data.fecha_finalizacion,
-        estado: data.estado,
+        titulo: data.titulo,
+        id_metodologia: data.id_metodologia,
+        tipo_taller: data.tipo_taller,
+        evaluacion_final: data.evaluacion_final,
+        duracion: data.duracion,
+        resultado: data.resultado,
+        fecha_realizacion: data.fecha_realizacion,
       }),
     });
     if (!response.ok) {

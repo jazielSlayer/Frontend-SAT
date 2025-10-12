@@ -12,6 +12,7 @@ export const navStyle = {
 
 export const ulStyle = {
   display: "flex",
+  alignItems: "center",
   gap: "1rem",
   listStyle: "none",
   margin: 0,

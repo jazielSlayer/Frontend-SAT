@@ -148,7 +148,7 @@ function Admin() {
         data: {
           labels: metodologias.map(m => m.nombre),
           datasets: [{
-            label: 'Número de Módulos',
+            label: 'Número de Metodologías',
             data: metodologias.map(m => m.numero_modulos),
             backgroundColor: '#7d0f0fff',
             borderWidth: 1
