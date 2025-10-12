@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all academic program records
+// Obtenemos todos los programas
 export async function getAllProgramas() {
   try {
     const response = await fetch(`${API_URL}/programas`, {
@@ -19,7 +19,7 @@ export async function getAllProgramas() {
   }
 }
 
-// Get a specific academic program record by ID
+// Obtenemos los datos los datos de programa por ID
 export async function getPrograma(id) {
   try {
     const response = await fetch(`${API_URL}/programas/${id}`, {
@@ -41,7 +41,7 @@ export async function getPrograma(id) {
   }
 }
 
-// Create a new academic program record
+// Creamos un nuevo programa
 export async function createPrograma(data) {
   try {
     const response = await fetch(`${API_URL}/programas`, {
@@ -68,7 +68,7 @@ export async function createPrograma(data) {
   }
 }
 
-// Update an academic program record by ID
+// Actalizamos un programa por ID
 export async function updatePrograma(id, data) {
   try {
     const response = await fetch(`${API_URL}/programas/${id}`, {
@@ -95,7 +95,7 @@ export async function updatePrograma(id, data) {
   }
 }
 
-// Delete an academic program record by ID
+// Eliminamos un programa por ID
 export async function deletePrograma(id) {
   try {
     const response = await fetch(`${API_URL}/programas/${id}`, {

@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all audit history records
+// Obtenemos todos los datos 
 export async function getAllHistoriales() {
   try {
     const response = await fetch(`${API_URL}/historiales`, {
@@ -19,7 +19,7 @@ export async function getAllHistoriales() {
   }
 }
 
-// Get a specific audit history record by ID
+// Obtenemos los datos del Historial por ID
 export async function getHistorial(id) {
   try {
     const response = await fetch(`${API_URL}/historiales/${id}`, {
@@ -41,7 +41,7 @@ export async function getHistorial(id) {
   }
 }
 
-// Create a new audit history record
+// Creamos un nuevo historial
 export async function createHistorial(data) {
   try {
     const response = await fetch(`${API_URL}/historiales`, {
@@ -66,7 +66,7 @@ export async function createHistorial(data) {
   }
 }
 
-// Update an audit history record by ID
+// Actualizamos el historial por ID
 export async function updateHistorial(id, data) {
   try {
     const response = await fetch(`${API_URL}/historiales/${id}`, {
@@ -91,7 +91,7 @@ export async function updateHistorial(id, data) {
   }
 }
 
-// Delete an audit history record by ID
+// Eliminamos los datos por ID
 export async function deleteHistorial(id) {
   try {
     const response = await fetch(`${API_URL}/historiales/${id}`, {

@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all student progress records
+// obtenemos los datos de los estudiantes
 export async function getAllAvances() {
   try {
     const response = await fetch(`${API_URL}/avances`, {
@@ -19,7 +19,7 @@ export async function getAllAvances() {
   }
 }
 
-// Get a specific student progress record by ID
+// Obtenemos el dato del estudiante por ID
 export async function getAvance(id) {
   try {
     const response = await fetch(`${API_URL}/avances/${id}`, {
@@ -41,7 +41,7 @@ export async function getAvance(id) {
   }
 }
 
-// Create a new student progress record
+// Creamos un avanse
 export async function createAvance(data) {
   try {
     const response = await fetch(`${API_URL}/avances`, {
@@ -67,7 +67,7 @@ export async function createAvance(data) {
   }
 }
 
-// Update a student progress record by ID
+// Actualizamos el dato del estudiante por id
 export async function updateAvance(id, data) {
   try {
     const response = await fetch(`${API_URL}/avances/${id}`, {
@@ -93,7 +93,7 @@ export async function updateAvance(id, data) {
   }
 }
 
-// Delete a student progress record by ID
+// Eliminamo el estudiante por ID
 export async function deleteAvance(id) {
   try {
     const response = await fetch(`${API_URL}/avances/${id}`, {
@@ -112,7 +112,7 @@ export async function deleteAvance(id) {
   }
 }
 
-// Get student progress records by student ID
+// Obtenemos el progreso del estudiante por ID
 export async function getAvanceEstudiante(id_estudiante) {
   try {
     const response = await fetch(`${API_URL}/avance/estudiante/${id_estudiante}`, {

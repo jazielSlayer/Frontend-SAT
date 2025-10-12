@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all administrative staff records
+// Obtenemos los datos los planteles
 export async function getAllPlanteles() {
   try {
     const response = await fetch(`${API_URL}/planteles`, {
@@ -19,7 +19,7 @@ export async function getAllPlanteles() {
   }
 }
 
-// Get a specific administrative staff record by ID
+// Obtenemos los datos de plantel por  ID
 export async function getPlantel(id) {
   try {
     const response = await fetch(`${API_URL}/planteles/${id}`, {
@@ -41,7 +41,7 @@ export async function getPlantel(id) {
   }
 }
 
-// Create a new administrative staff record
+// Creamos un nuevo plantel
 export async function createPlantel(data) {
   try {
     const response = await fetch(`${API_URL}/planteles`, {
@@ -66,7 +66,7 @@ export async function createPlantel(data) {
   }
 }
 
-// Update an administrative staff record by ID
+// Actualizamos un plantel por ID
 export async function updatePlantel(id, data) {
   try {
     const response = await fetch(`${API_URL}/planteles/${id}`, {
@@ -91,7 +91,7 @@ export async function updatePlantel(id, data) {
   }
 }
 
-// Delete an administrative staff record by ID
+// Eliminamos un plantel por ID
 export async function deletePlantel(id) {
   try {
     const response = await fetch(`${API_URL}/planteles/${id}`, {

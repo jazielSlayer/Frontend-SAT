@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all methodology records
+// Obtenemos todos los datos de metodologia
 export async function getAllMetodologias() {
   try {
     const response = await fetch(`${API_URL}/metodologias`, {
@@ -19,7 +19,7 @@ export async function getAllMetodologias() {
   }
 }
 
-// Get a specific methodology record by ID
+// Obtenemos los datos de moetodologi por ID
 export async function getMetodologia(id) {
   try {
     const response = await fetch(`${API_URL}/metodologias/${id}`, {
@@ -41,7 +41,7 @@ export async function getMetodologia(id) {
   }
 }
 
-// Create a new methodology record
+// Creamos una nueva metodologia
 export async function createMetodologia(data) {
   try {
     const response = await fetch(`${API_URL}/metodologias`, {
@@ -68,7 +68,7 @@ export async function createMetodologia(data) {
   }
 }
 
-// Update a methodology record by ID
+// Actualizamos los datos de la metodologia por ID
 export async function updateMetodologia(id, data) {
   try {
     const response = await fetch(`${API_URL}/metodologias/${id}`, {
@@ -95,7 +95,7 @@ export async function updateMetodologia(id, data) {
   }
 }
 
-// Delete a methodology record by ID
+// Eliminamos los datos de metodologia por ID
 export async function deleteMetodologia(id) {
   try {
     const response = await fetch(`${API_URL}/metodologias/${id}`, {

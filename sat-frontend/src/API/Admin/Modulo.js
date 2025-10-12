@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all module records
+// Obtenemos todos los datos de modulos
 export async function getAllModulos() {
   try {
     const response = await fetch(`${API_URL}/modulos`, {
@@ -19,7 +19,7 @@ export async function getAllModulos() {
   }
 }
 
-// Get a specific module record by ID
+// Obtenemos los datos de modulo por ID
 export async function getModulo(id) {
   try {
     const response = await fetch(`${API_URL}/modulos/${id}`, {
@@ -41,7 +41,7 @@ export async function getModulo(id) {
   }
 }
 
-// Create a new module record
+// Creamos nuevo modulo
 export async function createModulo(data) {
   try {
     const response = await fetch(`${API_URL}/modulos`, {
@@ -70,7 +70,7 @@ export async function createModulo(data) {
   }
 }
 
-// Update a module record by ID
+// Actualizamos los datos del modulo por ID
 export async function updateModulo(id, data) {
   try {
     const response = await fetch(`${API_URL}/modulos/${id}`, {
@@ -99,7 +99,7 @@ export async function updateModulo(id, data) {
   }
 }
 
-// Delete a module record by ID
+// Eliominamos los datos por ID
 export async function deleteModulo(id) {
   try {
     const response = await fetch(`${API_URL}/modulos/${id}`, {

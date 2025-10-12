@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all observation records
+// Obtenemos los datos de observaciones
 export async function getAllObservaciones() {
   try {
     const response = await fetch(`${API_URL}/observaciones`, {
@@ -19,7 +19,7 @@ export async function getAllObservaciones() {
   }
 }
 
-// Get a specific observation record by ID
+// Obtenemos los datos de observacion por ID
 export async function getObservacion(id) {
   try {
     const response = await fetch(`${API_URL}/observaciones/${id}`, {
@@ -41,7 +41,7 @@ export async function getObservacion(id) {
   }
 }
 
-// Create a new observation record
+// Creamos una nueva observacion
 export async function createObservacion(data) {
   try {
     const response = await fetch(`${API_URL}/observaciones`, {
@@ -66,7 +66,7 @@ export async function createObservacion(data) {
   }
 }
 
-// Update an observation record by ID
+// Actualizamos una observacion por ID
 export async function updateObservacion(id, data) {
   try {
     const response = await fetch(`${API_URL}/observaciones/${id}`, {
@@ -91,7 +91,7 @@ export async function updateObservacion(id, data) {
   }
 }
 
-// Delete an observation record by ID
+// Eliminamos una observacion por ID
 export async function deleteObservacion(id) {
   try {
     const response = await fetch(`${API_URL}/observaciones/${id}`, {

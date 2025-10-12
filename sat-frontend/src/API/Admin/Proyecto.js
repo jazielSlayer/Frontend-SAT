@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all project records
+// Obtenemos todos los datos del proyecto
 export async function getAllProyectos() {
   try {
     const response = await fetch(`${API_URL}/proyectos`, {
@@ -19,7 +19,7 @@ export async function getAllProyectos() {
   }
 }
 
-// Get a specific project record by ID
+// Obtenemos el dato de proyecto por ID
 export async function getProyecto(id) {
   try {
     const response = await fetch(`${API_URL}/proyectos/${id}`, {
@@ -41,7 +41,7 @@ export async function getProyecto(id) {
   }
 }
 
-// Create a new project record
+// Creamos un nuevo proyecto
 export async function createProyecto(data) {
   try {
     const response = await fetch(`${API_URL}/proyectos`, {
@@ -70,7 +70,7 @@ export async function createProyecto(data) {
   }
 }
 
-// Update a project record by ID
+// Actualizamos un nuevo proyecto
 export async function updateProyecto(id, data) {
   try {
     const response = await fetch(`${API_URL}/proyectos/${id}`, {
@@ -99,7 +99,7 @@ export async function updateProyecto(id, data) {
   }
 }
 
-// Delete a project record by ID
+// Eliminamos un proyecto por ID
 export async function deleteProyecto(id) {
   try {
     const response = await fetch(`${API_URL}/proyectos/${id}`, {
@@ -118,7 +118,7 @@ export async function deleteProyecto(id) {
   }
 }
 
-// Get project records by student ID
+// Obtenemos el proyecto de un estudiante
 export async function getProyectoEstudiante(id_estudiante) {
   try {
     const response = await fetch(`${API_URL}/proyectos/estudiante/${id_estudiante}`, {
@@ -137,7 +137,7 @@ export async function getProyectoEstudiante(id_estudiante) {
   }
 }
 
-// Get project records by teacher ID
+// Otenemos el proyecto del docente
 export async function getProyectoDocente(id_docente) {
   try {
     const response = await fetch(`${API_URL}/proyectos/docente/${id_docente}`, {

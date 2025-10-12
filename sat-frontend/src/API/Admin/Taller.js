@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all workshop records
+// Obtenemos todos los datos de los talleres
 export async function getAllTalleres() {
   try {
     const response = await fetch(`${API_URL}/talleres`, {
@@ -19,7 +19,7 @@ export async function getAllTalleres() {
   }
 }
 
-// Get a specific workshop record by ID
+// Obtenemos los datos del taller por ID
 export async function getTaller(id) {
   try {
     const response = await fetch(`${API_URL}/taller/${id}`, {
@@ -41,7 +41,7 @@ export async function getTaller(id) {
   }
 }
 
-// Create a new workshop record
+// Creamos un nuevo taller 
 export async function createTaller(data) {
   try {
     const response = await fetch(`${API_URL}/create-taller`, {
@@ -69,7 +69,7 @@ export async function createTaller(data) {
   }
 }
 
-// Update a workshop record by ID
+// Actaulizamos un taller por ID
 export async function updateTaller(id, data) {
   try {
     const response = await fetch(`${API_URL}/update-taller/${id}`, {
@@ -97,7 +97,7 @@ export async function updateTaller(id, data) {
   }
 }
 
-// Delete a workshop record by ID
+// Eliminamos un taller por ID
 export async function deleteTaller(id) {
   try {
     const response = await fetch(`${API_URL}/delete-taller/${id}`, {

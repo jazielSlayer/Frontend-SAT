@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all person records
+// Obtenemos los datos de personas
 export async function getAllPersonas() {
   try {
     const response = await fetch(`${API_URL}/personas`, {
@@ -19,7 +19,7 @@ export async function getAllPersonas() {
   }
 }
 
-// Get a specific person record by ID
+// Obtenemos los datos de persona por ID
 export async function getPersona(id) {
   try {
     const response = await fetch(`${API_URL}/personas/${id}`, {
@@ -41,7 +41,7 @@ export async function getPersona(id) {
   }
 }
 
-// Create a new person record
+// Creamos una nueva persona
 export async function createPersona(data) {
   try {
     const response = await fetch(`${API_URL}/personas`, {
@@ -71,7 +71,7 @@ export async function createPersona(data) {
   }
 }
 
-// Update a person record by ID
+// Actaulaizamos una persona por ID
 export async function updatePersona(id, data) {
   try {
     const response = await fetch(`${API_URL}/personas/${id}`, {
@@ -101,7 +101,7 @@ export async function updatePersona(id, data) {
   }
 }
 
-// Delete a person record by ID
+// Eliminamos una persona por ID
 export async function deletePersona(id) {
   try {
     const response = await fetch(`${API_URL}/personas/${id}`, {

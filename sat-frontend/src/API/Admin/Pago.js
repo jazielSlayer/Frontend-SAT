@@ -1,6 +1,6 @@
 import { API_URL } from "../Api.js";
 
-// Get all payment records
+// Obtenemos todos los datos de pago
 export async function getAllPagos() {
   try {
     const response = await fetch(`${API_URL}/pagos`, {
@@ -19,7 +19,7 @@ export async function getAllPagos() {
   }
 }
 
-// Get a specific payment record by ID
+// obtenemos los datos por id
 export async function getPago(id) {
   try {
     const response = await fetch(`${API_URL}/pagos/${id}`, {
@@ -41,7 +41,7 @@ export async function getPago(id) {
   }
 }
 
-// Create a new payment record
+// Creamos un nuevo pago
 export async function createPago(data) {
   try {
     const response = await fetch(`${API_URL}/pagos`, {
@@ -67,7 +67,7 @@ export async function createPago(data) {
   }
 }
 
-// Update a payment record by ID
+// Actauliazamos un pago por id
 export async function updatePago(id, data) {
   try {
     const response = await fetch(`${API_URL}/pagos/${id}`, {
@@ -93,7 +93,7 @@ export async function updatePago(id, data) {
   }
 }
 
-// Delete a payment record by ID
+// Eliminamos un pago por ID
 export async function deletePago(id) {
   try {
     const response = await fetch(`${API_URL}/pagos/${id}`, {
@@ -112,7 +112,7 @@ export async function deletePago(id) {
   }
 }
 
-// Get payment records by student ID
+// Obtenemos el pago del estudiante por ID
 export async function getPagoEstudiante(id_estudiante) {
   try {
     const response = await fetch(`${API_URL}/pago/estudiante/${id_estudiante}`, {
