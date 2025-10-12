@@ -1,4 +1,3 @@
-//Este archivo contiene los procesos que realiza el estudiante
 import { API_URL } from "../Api.js";
 // Obtener proyecto(s) de un estudiante por su ID
 export async function getProyectoEstudiante(id_estudiante) {

@@ -1,4 +1,3 @@
-// NavStyles.js
 export const logo = "/logousb.png";
 
 export const navStyle = {

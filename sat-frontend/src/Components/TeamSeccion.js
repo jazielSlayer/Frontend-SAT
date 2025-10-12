@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 import Jaziel from './Images/Jaziel.jpeg';
 
-// Datos estáticos
+
 const TEAM_MEMBERS = [
   {
     id: 1,

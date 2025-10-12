@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import Navegacion from "./Navegacion";
 import ProtectedRoute from "./ProtectedRout";
 
-// Llamamos a las ventanas
+
 import Bienvenida from "./Screens/Bienvenida";
 import Admin from "./Screens/Admin/Admin";
 import AdminEstudiantes from "./Screens/Admin/Admin-Ventanas/Estudiante-Admin";
@@ -17,7 +17,7 @@ import RegisterUsuario from "./Screens/Login/Register/RegisterUsuario";
 import RolesAdmin from "./Screens/Admin/Admin-Ventanas/AdminRoles";
 import Talleres from "./Screens/Admin/Admin-Ventanas/Tallerres";
 
-// Contexto de autenticación
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => useContext(AuthContext);
 
-// Renderizar navegación y rutas bajo un solo BrowserRouter en root
+
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>

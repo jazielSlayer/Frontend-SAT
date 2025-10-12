@@ -32,7 +32,6 @@ function RegisterPersona() {
       
       console.log('Persona creada:', createdPersona);
       
-      // Pasar los datos necesarios al siguiente paso
       navigate('/register-step2', { 
         state: { 
           personaId: createdPersona.id,

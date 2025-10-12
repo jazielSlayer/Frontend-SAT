@@ -1,4 +1,3 @@
-// AdminNav.jsx
 import { Link } from "react-router-dom";
 import {logo, navStyle,ulStyle, linkStyle, logoutButtonStyle,} from "./NavStyles";
 

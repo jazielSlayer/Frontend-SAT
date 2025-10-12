@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './index'; // Ajusta la ruta según la ubicación de index.jsx
-import { getUserRoleByEmail } from './API/Admin/Roles'; // Importar getUserRoleByEmail
+import { useAuth } from './index'; 
+import { getUserRoleByEmail } from './API/Admin/Roles'; 
 
 const ProtectedRoute = ({ children, requiredRole = null }) => {
   const [loading, setLoading] = useState(true);
@@ -34,14 +34,12 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
           return;
         }
 
-        // Obtener roles del backend
         let userRoles = parsedUser.roles || [];
         try {
           const backendRoles = await getUserRoleByEmail(parsedUser.email);
           console.log('ProtectedRoute: backendRoles:', backendRoles);
           userRoles = backendRoles;
 
-          // Actualizar localStorage y AuthContext con roles del backend
           const updatedUser = { ...parsedUser, roles: userRoles };
           localStorage.setItem('user', JSON.stringify(updatedUser));
           if (!user || JSON.stringify(user) !== JSON.stringify(updatedUser)) {

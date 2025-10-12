@@ -182,7 +182,6 @@ function RegisterUsuario() {
         )}
         
         <form onSubmit={handleSubmit} style={styles.form}>
-          {/* Datos básicos de usuario */}
           <input
             type="text"
             name="user_name"
@@ -215,7 +214,6 @@ function RegisterUsuario() {
             required
           />
           
-          {/* Selección de rol */}
           <select
             name="role"
             value={role}
@@ -228,7 +226,6 @@ function RegisterUsuario() {
             <option style={styles.SelectContainer} value="docente">Docente</option>
           </select>
 
-          {/* Campos específicos para estudiante */}
           {role === 'estudiante' && (
             <div style={styles.roleSection}>
               <h4 style={styles.roleSectionTitle}>Datos de Estudiante</h4>
@@ -269,7 +266,6 @@ function RegisterUsuario() {
             </div>
           )}
 
-          {/* Campos específicos para docente */}
           {role === 'docente' && (
             <div style={styles.roleSection}>
               <h4 style={styles.roleSectionTitle}>Datos de Docente</h4>

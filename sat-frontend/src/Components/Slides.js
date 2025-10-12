@@ -1,8 +1,6 @@
-// src/components/Slideshow.js
 import React, { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Datos estáticos memoizados
 const SLIDES = [
   {
     id: 1,
@@ -36,7 +34,6 @@ const Slideshow = () => {
     setCurrentSlide((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
   }, []);
 
-  // Auto-play del slideshow
   useEffect(() => {
     const interval = setInterval(() => {
       if (!isHovering) {
@@ -130,7 +127,6 @@ const Slideshow = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Botones de navegación optimizados */}
       <motion.button
         animate={{ opacity: isHovering ? 1 : 0.4 }}
         transition={{ duration: 0.3 }}
@@ -189,7 +185,6 @@ const Slideshow = () => {
         →
       </motion.button>
 
-      {/* Indicadores de slide */}
       <div style={{
         position: 'absolute',
         bottom: '20px',

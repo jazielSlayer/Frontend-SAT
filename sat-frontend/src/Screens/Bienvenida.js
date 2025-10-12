@@ -1,4 +1,3 @@
-// src/components/Bienvenida.js
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { useScroll, useTransform } from "framer-motion";
@@ -12,7 +11,6 @@ function Bienvenida() {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll();
   
-  // Transforms optimizados para el logo - hooks deben estar en el nivel superior
   const logoOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.1]);
   const logoScale = useTransform(scrollYProgress, [0, 0.3], [1, 2]);
   const logoY = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
@@ -28,7 +26,6 @@ function Bienvenida() {
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Hero Section */}
         <main ref={containerRef} style={{ 
           flex: '1',
           position: 'relative',
@@ -77,7 +74,6 @@ function Bienvenida() {
               Plataforma integral para la gestión académica y seguimiento estudiantil
             </motion.p>
 
-            {/* Logo de fondo optimizado */}
             <motion.div
               style={{
                 position: 'fixed',
@@ -104,17 +100,13 @@ function Bienvenida() {
             </motion.div>
           </motion.div>
 
-          {/* Slideshow */}
           <Slideshow />
 
-          {/* Flash Cards */}
           <FlashCards />
 
-          {/* Sección del equipo */}
           <TeamSection />
         </main>
 
-        {/* Footer optimizado */}
         <footer style={{
           background: 'rgba(0, 0, 0, 0.6)',
           backdropFilter: 'blur(20px)',

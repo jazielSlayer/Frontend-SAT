@@ -1,8 +1,6 @@
-// src/components/FlashCards.js
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 
-// Datos estáticos memoizados
 const FLASH_CARDS = [
   {
     id: 1,
@@ -25,7 +23,6 @@ const FLASH_CARDS = [
 ];
 
 const FlashCards = () => {
-  // Variantes de animación memoizadas
   const containerVariants = useMemo(() => ({
     hidden: { opacity: 0 },
     visible: {

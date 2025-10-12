@@ -16,7 +16,6 @@ function DocenteAdmin() {
     estado: true,
   });
 
-  // Obtener docentes y personas al cargar
   useEffect(() => {
     fetchData();
   }, []);
@@ -96,7 +95,6 @@ function DocenteAdmin() {
   };
 
   const getAvailablePersonas = () => {
-    // Filtrar personas que ya no están asignadas como docentes (excepto la que se está editando)
     const docentePersonIds = docentes
       .filter(d => editingDocente ? d.id !== editingDocente.id : true)
       .map(d => d.per_id);
@@ -114,7 +112,6 @@ function DocenteAdmin() {
 
       {!loading && !error && (
         <>
-          {/* Tabla de Docentes */}
           <div style={{ overflowX: "auto", marginBottom: "30px" }}>
             <table style={{ 
               width: "100%", 
@@ -216,7 +213,6 @@ function DocenteAdmin() {
             </table>
           </div>
 
-          {/* Formulario de Agregar/Editar Docente */}
           <div style={{
             backgroundColor: "rgba(0, 0, 0, 0.3)",
             padding: "25px",
@@ -384,7 +380,6 @@ function DocenteAdmin() {
             </form>
           </div>
 
-          {/* Estadísticas */}
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",

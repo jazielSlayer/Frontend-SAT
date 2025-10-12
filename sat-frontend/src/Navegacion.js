@@ -1,4 +1,3 @@
-// Navegacion.jsx
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AdminNav from "./Navegacion-Componets/AdminNav";
@@ -101,7 +100,7 @@ function Navegacion() {
     );
   }
 
-  // Barra para otras rutas
+  
   return (
     <nav style={navStyle}>
       <div>

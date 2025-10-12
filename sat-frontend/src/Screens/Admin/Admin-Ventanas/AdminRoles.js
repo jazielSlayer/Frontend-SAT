@@ -32,7 +32,6 @@ function RolesAdmin() {
     guard_name: "web",
   });
 
-  // Cargar datos iniciales
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -50,7 +49,6 @@ function RolesAdmin() {
       setPermissions(permissionsData);
       setUsers(usersData);
       
-      // Cargar permisos para cada rol
       const rolePermsMap = {};
       for (const role of rolesData) {
         try {
@@ -129,7 +127,6 @@ function RolesAdmin() {
         await assignPermissionToRole(roleId, permissionId);
       }
       
-      // Recargar permisos del rol
       const rolePerms = await getPermissionsByRole(roleId);
       setRolePermissions(prev => ({
         ...prev,
@@ -153,7 +150,6 @@ function RolesAdmin() {
         await assignRoleToUser(userId, roleId);
       }
       
-      // Recargar datos de usuarios
       const usersData = await getUsersWithRoles();
       setUsers(usersData);
     } catch (err) {
@@ -362,8 +358,6 @@ function RolesAdmin() {
           </tbody>
         </table>
       </div>
-
-      {/* Estadísticas de usuarios */}
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
@@ -480,8 +474,6 @@ function RolesAdmin() {
       <h2 style={{ marginBottom: "30px", textAlign: "center", fontSize: "28px" }}>
         Administración de Roles y Permisos
       </h2>
-
-      {/* Sistema de Tabs */}
       <div style={{ marginBottom: "30px" }}>
         <div style={{
           display: "flex",
@@ -543,10 +535,8 @@ function RolesAdmin() {
 
       {!loading && !error && (
         <div>
-          {/* Contenido según el tab activo */}
           {activeTab === 'roles' && (
             <div>
-              {/* Tabla de Roles */}
               <div style={{ overflowX: "auto", marginBottom: "30px" }}>
                 <table style={{ 
                   width: "100%", 
@@ -661,7 +651,6 @@ function RolesAdmin() {
                 </table>
               </div>
 
-              {/* Formulario de Agregar/Editar Rol */}
               <div style={{
                 backgroundColor: "rgba(0, 0, 0, 0.3)",
                 padding: "25px",
@@ -817,7 +806,6 @@ function RolesAdmin() {
                 </form>
               </div>
 
-              {/* Estadísticas */}
               <div style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
@@ -863,10 +851,8 @@ function RolesAdmin() {
 
           {activeTab === 'users' && renderUsersTab()}
 
-          {/* Modal de Permisos */}
           {renderPermissionsModal()}
           
-          {/* Modal de Roles de Usuario */}
           {renderUserRolesModal()}
         </div>
       )}

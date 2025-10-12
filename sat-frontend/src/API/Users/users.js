@@ -1,4 +1,3 @@
-//Este archivo contiene los procesos realcionados con users
 import { API_URL } from "../Api.js";
 // Obtener todos los usuarios
 export async function getUsers() {

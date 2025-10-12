@@ -352,7 +352,6 @@ function AdminEstudiantes() {
             </form>
           </div>
 
-          {/* Estadísticas */}
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",

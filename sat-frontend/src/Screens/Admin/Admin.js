@@ -17,7 +17,6 @@ function Admin() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch data
   const fetchData = useCallback(async () => {
     try {
       const [docentesData, estudiantesData, modulosData, talleresData, usersCount, metodologiasData] = await Promise.all([
@@ -42,16 +41,13 @@ function Admin() {
     }
   }, []);
 
-  // Initial data fetch
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // Memoize chart initialization
   const initializeCharts = useCallback(() => {
     if (loading) return;
 
-    // Cleanup existing charts
     ['userDistribution', 'talleresChart', 'metodologiasChart'].forEach(id => {
       const chart = Chart.getChart(id);
       if (chart) {
@@ -61,7 +57,6 @@ function Admin() {
 
     const talleresArray = Array.isArray(talleres) ? talleres : [];
 
-    // User Distribution Chart
     const userCtx = document.getElementById('userDistribution');
     if (userCtx) {
       new Chart(userCtx, {
@@ -89,7 +84,6 @@ function Admin() {
       });
     }
 
-    // Talleres Chart - Bar chart by tipo_taller with detailed tooltips
     const talleresCtx = document.getElementById('talleresChart');
     if (talleresCtx) {
       const tipos = ['Teórico', 'Práctico', 'Mixto'];
@@ -140,7 +134,6 @@ function Admin() {
       });
     }
 
-    // Metodologias Chart
     const metodologiasCtx = document.getElementById('metodologiasChart');
     if (metodologiasCtx) {
       new Chart(metodologiasCtx, {
@@ -191,12 +184,10 @@ function Admin() {
     }
   }, [loading, estudiantes.length, docentes.length, talleres, metodologias]);
 
-  // Add this useEffect after the initializeCharts definition
   useEffect(() => {
     if (!loading) {
       initializeCharts();
     }
-    // Cleanup function
     return () => {
       ['userDistribution', 'talleresChart', 'metodologiasChart'].forEach(id => {
         const chart = Chart.getChart(id);
@@ -207,7 +198,6 @@ function Admin() {
     };
   }, [initializeCharts, loading]);
 
-  // Memoize components
   const StatWidget = useMemo(() => ({ title, value, description, bgColor }) => (
     <div style={{
       padding: '5px',
@@ -242,7 +232,6 @@ function Admin() {
     </div>
   ), []);
 
-  // Memoize grid layout
   const renderGrid = useMemo(() => (
     <div style={{
       display: 'grid',
@@ -252,7 +241,6 @@ function Admin() {
       padding: '20px',
       borderRadius: '15px',
     }}>
-      {/* Stats Widgets */}
       <StatWidget
         title="Usuarios"
         value={userCount}
@@ -278,7 +266,6 @@ function Admin() {
         bgColor="rgba(4, 22, 70, 0.55)"
       />
 
-      {/* Chart Widgets with updated spans */}
       <div style={{ gridColumn: 'span 2' }}>
         <ChartWidget
           title="Distribución de Usuarios"
@@ -295,7 +282,7 @@ function Admin() {
       </div>
       <div style={{ 
         gridColumn: 'span 4',
-        minHeight: '500px' // Increased container height
+        minHeight: '500px'
       }}>
         <ChartWidget
           title="Metodologías"

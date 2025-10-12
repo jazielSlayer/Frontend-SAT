@@ -28,7 +28,6 @@ function Talleres() {
         console.log("Talleres Data:", talleresData);
         console.log("Metodologias Data:", metodologiasData);
         
-        // Manejar diferentes estructuras de respuesta
         const talleresArray = Array.isArray(talleresData) ? talleresData : (talleresData?.data || []);
         const metodologiasArray = Array.isArray(metodologiasData) ? metodologiasData : (metodologiasData?.data || []);
         
