@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { sendAuthCode, verifyAuthCode } from "../../../API/Verficacion/Verificacion"; // Ajusta la ruta según tu estructura
+import { sendAuthCode, verifyAuthCode } from "../../../API/Verficacion/Verificacion";
 
 function AutenticacionUser() {
   const [code, setCode] = useState("");
@@ -8,6 +8,8 @@ function AutenticacionUser() {
   const [resendLoading, setResendLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
+  const isCodeSent = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -20,10 +22,13 @@ function AutenticacionUser() {
     }
 
     const sendInitialCode = async () => {
+      if (isCodeSent.current) return;
       setLoading(true);
       try {
         await sendAuthCode(correo);
         setSuccess(`Código de autenticación enviado a ${correo}`);
+        isCodeSent.current = true;
+        startResendTimer();
       } catch (err) {
         setError("Error al enviar el código de autenticación: " + err.message);
       } finally {
@@ -31,7 +36,9 @@ function AutenticacionUser() {
       }
     };
 
-    sendInitialCode();
+    if (!isCodeSent.current) {
+      sendInitialCode();
+    }
   }, [personaId, correo, navigate]);
 
   const handleChange = (e) => {
@@ -59,7 +66,6 @@ function AutenticacionUser() {
     try {
       await verifyAuthCode(correo, code);
       setSuccess("Código verificado correctamente. Continúa con el registro.");
-
       navigate("/register-step3", {
         state: { personaId, correo, nombres },
       });
@@ -71,7 +77,7 @@ function AutenticacionUser() {
   };
 
   const handleResendCode = async () => {
-    if (loading || resendLoading) return;
+    if (loading || resendLoading || resendTimer > 0) return;
     setResendLoading(true);
     setError("");
     setSuccess("");
@@ -79,6 +85,7 @@ function AutenticacionUser() {
     try {
       await sendAuthCode(correo);
       setSuccess(`Código de autenticación reenviado a ${correo}`);
+      startResendTimer();
     } catch (err) {
       setError("Error al reenviar el código: " + err.message);
     } finally {
@@ -86,10 +93,18 @@ function AutenticacionUser() {
     }
   };
 
+  const startResendTimer = () => {
+    setResendTimer(30);
+    const timer = setInterval(() => {
+      setResendTimer((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    setTimeout(() => clearInterval(timer), 30000);
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.formWrapper}>
-        <h2 style={styles.title}>Registro - Paso 2</h2>
+        <h2 style={styles.title}>Autenticacion de correo</h2>
         <p style={styles.subtitle}>
           Verifica tu correo electrónico para {nombres}
         </p>
@@ -117,18 +132,6 @@ function AutenticacionUser() {
           >
             {loading ? "Verificando..." : "Verificar Código"}
           </button>
-          <button
-            type="button"
-            onClick={handleResendCode}
-            style={
-              resendLoading
-                ? { ...styles.resendButton, ...styles.buttonDisabled }
-                : styles.resendButton
-            }
-            disabled={resendLoading}
-          >
-            {resendLoading ? "Enviando..." : "Reenviar Código"}
-          </button>
         </form>
 
         <p style={styles.registerText}>
@@ -139,6 +142,23 @@ function AutenticacionUser() {
           <Link to="/login" style={styles.registerLink}>
             Iniciar sesión
           </Link>
+           {" | "}
+          <button
+            type="button"
+            onClick={handleResendCode}
+            style={
+              resendLoading || resendTimer > 0
+                ? { ...styles.resendButton, ...styles.buttonDisabled }
+                : styles.resendButton
+            }
+            disabled={resendLoading || resendTimer > 0}
+          >
+            {resendLoading
+              ? "Enviando..."
+              : resendTimer > 0
+              ? `Reenviar en ${resendTimer}s`
+              : "Reenviar Código"}
+          </button>
         </p>
       </div>
     </div>
@@ -207,19 +227,20 @@ const styles = {
     marginTop: "10px",
   },
   resendButton: {
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid rgba(255,255,255,0.2)",
-    backgroundColor: "transparent",
-    color: "#fff",
+    background: "none",
+    border: "none",
+    color: "#6c63ff",
+    textDecoration: "underline",
     fontWeight: "bold",
     cursor: "pointer",
-    transition: "all 0.3s ease",
-    fontSize: "16px",
-    marginTop: "10px",
+    fontSize: "12.5px",
+    marginTop: "5px",
+    padding: "0",
+    textAlign: "center",
   },
   buttonDisabled: {
-    backgroundColor: "#666",
+    color: "#666",
+    textDecoration: "underline",
     cursor: "not-allowed",
   },
   registerText: {
