@@ -41,7 +41,7 @@ Esta guía proporciona instrucciones paso a paso para configurar y ejecutar el F
    - Clona el repositorio del proyecto usando:
    
    ```bash
-   git clone https://github.com/jazielSlayer/SAFT-Bakent.git
+   git clone https://github.com/jazielSlayer/Frontend-SAT.git
    ```
 
 <h2>4. Instalar Dependencias</h2>
@@ -51,56 +51,18 @@ Esta guía proporciona instrucciones paso a paso para configurar y ejecutar el F
    ```bash
    npm install
    ```
+<h2>5. Ejecutar el proyecto</h2>
 
-<h2>5. Configurar Variables de Entorno</h2>
-
->[!IMPORTANT]
->Este archivo es importante para no guardar datos sensibles como contraseñas
-
-   - Crea un archivo `.env` en la raíz del proyecto:
-     ```powershell
-     New-Item -Path .env -ItemType File -Force
-     ```
-   - Agrega las siguientes variables al archivo `.env`:
-     ```powershell
-     Add-Content -Path .env -Value "DB_HOST=localhost"
-     Add-Content -Path .env -Value "DB_USER=root"
-     Add-Content -Path .env -Value "DB_PASSWORD="
-     Add-Content -Path .env -Value "DB_DATABASE=saf"
-     ```
-   - Agrega tu correo electrónico para la variable `CORREO_APP` (reemplaza `example@gmail.com` con tu correo real):
-     ```powershell
-     Add-Content -Path .env -Value "CORREO_APP=example@gmail.com"
-     ```
->[!NOTE]
->Nesesitas activar la verificacion de dos pasos de tu cuenta de google
-   - Genera una contraseña específica para la aplicación desde [Contraseñas de Aplicaciones de Google](https://myaccount.google.com/apppasswords?pli=1&rapt=AEjHL4MBatzGXSV5f-OI9U1v8ujdutvXwSkByemPACclTJANJBc6yTPJhopYmYIYqE_NtoCxRqvJMY_kx_E6loH_xljv-dPt1oqRblPceA-A_a9meGtBeoU) y agrégala al archivo `.env` (reemplaza la contraseña de ejemplo):
-     ```powershell
-     Add-Content -Path .env -Value "CONTRASENA_APP=tu-contraseña-generada"
-     ```
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-<h2>6. Configurar la Base de Datos</h2>
-
-   - Ejecuta el script de la base de datos (`db`) para crear la estructura de la base de datos necesaria.
-
-<h2>7. Compilar el Proyecto</h2>
-
-   - Compila el proyecto para transformar la carpeta `src` en la carpeta `dist`:
-     ```bash
-     npm run build
-     ```
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-<h2>8. Ejecutar el Proyecto</h2>
-
-   - Inicia el servidor de desarrollo (se reinicia automáticamente al hacer cambios):
-     ```bash
-     npm run dev
-     ```
-
-   - Alternativamente, ejecuta el proyecto compilado:
->[!IMPORTANT]
->Este comando es importante para crear el API para el frontend.
+   - Navega al directorio del proyecto y ejecuta el proyecto con el siguiente comando:
 
    ```bash
-   npm run build
+   npm start
    ```
+
+
+>[!NOTE]
+>El proyecto se ejecutara en el `localhost:3000`
+
+
+>[!IMPORTANT]
+>Si el proyecto presenta alguna falla al momento de hacerlo correr verificar si se hiso correctamente los pasos anteriores, verificar si no hay programas ejecutandoce en el `localhost:3000`
