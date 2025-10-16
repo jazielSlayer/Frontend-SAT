@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllTalleres, getTaller, createTaller, updateTaller, deleteTaller } from "../../../API/Admin/Taller";
 import { getAllMetodologias } from "../../../API/Admin/Metodologia.js";
-
+import { TallerStyles } from "../../Components screens/Styles.js";
 function Talleres() {
   const [talleres, setTalleres] = useState([]);
   const [metodologias, setMetodologias] = useState([]);
@@ -18,6 +18,7 @@ function Talleres() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -27,10 +28,10 @@ function Talleres() {
         ]);
         console.log("Talleres Data:", talleresData);
         console.log("Metodologias Data:", metodologiasData);
-        
+
         const talleresArray = Array.isArray(talleresData) ? talleresData : (talleresData?.data || []);
         const metodologiasArray = Array.isArray(metodologiasData) ? metodologiasData : (metodologiasData?.data || []);
-        
+
         setTalleres(talleresArray);
         setMetodologias(metodologiasArray);
         setLoading(false);
@@ -126,82 +127,58 @@ function Talleres() {
   };
 
   return (
-    <div style={{ color: "#fff", minHeight: "100vh", padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h2 style={{ marginBottom: "20px", textAlign: "center", fontSize: "28px" }}>
-        Gestión de Talleres
-      </h2>
+    <div style={TallerStyles.container}>
+      <h2 style={TallerStyles.title}>Gestión de Talleres</h2>
 
-      {loading && <p style={{ textAlign: "center", fontSize: "18px" }}>Cargando talleres...</p>}
-      {error && <p style={{ color: "red", textAlign: "center", fontSize: "16px" }}>Error: {error}</p>}
+      {loading && <p style={TallerStyles.loadingText}>Cargando talleres...</p>}
+      {error && <p style={TallerStyles.errorText}>Error: {error}</p>}
 
       {!loading && !error && (
         <>
-          <div style={{ overflowX: "auto", marginBottom: "30px" }}>
-            <table style={{ 
-              width: "100%", 
-              borderCollapse: "collapse", 
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
-              borderRadius: "8px",
-              overflow: "hidden"
-            }}>
-              <thead style={{ backgroundColor: "#333" }}>
+          <div style={TallerStyles.tableContainer}>
+            <table style={TallerStyles.table}>
+              <thead style={TallerStyles.tableHead}>
                 <tr>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>ID</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Título</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Metodología</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Tipo</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Evaluación</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Duración</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Resultado</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Fecha</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Acciones</th>
+                  <th style={TallerStyles.tableHeader}>ID</th>
+                  <th style={TallerStyles.tableHeader}>Título</th>
+                  <th style={TallerStyles.tableHeader}>Metodología</th>
+                  <th style={TallerStyles.tableHeader}>Tipo</th>
+                  <th style={TallerStyles.tableHeader}>Evaluación</th>
+                  <th style={TallerStyles.tableHeader}>Duración</th>
+                  <th style={TallerStyles.tableHeader}>Resultado</th>
+                  <th style={TallerStyles.tableHeader}>Fecha</th>
+                  <th style={TallerStyles.tableHeader}>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {talleres.length > 0 ? (
                   talleres.map((taller, index) => (
-                    <tr 
+                    <tr
                       key={taller.id}
-                      style={{ 
-                        borderBottom: "1px solid #555",
-                        backgroundColor: index % 2 === 0 ? "rgba(255,255,255,0.05)" : "transparent"
+                      style={{
+                        ...TallerStyles.tableRow,
+                        ...(index % 2 === 0 ? TallerStyles.tableRowAlternate : {}),
                       }}
                     >
-                      <td style={{ padding: "12px" }}>{taller.id}</td>
-                      <td style={{ padding: "12px", fontWeight: "bold" }}>{taller.titulo}</td>
-                      <td style={{ padding: "12px" }}>{getMetodologiaNombre(taller.id_metodologia)}</td>
-                      <td style={{ padding: "12px" }}>{taller.tipo_taller}</td>
-                      <td style={{ padding: "12px" }}>{taller.evaluacion_final || "-"}</td>
-                      <td style={{ padding: "12px" }}>{taller.duracion || "-"}</td>
-                      <td style={{ padding: "12px" }}>{taller.resultado || "-"}</td>
-                      <td style={{ padding: "12px" }}>{taller.fecha_realizacion}</td>
-                      <td style={{ padding: "12px" }}>
-                        <div style={{ display: "flex", gap: "8px" }}>
+                      <td style={TallerStyles.tableCell}>{taller.id}</td>
+                      <td style={TallerStyles.tableCellBold}>{taller.titulo}</td>
+                      <td style={TallerStyles.tableCell}>{getMetodologiaNombre(taller.id_metodologia)}</td>
+                      <td style={TallerStyles.tableCell}>{taller.tipo_taller}</td>
+                      <td style={TallerStyles.tableCell}>{taller.evaluacion_final || "-"}</td>
+                      <td style={TallerStyles.tableCell}>{taller.duracion || "-"}</td>
+                      <td style={TallerStyles.tableCell}>{taller.resultado || "-"}</td>
+                      <td style={TallerStyles.tableCell}>{taller.fecha_realizacion}</td>
+                      <td style={TallerStyles.tableCell}>
+                        <div style={TallerStyles.actionContainer}>
                           <button
                             onClick={() => handleEdit(taller.id)}
-                            style={{
-                              padding: "6px 12px",
-                              backgroundColor: "#2196F3",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: "4px",
-                              cursor: "pointer",
-                              fontSize: "12px"
-                            }}
+                            style={TallerStyles.editButton}
                           >
                             Editar
                           </button>
                           <button
                             onClick={() => handleDelete(taller.id)}
-                            style={{
-                              padding: "6px 12px",
-                              backgroundColor: "#F44336",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: "4px",
-                              cursor: "pointer",
-                              fontSize: "12px"
-                            }}
+                            style={TallerStyles.deleteButton}
                           >
                             Eliminar
                           </button>
@@ -211,7 +188,7 @@ function Talleres() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="9" style={{ padding: "20px", textAlign: "center", fontSize: "16px" }}>
+                    <td style={TallerStyles.noDataText} colSpan="9">
                       No hay talleres registrados
                     </td>
                   </tr>
@@ -220,26 +197,14 @@ function Talleres() {
             </table>
           </div>
 
-          <div style={{
-            backgroundColor: "rgba(0, 0, 0, 0.3)",
-            padding: "25px",
-            borderRadius: "8px",
-            marginTop: "20px"
-          }}>
-            <h3 style={{ marginBottom: "20px", fontSize: "22px" }}>
+          <div style={TallerStyles.formContainer}>
+            <h3 style={TallerStyles.formTitle}>
               {editingTaller ? "Editar Taller" : "Agregar Nuevo Taller"}
             </h3>
             <form onSubmit={handleSubmit}>
-              <div style={{ 
-                display: "grid", 
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: "15px",
-                marginBottom: "20px"
-              }}>
+              <div style={TallerStyles.formGrid}>
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Título:
-                  </label>
+                  <label style={TallerStyles.formLabel}>Título:</label>
                   <input
                     type="text"
                     name="titulo"
@@ -247,35 +212,17 @@ function Talleres() {
                     value={formData.titulo}
                     onChange={handleInputChange}
                     required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff",
-                      boxSizing: "border-box"
-                    }}
+                    style={TallerStyles.formInput}
                   />
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Metodología:
-                  </label>
+                  <label style={TallerStyles.formLabel}>Metodología:</label>
                   <select
                     name="id_metodologia"
                     value={formData.id_metodologia}
                     onChange={handleInputChange}
                     required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff",
-                      boxSizing: "border-box"
-                    }}
+                    style={TallerStyles.formInput}
                   >
                     <option value="">Selecciona Metodología</option>
                     {metodologias.length > 0 ? (
@@ -288,23 +235,13 @@ function Talleres() {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Tipo de Taller:
-                  </label>
+                  <label style={TallerStyles.formLabel}>Tipo de Taller:</label>
                   <select
                     name="tipo_taller"
                     value={formData.tipo_taller}
                     onChange={handleInputChange}
                     required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff",
-                      boxSizing: "border-box"
-                    }}
+                    style={TallerStyles.formInput}
                   >
                     <option value="">Selecciona Tipo</option>
                     <option value="Teórico">Teórico</option>
@@ -313,102 +250,56 @@ function Talleres() {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Evaluación Final:
-                  </label>
+                  <label style={TallerStyles.formLabel}>Evaluación Final:</label>
                   <input
                     type="text"
                     name="evaluacion_final"
                     placeholder="Evaluación Final"
                     value={formData.evaluacion_final}
                     onChange={handleInputChange}
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff",
-                      boxSizing: "border-box"
-                    }}
+                    style={TallerStyles.formInput}
                   />
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Duración:
-                  </label>
+                  <label style={TallerStyles.formLabel}>Duración:</label>
                   <input
                     type="text"
                     name="duracion"
                     placeholder="Duración"
                     value={formData.duracion}
                     onChange={handleInputChange}
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff",
-                      boxSizing: "border-box"
-                    }}
+                    style={TallerStyles.formInput}
                   />
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Resultado:
-                  </label>
+                  <label style={TallerStyles.formLabel}>Resultado:</label>
                   <input
                     type="text"
                     name="resultado"
                     placeholder="Resultado"
                     value={formData.resultado}
                     onChange={handleInputChange}
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff",
-                      boxSizing: "border-box"
-                    }}
+                    style={TallerStyles.formInput}
                   />
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Fecha de Realización:
-                  </label>
+                  <label style={TallerStyles.formLabel}>Fecha de Realización:</label>
                   <input
                     type="date"
                     name="fecha_realizacion"
                     value={formData.fecha_realizacion}
                     onChange={handleInputChange}
                     required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff",
-                      boxSizing: "border-box"
-                    }}
+                    style={TallerStyles.formInput}
                   />
                 </div>
               </div>
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div style={TallerStyles.formButtonContainer}>
                 <button
                   type="submit"
                   style={{
-                    padding: "12px 24px",
-                    backgroundColor: editingTaller ? "#2196F3" : "#4CAF50",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "16px",
-                    fontWeight: "bold"
+                    ...TallerStyles.submitButton,
+                    ...(editingTaller ? TallerStyles.submitButtonUpdate : TallerStyles.submitButtonCreate),
                   }}
                 >
                   {editingTaller ? "Actualizar Taller" : "Agregar Taller"}
@@ -417,16 +308,7 @@ function Talleres() {
                   <button
                     type="button"
                     onClick={handleCancelEdit}
-                    style={{
-                      padding: "12px 24px",
-                      backgroundColor: "#F44336",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      fontWeight: "bold"
-                    }}
+                    style={TallerStyles.cancelButton}
                   >
                     Cancelar Edición
                   </button>
@@ -435,29 +317,18 @@ function Talleres() {
             </form>
           </div>
 
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "15px",
-            marginTop: "30px"
-          }}>
-            <div style={{
-              backgroundColor: "rgba(76, 175, 80, 0.2)",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center"
-            }}>
-              <h4 style={{ margin: "0 0 10px 0", color: "#4CAF50" }}>Total Talleres</h4>
-              <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>{talleres.length}</p>
+          <div style={TallerStyles.statsContainer}>
+            <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTotal }}>
+              <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTotal }}>
+                Total Talleres
+              </h4>
+              <p style={TallerStyles.statValue}>{talleres.length}</p>
             </div>
-            <div style={{
-              backgroundColor: "rgba(33, 150, 243, 0.2)",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center"
-            }}>
-              <h4 style={{ margin: "0 0 10px 0", color: "#2196F3" }}>Tipos Únicos</h4>
-              <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>{uniqueTipos.length}</p>
+            <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTipos }}>
+              <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTipos }}>
+                Tipos Únicos
+              </h4>
+              <p style={TallerStyles.statValue}>{uniqueTipos.length}</p>
             </div>
           </div>
         </>

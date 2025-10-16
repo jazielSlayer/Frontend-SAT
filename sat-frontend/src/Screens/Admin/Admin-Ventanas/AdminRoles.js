@@ -10,16 +10,18 @@ import {
   removePermissionFromRole,
   getUsersWithRoles,
   assignRoleToUser,
-  removeRoleFromUser
 } from "../../../API/Admin/Roles";
 
+import { styles } from "../../Components screens/Styles";
+
 function RolesAdmin() {
-  const [activeTab, setActiveTab] = useState('roles');
+  const [activeTab, setActiveTab] = useState("roles");
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
   const [users, setUsers] = useState([]);
   const [rolePermissions, setRolePermissions] = useState({});
   const [loading, setLoading] = useState(true);
+  const [operationLoading, setOperationLoading] = useState(false);
   const [error, setError] = useState(null);
   const [editingRole, setEditingRole] = useState(null);
   const [showPermissionsModal, setShowPermissionsModal] = useState(null);
@@ -31,6 +33,9 @@ function RolesAdmin() {
     is_default: false,
     guard_name: "web",
   });
+  const [formErrors, setFormErrors] = useState({});
+
+  
 
   useEffect(() => {
     fetchAllData();
@@ -43,14 +48,14 @@ function RolesAdmin() {
       const [rolesData, permissionsData, usersData] = await Promise.all([
         getAllRoles(),
         getAllPermissions(),
-        getUsersWithRoles()
+        getUsersWithRoles(),
       ]);
-      setRoles(rolesData);
-      setPermissions(permissionsData);
-      setUsers(usersData);
-      
+      setRoles(rolesData || []);
+      setPermissions(permissionsData || []);
+      setUsers(usersData || []);
+
       const rolePermsMap = {};
-      for (const role of rolesData) {
+      for (const role of rolesData || []) {
         try {
           const rolePerms = await getPermissionsByRole(role.id);
           rolePermsMap[role.id] = rolePerms;
@@ -61,25 +66,51 @@ function RolesAdmin() {
       }
       setRolePermissions(rolePermsMap);
     } catch (err) {
-      setError(err.message || 'Error al cargar datos');
+      setError(err.message || "Error al cargar datos");
+      console.error("Fetch all data error:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  const validateForm = (data) => {
+    const errors = {};
+    if (!data.name.trim()) {
+      errors.name = "El nombre del rol es obligatorio";
+    }
+    if (!data.start_path.trim()) {
+      errors.start_path = "La ruta inicial es obligatoria";
+    }
+    if (!data.guard_name) {
+      errors.guard_name = "El guard name es obligatorio";
+    }
+    return errors;
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const finalValue = type === 'checkbox' ? checked : value;
-    
+    const finalValue = type === "checkbox" ? checked : value;
+
     if (editingRole) {
       setEditingRole((prev) => ({ ...prev, [name]: finalValue }));
     } else {
       setNewRole((prev) => ({ ...prev, [name]: finalValue }));
     }
+    setFormErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const currentRole = editingRole || newRole;
+    const errors = validateForm(currentRole);
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setOperationLoading(true);
+    setError(null);
     try {
       if (editingRole) {
         await updateRole(editingRole.id, editingRole);
@@ -94,83 +125,112 @@ function RolesAdmin() {
           guard_name: "web",
         });
       }
-      fetchAllData();
+      await fetchAllData();
     } catch (err) {
-      setError(err.message || 'Error al procesar el rol');
+      setError(err.message || "Error al procesar el rol");
+    } finally {
+      setOperationLoading(false);
     }
   };
 
   const handleEdit = (role) => {
-    setEditingRole(role);
+    setEditingRole({ ...role });
+    setFormErrors({});
   };
 
   const handleCancelEdit = () => {
     setEditingRole(null);
+    setFormErrors({});
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este rol? Esta acción no se puede deshacer.")) {
+  const handleDelete = async (id, roleName) => {
+    if (window.confirm(`¿Estás seguro de que quieres eliminar el rol "${roleName}"? Esta acción no se puede deshacer.`)) {
+      setOperationLoading(true);
+      setError(null);
       try {
         await deleteRole(id);
-        fetchAllData();
+        await fetchAllData();
       } catch (err) {
-        setError(err.message || 'Error al eliminar el rol');
+        setError(err.message || "Error al eliminar el rol");
+      } finally {
+        setOperationLoading(false);
       }
     }
   };
 
   const handlePermissionToggle = async (roleId, permissionId, isAssigned) => {
+    setOperationLoading(true);
+    setError(null);
     try {
       if (isAssigned) {
         await removePermissionFromRole(roleId, permissionId);
       } else {
         await assignPermissionToRole(roleId, permissionId);
       }
-      
+
       const rolePerms = await getPermissionsByRole(roleId);
-      setRolePermissions(prev => ({
+      setRolePermissions((prev) => ({
         ...prev,
-        [roleId]: rolePerms
+        [roleId]: rolePerms,
       }));
     } catch (err) {
-      setError(err.message || 'Error al actualizar permisos');
+      setError(err.message || "Error al actualizar permisos");
+    } finally {
+      setOperationLoading(false);
     }
   };
 
   const isPermissionAssigned = (roleId, permissionId) => {
     const rolePerms = rolePermissions[roleId] || [];
-    return rolePerms.some(perm => perm.id === permissionId);
+    return rolePerms.some((perm) => perm.id === permissionId);
   };
 
-  const handleUserRoleToggle = async (userId, roleId, isAssigned) => {
+  const handleUserRoleToggle = async (userId, roleId) => {
+    console.log("Toggling role - Input:", { userId, roleId });
+    if (!userId || (roleId !== null && isNaN(roleId))) {
+      setError("ID de usuario o rol inválido");
+      return;
+    }
+
+    setOperationLoading(true);
+    setError(null);
     try {
-      if (isAssigned) {
-        await removeRoleFromUser(userId, roleId);
-      } else {
-        await assignRoleToUser(userId, roleId);
-      }
-      
+      const isAssigned = isRoleAssignedToUser(userId, roleId);
+      await assignRoleToUser(userId, isAssigned ? null : roleId);
       const usersData = await getUsersWithRoles();
       setUsers(usersData);
     } catch (err) {
-      setError(err.message || 'Error al actualizar roles de usuario');
+      const errorMessage = err.message || "Error al actualizar rol de usuario";
+      if (err.message.includes("Usuario no encontrado")) {
+        setError("El usuario no existe en la base de datos");
+      } else if (err.message.includes("Rol no encontrado")) {
+        setError("El rol seleccionado no existe");
+      } else if (err.message.includes("Solicitud inválida")) {
+        setError("Solicitud inválida: parámetros incorrectos");
+      } else {
+        setError(errorMessage);
+      }
+      console.error("Toggle error:", err);
+    } finally {
+      setOperationLoading(false);
     }
   };
 
   const getUserRoles = (userId) => {
-    const user = users.find(u => u.id === userId);
-    return user?.roles || [];
+    const user = users.find((u) => u.id === userId);
+    if (!user || !user.id_roles || !user.role_name) return [];
+    return [{ id: user.id_roles, name: user.role_name }];
   };
 
   const isRoleAssignedToUser = (userId, roleId) => {
-    const userRoles = getUserRoles(userId);
-    return userRoles.some(role => role.id === roleId);
+    const user = users.find((u) => u.id === userId);
+    return user?.id_roles === roleId;
   };
 
   const getPermissionsByCategory = () => {
     const categories = {};
-    permissions.forEach(permission => {
-      const category = permission.name.split('.')[0];
+    permissions.forEach((permission) => {
+      const category = permission.name.split(".")[0];
       if (!categories[category]) {
         categories[category] = [];
       }
@@ -182,14 +242,21 @@ function RolesAdmin() {
   const renderUserRolesModal = () => {
     if (!showUserRolesModal) return null;
 
-    const user = users.find(u => u.id === showUserRolesModal);
+    const user = users.find((u) => u.id === showUserRolesModal);
+    console.log("Rendering modal - User:", user, "Roles:", roles);
+
+    if (!user) {
+      setError("Usuario no encontrado en la lista");
+      setShowUserRolesModal(null);
+      return null;
+    }
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-gray-800 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-2xl font-bold text-white">
-              Roles para: {user?.user_name} ({user?.nombres} {user?.apellidopat})
+              Rol para: {user?.user_name} ({user?.nombres} {user?.apellidopat})
             </h3>
             <button
               onClick={() => setShowUserRolesModal(null)}
@@ -200,44 +267,52 @@ function RolesAdmin() {
           </div>
 
           <div className="space-y-4">
-            <p className="text-gray-300 mb-4">
-              Selecciona los roles que quieres asignar a este usuario:
+            <p className="text-gray-300 text-sm">
+              Selecciona un rol para asignarlo al usuario. Cada usuario puede tener solo un rol asignado.
             </p>
-            
+            {error && (
+              <div style={styles.errorMessage}>Error: {error}</div>
+            )}
+
             <div className="grid gap-3">
               {roles.map((role) => (
-                <label
-                  key={role.id}
-                  className="flex items-center justify-between p-4 hover:bg-gray-700 rounded-lg cursor-pointer border border-gray-600"
-                >
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      checked={isRoleAssignedToUser(showUserRolesModal, role.id)}
-                      onChange={(e) => handleUserRoleToggle(
-                        showUserRolesModal,
-                        role.id,
-                        !e.target.checked
-                      )}
-                      className="w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
-                    />
-                    <div>
-                      <span className="text-white font-medium">{role.name}</span>
-                      <p className="text-gray-400 text-sm">{role.descripcion || 'Sin descripción'}</p>
-                      <p className="text-gray-400 text-sm">Ruta: {role.start_path}</p>
+                role.id && (
+                  <label
+                    key={role.id}
+                    className="flex items-center justify-between p-4 hover:bg-gray-700 rounded-lg cursor-pointer border border-gray-600"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={isRoleAssignedToUser(showUserRolesModal, role.id)}
+                        onChange={() => handleUserRoleToggle(showUserRolesModal, role.id)}
+                        disabled={operationLoading}
+                        className="w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                      />
+                      <div>
+                        <span className="text-white font-medium">{role.name}</span>
+                        <p className="text-gray-400 text-sm">
+                          {role.descripcion || "Sin descripción"}
+                        </p>
+                        <p className="text-gray-400 text-sm">Ruta: {role.start_path}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      role.is_default ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'
-                    }`}>
-                      {role.is_default ? 'Por defecto' : 'Opcional'}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {(rolePermissions[role.id] || []).length} permisos
-                    </span>
-                  </div>
-                </label>
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          role.is_default
+                            ? "bg-green-500/20 text-green-300"
+                            : "bg-gray-500/20 text-gray-300"
+                        }`}
+                      >
+                        {role.is_default ? "Por defecto" : "Opcional"}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {(rolePermissions[role.id] || []).length} permisos
+                      </span>
+                    </div>
+                  </label>
+                )
               ))}
             </div>
           </div>
@@ -245,6 +320,7 @@ function RolesAdmin() {
           <div className="flex justify-end mt-6">
             <button
               onClick={() => setShowUserRolesModal(null)}
+              disabled={operationLoading}
               className="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg"
             >
               Cerrar
@@ -257,100 +333,75 @@ function RolesAdmin() {
 
   const renderUsersTab = () => (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-2xl font-bold text-white">Gestión de Usuarios y Roles</h3>
-        <div className="text-sm text-gray-300">
-          Total usuarios: {users.length}
-        </div>
+      <div style={styles.usersHeaderContainer}>
+        <h3 style={styles.usersHeaderTitle}>Gestión de Usuarios y Roles</h3>
+        <div style={styles.usersHeaderCount}>Total usuarios: {users.length}</div>
       </div>
 
       <div className="overflow-x-auto">
-        <table style={{ 
-          width: "100%", 
-          borderCollapse: "collapse", 
-          backgroundColor: "rgba(0, 0, 0, 0.3)",
-          borderRadius: "8px",
-          overflow: "hidden"
-        }}>
-          <thead style={{ backgroundColor: "#333" }}>
+        <table style={styles.table}>
+          <thead style={styles.tableHead}>
             <tr>
-              <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Usuario</th>
-              <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Email</th>
-              <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Nombre Completo</th>
-              <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Estado</th>
-              <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Roles Actuales</th>
-              <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "center" }}>Acciones</th>
+              <th style={styles.tableHeader}>Usuario</th>
+              <th style={styles.tableHeader}>Email</th>
+              <th style={styles.tableHeader}>Nombre Completo</th>
+              <th style={styles.tableHeader}>Estado</th>
+              <th style={styles.tableHeader}>Rol Actual</th>
+              <th style={styles.tableHeaderCenter}>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {users.length > 0 ? (
               users.map((user, index) => (
-                <tr 
-                  key={user.id} 
-                  style={{ 
-                    borderBottom: "1px solid #555",
-                    backgroundColor: index % 2 === 0 ? "rgba(255,255,255,0.05)" : "transparent"
+                <tr
+                  key={user.id}
+                  style={{
+                    ...styles.tableRow,
+                    ...(index % 2 === 0 ? styles.tableRowAlternate : {}),
                   }}
                 >
-                  <td style={{ padding: "12px", fontWeight: "bold" }}>{user.user_name}</td>
-                  <td style={{ padding: "12px" }}>{user.email || 'Sin email'}</td>
-                  <td style={{ padding: "12px" }}>
-                    {user.nombres} {user.apellidopat} {user.apellidomat || ''}
+                  <td style={styles.tableCellBold}>{user.user_name}</td>
+                  <td style={styles.tableCell}>{user.email || "Sin email"}</td>
+                  <td style={styles.tableCell}>
+                    {user.nombres} {user.apellidopat} {user.apellidomat || ""}
                   </td>
-                  <td style={{ padding: "12px" }}>
-                    <span style={{
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      backgroundColor: user.status ? "#4CAF50" : "#F44336",
-                      color: "white",
-                      fontSize: "12px"
-                    }}>
+                  <td style={styles.tableCell}>
+                    <span
+                      style={{
+                        ...styles.statusBadge,
+                        ...(user.status ? styles.statusActive : styles.statusInactive),
+                      }}
+                    >
                       {user.status ? "Activo" : "Inactivo"}
                     </span>
                   </td>
-                  <td style={{ padding: "12px" }}>
+                  <td style={styles.tableCell}>
                     <div className="flex flex-wrap gap-1">
                       {getUserRoles(user.id).length > 0 ? (
                         getUserRoles(user.id).map((role) => (
-                          <span
-                            key={role.id}
-                            style={{
-                              padding: "2px 6px",
-                              borderRadius: "4px",
-                              backgroundColor: "#2196F3",
-                              color: "white",
-                              fontSize: "11px"
-                            }}
-                          >
+                          <span key={role.id} style={styles.roleBadge}>
                             {role.name}
                           </span>
                         ))
                       ) : (
-                        <span style={{ color: "#999", fontSize: "12px" }}>Sin roles</span>
+                        <span style={styles.noRoleText}>Sin rol</span>
                       )}
                     </div>
                   </td>
-                  <td style={{ padding: "12px", textAlign: "center" }}>
+                  <td style={styles.tableCellCenter}>
                     <button
                       onClick={() => setShowUserRolesModal(user.id)}
-                      style={{
-                        padding: "6px 12px",
-                        backgroundColor: "#08085fff",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        fontSize: "12px"
-                      }}
+                      disabled={operationLoading}
+                      style={operationLoading ? styles.manageButtonDisabled : styles.manageButton}
                     >
-                      Gestionar Roles
+                      Gestionar Rol
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" style={{ padding: "20px", textAlign: "center", fontSize: "16px" }}>
+                <td style={styles.noDataText} colSpan="6">
                   No hay usuarios registrados
                 </td>
               </tr>
@@ -358,46 +409,18 @@ function RolesAdmin() {
           </tbody>
         </table>
       </div>
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-        gap: "15px",
-        marginTop: "30px"
-      }}>
-        <div style={{
-          backgroundColor: "rgba(76, 175, 80, 0.2)",
-          padding: "20px",
-          borderRadius: "8px",
-          textAlign: "center"
-        }}>
-          <h4 style={{ margin: "0 0 10px 0", color: "#4CAF50" }}>Usuarios Activos</h4>
-          <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
-            {users.filter(u => u.status).length}
-          </p>
+      <div style={styles.statsContainer}>
+        <div style={{ ...styles.statCard, ...styles.userStatCardUsers }}>
+          <h4 style={{ ...styles.statTitle, ...styles.userStatTitleUsers }}>Usuarios Activos</h4>
+          <p style={styles.statValue}>{users.filter((u) => u.status).length}</p>
         </div>
-        
-        <div style={{
-          backgroundColor: "rgba(255, 152, 0, 0.2)",
-          padding: "20px",
-          borderRadius: "8px",
-          textAlign: "center"
-        }}>
-          <h4 style={{ margin: "0 0 10px 0", color: "#FF9800" }}>Sin Roles</h4>
-          <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
-            {users.filter(u => getUserRoles(u.id).length === 0).length}
-          </p>
+        <div style={{ ...styles.statCard, ...styles.userStatCardNoRole }}>
+          <h4 style={{ ...styles.statTitle, ...styles.userStatTitleNoRole }}>Sin Rol</h4>
+          <p style={styles.statValue}>{users.filter((u) => !u.id_roles).length}</p>
         </div>
-        
-        <div style={{
-          backgroundColor: "rgba(16, 13, 115, 0.45)",
-          padding: "20px",
-          borderRadius: "8px",
-          textAlign: "center"
-        }}>
-          <h4 style={{ margin: "0 0 10px 0", color: "#101889ff" }}>Con Múltiples Roles</h4>
-          <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
-            {users.filter(u => getUserRoles(u.id).length > 1).length}
-          </p>
+        <div style={{ ...styles.statCard, ...styles.userStatCardWithRole }}>
+          <h4 style={{ ...styles.statTitle, ...styles.userStatTitleWithRole }}>Con Rol Asignado</h4>
+          <p style={styles.statValue}>{users.filter((u) => u.id_roles).length}</p>
         </div>
       </div>
     </div>
@@ -406,18 +429,17 @@ function RolesAdmin() {
   const renderPermissionsModal = () => {
     if (!showPermissionsModal) return null;
 
-    const role = roles.find(r => r.id === showPermissionsModal);
+    const role = roles.find((r) => r.id === showPermissionsModal);
     const permissionCategories = getPermissionsByCategory();
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-gray-800 rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold text-white">
-              Permisos para: {role?.name}
-            </h3>
+            <h3 className="text-2xl font-bold text-white">Permisos para: {role?.name}</h3>
             <button
               onClick={() => setShowPermissionsModal(null)}
+              disabled={operationLoading}
               className="text-gray-400 hover:text-white text-3xl"
             >
               ×
@@ -425,11 +447,13 @@ function RolesAdmin() {
           </div>
 
           <div className="space-y-6">
+            {error && (
+              <div style={styles.errorMessage}>Error: {error}</div>
+            )}
+
             {Object.entries(permissionCategories).map(([category, categoryPermissions]) => (
               <div key={category} className="bg-gray-700 rounded-lg p-4">
-                <h4 className="text-lg font-semibold text-white mb-4 capitalize">
-                  {category}
-                </h4>
+                <h4 className="text-lg font-semibold text-white mb-4 capitalize">{category}</h4>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {categoryPermissions.map((permission) => (
                     <label
@@ -439,15 +463,18 @@ function RolesAdmin() {
                       <input
                         type="checkbox"
                         checked={isPermissionAssigned(showPermissionsModal, permission.id)}
-                        onChange={(e) => handlePermissionToggle(
-                          showPermissionsModal,
-                          permission.id,
-                          e.target.checked
-                        )}
+                        onChange={() =>
+                          handlePermissionToggle(
+                            showPermissionsModal,
+                            permission.id,
+                            isPermissionAssigned(showPermissionsModal, permission.id)
+                          )
+                        }
+                        disabled={operationLoading}
                         className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="text-gray-300 text-sm">
-                        {permission.name.replace(category + '.', '')}
+                        {permission.name.replace(category + ".", "")}
                       </span>
                     </label>
                   ))}
@@ -459,6 +486,7 @@ function RolesAdmin() {
           <div className="flex justify-end mt-6">
             <button
               onClick={() => setShowPermissionsModal(null)}
+              disabled={operationLoading}
               className="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg"
             >
               Cerrar
@@ -470,47 +498,24 @@ function RolesAdmin() {
   };
 
   return (
-    <div style={{ color: "#fff", minHeight: "100vh", padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h2 style={{ marginBottom: "30px", textAlign: "center", fontSize: "28px" }}>
-        Administración de Roles y Permisos
-      </h2>
-      <div style={{ marginBottom: "30px" }}>
-        <div style={{
-          display: "flex",
-          backgroundColor: "rgba(0, 0, 0, 0.3)",
-          borderRadius: "8px",
-          padding: "4px"
-        }}>
+    <div style={styles.container}>
+      <h2 style={styles.title}>Administración de Roles y Permisos</h2>
+      <div style={styles.tabContainer}>
+        <div style={styles.tabWrapper}>
           <button
-            onClick={() => setActiveTab('roles')}
+            onClick={() => setActiveTab("roles")}
             style={{
-              flex: 1,
-              padding: "12px 24px",
-              border: "none",
-              borderRadius: "6px",
-              backgroundColor: activeTab === 'roles' ? "#2196F3" : "transparent",
-              color: "#fff",
-              fontSize: "16px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              transition: "all 0.3s ease"
+              ...styles.tabButton,
+              ...(activeTab === "roles" ? styles.tabButtonActive : styles.tabButtonInactive),
             }}
           >
             Gestión de Roles
           </button>
           <button
-            onClick={() => setActiveTab('users')}
+            onClick={() => setActiveTab("users")}
             style={{
-              flex: 1,
-              padding: "12px 24px",
-              border: "none",
-              borderRadius: "6px",
-              backgroundColor: activeTab === 'users' ? "#2196F3" : "transparent",
-              color: "#fff",
-              fontSize: "16px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              transition: "all 0.3s ease"
+              ...styles.tabButton,
+              ...(activeTab === "users" ? styles.tabButtonActive : styles.tabButtonInactive),
             }}
           >
             Usuarios y Roles
@@ -518,122 +523,75 @@ function RolesAdmin() {
         </div>
       </div>
 
-      {loading && <p style={{ textAlign: "center", fontSize: "18px" }}>Cargando datos...</p>}
-      {error && (
-        <div style={{ 
-          backgroundColor: "rgba(244, 67, 54, 0.1)", 
-          border: "1px solid #f44336", 
-          color: "#f44336", 
-          padding: "12px", 
-          borderRadius: "8px", 
-          marginBottom: "20px",
-          textAlign: "center"
-        }}>
-          Error: {error}
-        </div>
-      )}
+      {loading && <p style={styles.loadingText}>Cargando datos...</p>}
+      {error && <div style={styles.errorMessage}>Error: {error}</div>}
 
       {!loading && !error && (
         <div>
-          {activeTab === 'roles' && (
+          {activeTab === "roles" && (
             <div>
-              <div style={{ overflowX: "auto", marginBottom: "30px" }}>
-                <table style={{ 
-                  width: "100%", 
-                  borderCollapse: "collapse", 
-                  backgroundColor: "rgba(0, 0, 0, 0.3)",
-                  borderRadius: "8px",
-                  overflow: "hidden"
-                }}>
-                  <thead style={{ backgroundColor: "#333" }}>
+              <div style={styles.rolesTableContainer}>
+                <table style={styles.table}>
+                  <thead style={styles.tableHead}>
                     <tr>
-                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>ID</th>
-                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Nombre</th>
-                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Descripción</th>
-                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Ruta Inicial</th>
-                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Guard</th>
-                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Por Defecto</th>
-                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Permisos</th>
-                      <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "center" }}>Acciones</th>
+                      <th style={styles.tableHeader}>ID</th>
+                      <th style={styles.tableHeader}>Nombre</th>
+                      <th style={styles.tableHeader}>Descripción</th>
+                      <th style={styles.tableHeader}>Ruta Inicial</th>
+                      <th style={styles.tableHeader}>Guard</th>
+                      <th style={styles.tableHeader}>Por Defecto</th>
+                      <th style={styles.tableHeader}>Permisos</th>
+                      <th style={styles.tableHeaderCenter}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
                     {roles.length > 0 ? (
                       roles.map((role, index) => (
-                        <tr 
-                          key={role.id} 
-                          style={{ 
-                            borderBottom: "1px solid #555",
-                            backgroundColor: index % 2 === 0 ? "rgba(255,255,255,0.05)" : "transparent"
+                        <tr
+                          key={role.id}
+                          style={{
+                            ...styles.tableRow,
+                            ...(index % 2 === 0 ? styles.tableRowAlternate : {}),
                           }}
                         >
-                          <td style={{ padding: "12px" }}>{role.id}</td>
-                          <td style={{ padding: "12px", fontWeight: "bold" }}>{role.name}</td>
-                          <td style={{ padding: "12px" }}>{role.descripcion || 'Sin descripción'}</td>
-                          <td style={{ padding: "12px" }}>
-                            <code style={{ 
-                              backgroundColor: "rgba(255,255,255,0.1)", 
-                              padding: "2px 6px", 
-                              borderRadius: "4px" 
-                            }}>
-                              {role.start_path}
-                            </code>
+                          <td style={styles.tableCell}>{role.id}</td>
+                          <td style={styles.tableCellBold}>{role.name}</td>
+                          <td style={styles.tableCell}>{role.descripcion || "Sin descripción"}</td>
+                          <td style={styles.tableCell}>
+                            <code style={styles.code}>{role.start_path}</code>
                           </td>
-                          <td style={{ padding: "12px" }}>{role.guard_name}</td>
-                          <td style={{ padding: "12px" }}>
-                            <span style={{
-                              padding: "4px 8px",
-                              borderRadius: "4px",
-                              backgroundColor: role.is_default ? "#4CAF50" : "#757575",
-                              color: "white",
-                              fontSize: "12px"
-                            }}>
+                          <td style={styles.tableCell}>{role.guard_name}</td>
+                          <td style={styles.tableCell}>
+                            <span
+                              style={{
+                                ...styles.statusBadge,
+                                ...(role.is_default ? styles.statusDefault : styles.statusNotDefault),
+                              }}
+                            >
                               {role.is_default ? "Sí" : "No"}
                             </span>
                           </td>
-                          <td style={{ padding: "12px" }}>
+                          <td style={styles.tableCell}>
                             <button
                               onClick={() => setShowPermissionsModal(role.id)}
-                              style={{
-                                padding: "6px 12px",
-                                backgroundColor: "#08085fff",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "4px",
-                                cursor: "pointer",
-                                fontSize: "12px"
-                              }}
+                              disabled={operationLoading}
+                              style={operationLoading ? styles.manageButtonDisabled : styles.manageButton}
                             >
                               Gestionar ({(rolePermissions[role.id] || []).length})
                             </button>
                           </td>
-                          <td style={{ padding: "12px", textAlign: "center" }}>
+                          <td style={styles.tableCellCenter}>
                             <button
                               onClick={() => handleEdit(role)}
-                              style={{
-                                padding: "6px 12px",
-                                backgroundColor: "#2196F3",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "4px",
-                                cursor: "pointer",
-                                marginRight: "8px",
-                                fontSize: "12px"
-                              }}
+                              disabled={operationLoading}
+                              style={operationLoading ? styles.editButtonDisabled : styles.editButton}
                             >
                               Editar
                             </button>
                             <button
-                              onClick={() => handleDelete(role.id)}
-                              style={{
-                                padding: "6px 12px",
-                                backgroundColor: "#F44336",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "4px",
-                                cursor: "pointer",
-                                fontSize: "12px"
-                              }}
+                              onClick={() => handleDelete(role.id, role.name)}
+                              disabled={operationLoading}
+                              style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
                             >
                               Eliminar
                             </button>
@@ -642,7 +600,7 @@ function RolesAdmin() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="8" style={{ padding: "20px", textAlign: "center", fontSize: "16px" }}>
+                        <td style={styles.noDataText} colSpan="8">
                           No hay roles registrados
                         </td>
                       </tr>
@@ -651,26 +609,13 @@ function RolesAdmin() {
                 </table>
               </div>
 
-              <div style={{
-                backgroundColor: "rgba(0, 0, 0, 0.3)",
-                padding: "25px",
-                borderRadius: "8px",
-                marginTop: "20px"
-              }}>
-                <h3 style={{ marginBottom: "20px", fontSize: "22px" }}>
-                  {editingRole ? "Editar Rol" : "Agregar Nuevo Rol"}
-                </h3>
+              <div style={styles.formContainer}>
+                <h3 style={styles.formTitle}>{editingRole ? "Editar Rol" : "Agregar Nuevo Rol"}</h3>
                 <form onSubmit={handleSubmit}>
-                  <div style={{ 
-                    display: "grid", 
-                    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-                    gap: "15px",
-                    marginBottom: "20px"
-                  }}>
+                  {error && <div style={styles.errorMessage}>Error: {error}</div>}
+                  <div style={styles.formGrid}>
                     <div>
-                      <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                        Nombre del Rol:
-                      </label>
+                      <label style={styles.formLabel}>Nombre del Rol:</label>
                       <input
                         type="text"
                         name="name"
@@ -678,42 +623,27 @@ function RolesAdmin() {
                         value={editingRole ? editingRole.name : newRole.name}
                         onChange={handleChange}
                         required
-                        style={{
-                          width: "100%",
-                          padding: "10px",
-                          borderRadius: "4px",
-                          border: "1px solid #555",
-                          backgroundColor: "#222",
-                          color: "#fff"
-                        }}
+                        disabled={operationLoading}
+                        style={formErrors.name ? styles.formInputError : styles.formInput}
                       />
+                      {formErrors.name && <p style={styles.formErrorText}>{formErrors.name}</p>}
                     </div>
 
                     <div>
-                      <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                        Descripción:
-                      </label>
+                      <label style={styles.formLabel}>Descripción:</label>
                       <input
                         type="text"
                         name="descripcion"
                         placeholder="Ej: Rol con acceso completo al sistema"
-                        value={editingRole ? editingRole.descripcion || '' : newRole.descripcion}
+                        value={editingRole ? editingRole.descripcion || "" : newRole.descripcion}
                         onChange={handleChange}
-                        style={{
-                          width: "100%",
-                          padding: "10px",
-                          borderRadius: "4px",
-                          border: "1px solid #555",
-                          backgroundColor: "#222",
-                          color: "#fff"
-                        }}
+                        disabled={operationLoading}
+                        style={styles.formInput}
                       />
                     </div>
 
                     <div>
-                      <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                        Ruta Inicial:
-                      </label>
+                      <label style={styles.formLabel}>Ruta Inicial:</label>
                       <input
                         type="text"
                         name="start_path"
@@ -721,83 +651,69 @@ function RolesAdmin() {
                         value={editingRole ? editingRole.start_path : newRole.start_path}
                         onChange={handleChange}
                         required
-                        style={{
-                          width: "100%",
-                          padding: "10px",
-                          borderRadius: "4px",
-                          border: "1px solid #555",
-                          backgroundColor: "#222",
-                          color: "#fff"
-                        }}
+                        disabled={operationLoading}
+                        style={formErrors.start_path ? styles.formInputError : styles.formInput}
                       />
+                      {formErrors.start_path && (
+                        <p style={styles.formErrorText}>{formErrors.start_path}</p>
+                      )}
                     </div>
 
                     <div>
-                      <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                        Guard Name:
-                      </label>
+                      <label style={styles.formLabel}>Guard Name:</label>
                       <select
                         name="guard_name"
                         value={editingRole ? editingRole.guard_name : newRole.guard_name}
                         onChange={handleChange}
-                        style={{
-                          width: "100%",
-                          padding: "10px",
-                          borderRadius: "4px",
-                          border: "1px solid #555",
-                          backgroundColor: "#222",
-                          color: "#fff"
-                        }}
+                        disabled={operationLoading}
+                        style={formErrors.guard_name ? styles.formInputError : styles.formInput}
                       >
                         <option value="web">Web</option>
                         <option value="api">API</option>
                       </select>
+                      {formErrors.guard_name && (
+                        <p style={styles.formErrorText}>{formErrors.guard_name}</p>
+                      )}
                     </div>
                   </div>
 
                   <div style={{ marginBottom: "20px" }}>
-                    <label style={{ display: "flex", alignItems: "center", fontSize: "14px" }}>
+                    <label style={styles.formCheckboxLabel}>
                       <input
                         type="checkbox"
                         name="is_default"
                         checked={editingRole ? editingRole.is_default : newRole.is_default}
                         onChange={handleChange}
-                        style={{ marginRight: "8px", transform: "scale(1.2)" }}
+                        disabled={operationLoading}
+                        style={styles.formCheckbox}
                       />
                       Rol por defecto para nuevos usuarios
                     </label>
                   </div>
 
-                  <div style={{ display: "flex", gap: "10px" }}>
+                  <div style={styles.formButtonContainer}>
                     <button
                       type="submit"
+                      disabled={operationLoading}
                       style={{
-                        padding: "12px 24px",
-                        backgroundColor: editingRole ? "#FF9800" : "#4CAF50",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        fontSize: "16px",
-                        fontWeight: "bold"
+                        ...styles.submitButton,
+                        ...(editingRole ? styles.submitButtonUpdate : styles.submitButtonCreate),
+                        ...(operationLoading ? styles.submitButtonDisabled : {}),
                       }}
                     >
-                      {editingRole ? "Actualizar Rol" : "Crear Rol"}
+                      {operationLoading
+                        ? "Procesando..."
+                        : editingRole
+                        ? "Actualizar Rol"
+                        : "Crear Rol"}
                     </button>
-                    
+
                     {editingRole && (
                       <button
                         type="button"
                         onClick={handleCancelEdit}
-                        style={{
-                          padding: "12px 24px",
-                          backgroundColor: "#757575",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          fontSize: "16px"
-                        }}
+                        disabled={operationLoading}
+                        style={operationLoading ? styles.cancelButtonDisabled : styles.cancelButton}
                       >
                         Cancelar
                       </button>
@@ -806,53 +722,31 @@ function RolesAdmin() {
                 </form>
               </div>
 
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: "15px",
-                marginTop: "30px"
-              }}>
-                <div style={{
-                  backgroundColor: "rgba(76, 175, 80, 0.2)",
-                  padding: "20px",
-                  borderRadius: "8px",
-                  textAlign: "center"
-                }}>
-                  <h4 style={{ margin: "0 0 10px 0", color: "#4CAF50" }}>Total Roles</h4>
-                  <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>{roles.length}</p>
+              <div style={styles.statsContainer}>
+                <div style={{ ...styles.statCard, ...styles.statCardRoles }}>
+                  <h4 style={{ ...styles.statTitle, ...styles.statTitleRoles }}>Total Roles</h4>
+                  <p style={styles.statValue}>{roles.length}</p>
                 </div>
-                
-                <div style={{
-                  backgroundColor: "rgba(33, 150, 243, 0.2)",
-                  padding: "20px",
-                  borderRadius: "8px",
-                  textAlign: "center"
-                }}>
-                  <h4 style={{ margin: "0 0 10px 0", color: "#2196F3" }}>Total Permisos</h4>
-                  <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
-                    {permissions.length}
-                  </p>
+                <div style={{ ...styles.statCard, ...styles.statCardPermissions }}>
+                  <h4 style={{ ...styles.statTitle, ...styles.statTitlePermissions }}>
+                    Total Permisos
+                  </h4>
+                  <p style={styles.statValue}>{permissions.length}</p>
                 </div>
-                
-                <div style={{
-                  backgroundColor: "rgba(16, 7, 77, 0.41)",
-                  padding: "20px",
-                  borderRadius: "8px",
-                  textAlign: "center"
-                }}>
-                  <h4 style={{ margin: "0 0 10px 0", color: "#2727b0ff" }}>Roles por Defecto</h4>
-                  <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
-                    {roles.filter(r => r.is_default).length}
-                  </p>
+                <div style={{ ...styles.statCard, ...styles.statCardDefaultRoles }}>
+                  <h4 style={{ ...styles.statTitle, ...styles.statTitleDefaultRoles }}>
+                    Roles por Defecto
+                  </h4>
+                  <p style={styles.statValue}>{roles.filter((r) => r.is_default).length}</p>
                 </div>
               </div>
             </div>
           )}
 
-          {activeTab === 'users' && renderUsersTab()}
+          {activeTab === "users" && renderUsersTab()}
 
           {renderPermissionsModal()}
-          
+
           {renderUserRolesModal()}
         </div>
       )}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getDocentes, createDocente, updateDocente, deleteDocente } from "../../../API/Admin/Docente_admin";
 import { getAllPersonas } from "../../../API/Admin/Persona";
-
+import { DocenteStyles } from "../../Components screens/Styles";
 function DocenteAdmin() {
   const [docentes, setDocentes] = useState([]);
   const [personas, setPersonas] = useState([]);
@@ -16,6 +16,8 @@ function DocenteAdmin() {
     estado: true,
   });
 
+  
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -26,7 +28,7 @@ function DocenteAdmin() {
     try {
       const [docentesData, personasData] = await Promise.all([
         getDocentes(),
-        getAllPersonas()
+        getAllPersonas(),
       ]);
       setDocentes(docentesData);
       setPersonas(personasData);
@@ -39,8 +41,8 @@ function DocenteAdmin() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const finalValue = type === 'checkbox' ? checked : value;
-    
+    const finalValue = type === "checkbox" ? checked : value;
+
     if (editingDocente) {
       setEditingDocente((prev) => ({ ...prev, [name]: finalValue }));
     } else {
@@ -90,112 +92,89 @@ function DocenteAdmin() {
   };
 
   const getPersonaName = (per_id) => {
-    const persona = personas.find(p => p.id === per_id);
-    return persona ? `${persona.nombres} ${persona.apellidopat} ${persona.apellidomat}` : 'N/A';
+    const persona = personas.find((p) => p.id === per_id);
+    return persona ? `${persona.nombres} ${persona.apellidopat} ${persona.apellidomat}` : "N/A";
   };
 
   const getAvailablePersonas = () => {
     const docentePersonIds = docentes
-      .filter(d => editingDocente ? d.id !== editingDocente.id : true)
-      .map(d => d.per_id);
-    return personas.filter(p => !docentePersonIds.includes(p.id));
+      .filter((d) => (editingDocente ? d.id !== editingDocente.id : true))
+      .map((d) => d.per_id);
+    return personas.filter((p) => !docentePersonIds.includes(p.id));
   };
 
   return (
-    <div style={{ color: "#fff", minHeight: "100vh", padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h2 style={{ marginBottom: "20px", textAlign: "center", fontSize: "28px" }}>
-        Administración de Docentes
-      </h2>
+    <div style={DocenteStyles.container}>
+      <h2 style={DocenteStyles.title}>Administración de Docentes</h2>
 
-      {loading && <p style={{ textAlign: "center", fontSize: "18px" }}>Cargando docentes...</p>}
-      {error && <p style={{ color: "red", textAlign: "center", fontSize: "16px" }}>Error: {error}</p>}
+      {loading && <p style={DocenteStyles.loadingText}>Cargando docentes...</p>}
+      {error && <p style={DocenteStyles.errorText}>Error: {error}</p>}
 
       {!loading && !error && (
         <>
-          <div style={{ overflowX: "auto", marginBottom: "30px" }}>
-            <table style={{ 
-              width: "100%", 
-              borderCollapse: "collapse", 
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
-              borderRadius: "8px",
-              overflow: "hidden"
-            }}>
-              <thead style={{ backgroundColor: "#333" }}>
+          <div style={DocenteStyles.tableContainer}>
+            <table style={DocenteStyles.table}>
+              <thead style={DocenteStyles.tableHead}>
                 <tr>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>ID</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Nombre Completo</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Número Item</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Especialidad</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Tipo Contrato</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "left" }}>Estado</th>
-                  <th style={{ padding: "15px", borderBottom: "2px solid #555", textAlign: "center" }}>Acciones</th>
+                  <th style={DocenteStyles.tableHeader}>ID</th>
+                  <th style={DocenteStyles.tableHeader}>Nombre Completo</th>
+                  <th style={DocenteStyles.tableHeader}>Número Item</th>
+                  <th style={DocenteStyles.tableHeader}>Especialidad</th>
+                  <th style={DocenteStyles.tableHeader}>Tipo Contrato</th>
+                  <th style={DocenteStyles.tableHeader}>Estado</th>
+                  <th style={DocenteStyles.tableHeaderCenter}>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {docentes.length > 0 ? (
                   docentes.map((docente, index) => (
-                    <tr 
-                      key={docente.id} 
-                      style={{ 
-                        borderBottom: "1px solid #555",
-                        backgroundColor: index % 2 === 0 ? "rgba(255,255,255,0.05)" : "transparent"
+                    <tr
+                      key={docente.id}
+                      style={{
+                        ...DocenteStyles.tableRow,
+                        ...(index % 2 === 0 ? DocenteStyles.tableRowAlternate : {}),
                       }}
                     >
-                      <td style={{ padding: "12px" }}>{docente.id}</td>
-                      <td style={{ padding: "12px", fontWeight: "bold" }}>
+                      <td style={DocenteStyles.tableCell}>{docente.id}</td>
+                      <td style={DocenteStyles.tableCellBold}>
                         {getPersonaName(docente.per_id)}
                       </td>
-                      <td style={{ padding: "12px" }}>{docente.numero_item}</td>
-                      <td style={{ padding: "12px" }}>{docente.especialidad}</td>
-                      <td style={{ padding: "12px" }}>
-                        <span style={{
-                          padding: "4px 8px",
-                          borderRadius: "4px",
-                          backgroundColor: docente.tipo_contrato === 'permanente' ? "#4CAF50" : "#FF9800",
-                          color: "white",
-                          fontSize: "12px"
-                        }}>
+                      <td style={DocenteStyles.tableCell}>{docente.numero_item}</td>
+                      <td style={DocenteStyles.tableCell}>{docente.especialidad}</td>
+                      <td style={DocenteStyles.tableCell}>
+                        <span
+                          style={{
+                            ...DocenteStyles.statusBadge,
+                            ...(docente.tipo_contrato === "permanente"
+                              ? DocenteStyles.statusPermanente
+                              : DocenteStyles.statusTemporal),
+                          }}
+                        >
                           {docente.tipo_contrato}
                         </span>
                       </td>
-                      <td style={{ padding: "12px" }}>
-                        <span style={{
-                          padding: "4px 8px",
-                          borderRadius: "4px",
-                          backgroundColor: docente.estado ? "#4CAF50" : "#F44336",
-                          color: "white",
-                          fontSize: "12px"
-                        }}>
+                      <td style={DocenteStyles.tableCell}>
+                        <span
+                          style={{
+                            ...DocenteStyles.statusBadge,
+                            ...(docente.estado
+                              ? DocenteStyles.statusActive
+                              : DocenteStyles.statusInactive),
+                          }}
+                        >
                           {docente.estado ? "Activo" : "Inactivo"}
                         </span>
                       </td>
-                      <td style={{ padding: "12px", textAlign: "center" }}>
+                      <td style={DocenteStyles.tableCellCenter}>
                         <button
                           onClick={() => handleEdit(docente)}
-                          style={{
-                            padding: "6px 12px",
-                            backgroundColor: "#2196F3",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            marginRight: "8px",
-                            fontSize: "12px"
-                          }}
+                          style={DocenteStyles.editButton}
                         >
                           Editar
                         </button>
                         <button
                           onClick={() => handleDelete(docente.id)}
-                          style={{
-                            padding: "6px 12px",
-                            backgroundColor: "#F44336",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            fontSize: "12px"
-                          }}
+                          style={DocenteStyles.deleteButton}
                         >
                           Eliminar
                         </button>
@@ -204,7 +183,7 @@ function DocenteAdmin() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" style={{ padding: "20px", textAlign: "center", fontSize: "16px" }}>
+                    <td style={DocenteStyles.noDataText} colSpan="7">
                       No hay docentes registrados
                     </td>
                   </tr>
@@ -213,39 +192,20 @@ function DocenteAdmin() {
             </table>
           </div>
 
-          <div style={{
-            backgroundColor: "rgba(0, 0, 0, 0.3)",
-            padding: "25px",
-            borderRadius: "8px",
-            marginTop: "20px"
-          }}>
-            <h3 style={{ marginBottom: "20px", fontSize: "22px" }}>
+          <div style={DocenteStyles.formContainer}>
+            <h3 style={DocenteStyles.formTitle}>
               {editingDocente ? "Editar Docente" : "Agregar Nuevo Docente"}
             </h3>
             <form onSubmit={handleSubmit}>
-              <div style={{ 
-                display: "grid", 
-                gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-                gap: "15px",
-                marginBottom: "20px"
-              }}>
+              <div style={DocenteStyles.formGrid}>
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Persona:
-                  </label>
+                  <label style={DocenteStyles.formLabel}>Persona:</label>
                   <select
                     name="per_id"
                     value={editingDocente ? editingDocente.per_id : newDocente.per_id}
                     onChange={handleChange}
                     required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff"
-                    }}
+                    style={DocenteStyles.formInput}
                   >
                     <option value="">Seleccionar Persona</option>
                     {editingDocente && (
@@ -262,9 +222,7 @@ function DocenteAdmin() {
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Número de Item:
-                  </label>
+                  <label style={DocenteStyles.formLabel}>Número de Item:</label>
                   <input
                     type="text"
                     name="numero_item"
@@ -272,21 +230,12 @@ function DocenteAdmin() {
                     value={editingDocente ? editingDocente.numero_item : newDocente.numero_item}
                     onChange={handleChange}
                     required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff"
-                    }}
+                    style={DocenteStyles.formInput}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Especialidad:
-                  </label>
+                  <label style={DocenteStyles.formLabel}>Especialidad:</label>
                   <input
                     type="text"
                     name="especialidad"
@@ -294,33 +243,19 @@ function DocenteAdmin() {
                     value={editingDocente ? editingDocente.especialidad : newDocente.especialidad}
                     onChange={handleChange}
                     required
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff"
-                    }}
+                    style={DocenteStyles.formInput}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                    Tipo de Contrato:
-                  </label>
+                  <label style={DocenteStyles.formLabel}>Tipo de Contrato:</label>
                   <select
                     name="tipo_contrato"
-                    value={editingDocente ? editingDocente.tipo_contrato : newDocente.tipo_contrato}
+                    value={
+                      editingDocente ? editingDocente.tipo_contrato : newDocente.tipo_contrato
+                    }
                     onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "4px",
-                      border: "1px solid #555",
-                      backgroundColor: "#222",
-                      color: "#fff"
-                    }}
+                    style={DocenteStyles.formInput}
                   >
                     <option value="permanente">Permanente</option>
                     <option value="temporal">Temporal</option>
@@ -330,48 +265,36 @@ function DocenteAdmin() {
               </div>
 
               <div style={{ marginBottom: "20px" }}>
-                <label style={{ display: "flex", alignItems: "center", fontSize: "14px" }}>
+                <label style={DocenteStyles.formCheckboxLabel}>
                   <input
                     type="checkbox"
                     name="estado"
                     checked={editingDocente ? editingDocente.estado : newDocente.estado}
                     onChange={handleChange}
-                    style={{ marginRight: "8px", transform: "scale(1.2)" }}
+                    style={DocenteStyles.formCheckbox}
                   />
                   Docente Activo
                 </label>
               </div>
 
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div style={DocenteStyles.formButtonContainer}>
                 <button
                   type="submit"
                   style={{
-                    padding: "12px 24px",
-                    backgroundColor: editingDocente ? "#FF9800" : "#4CAF50",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "16px",
-                    fontWeight: "bold"
+                    ...DocenteStyles.submitButton,
+                    ...(editingDocente
+                      ? DocenteStyles.submitButtonUpdate
+                      : DocenteStyles.submitButtonCreate),
                   }}
                 >
                   {editingDocente ? "Actualizar Docente" : "Agregar Docente"}
                 </button>
-                
+
                 {editingDocente && (
                   <button
                     type="button"
                     onClick={handleCancelEdit}
-                    style={{
-                      padding: "12px 24px",
-                      backgroundColor: "#757575",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontSize: "16px"
-                    }}
+                    style={DocenteStyles.cancelButton}
                   >
                     Cancelar
                   </button>
@@ -380,43 +303,27 @@ function DocenteAdmin() {
             </form>
           </div>
 
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "15px",
-            marginTop: "30px"
-          }}>
-            <div style={{
-              backgroundColor: "rgba(76, 175, 80, 0.2)",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center"
-            }}>
-              <h4 style={{ margin: "0 0 10px 0", color: "#4CAF50" }}>Total Docentes</h4>
-              <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>{docentes.length}</p>
+          <div style={DocenteStyles.statsContainer}>
+            <div style={{ ...DocenteStyles.statCard, ...DocenteStyles.statCardTotal }}>
+              <h4 style={{ ...DocenteStyles.statTitle, ...DocenteStyles.statTitleTotal }}>
+                Total Docentes
+              </h4>
+              <p style={DocenteStyles.statValue}>{docentes.length}</p>
             </div>
-            
-            <div style={{
-              backgroundColor: "rgba(33, 150, 243, 0.2)",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center"
-            }}>
-              <h4 style={{ margin: "0 0 10px 0", color: "#2196F3" }}>Docentes Activos</h4>
-              <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
-                {docentes.filter(d => d.estado).length}
-              </p>
+
+            <div style={{ ...DocenteStyles.statCard, ...DocenteStyles.statCardActive }}>
+              <h4 style={{ ...DocenteStyles.statTitle, ...DocenteStyles.statTitleActive }}>
+                Docentes Activos
+              </h4>
+              <p style={DocenteStyles.statValue}>{docentes.filter((d) => d.estado).length}</p>
             </div>
-            
-            <div style={{
-              backgroundColor: "rgba(255, 152, 0, 0.2)",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center"
-            }}>
-              <h4 style={{ margin: "0 0 10px 0", color: "#FF9800" }}>Permanentes</h4>
-              <p style={{ fontSize: "24px", fontWeight: "bold", margin: "0" }}>
-                {docentes.filter(d => d.tipo_contrato === 'permanente').length}
+
+            <div style={{ ...DocenteStyles.statCard, ...DocenteStyles.statCardPermanente }}>
+              <h4 style={{ ...DocenteStyles.statTitle, ...DocenteStyles.statTitlePermanente }}>
+                Permanentes
+              </h4>
+              <p style={DocenteStyles.statValue}>
+                {docentes.filter((d) => d.tipo_contrato === "permanente").length}
               </p>
             </div>
           </div>
