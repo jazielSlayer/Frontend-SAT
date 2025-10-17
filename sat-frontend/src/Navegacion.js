@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminNav from "./Navegacion-Componets/AdminNav";
 import DocenteNav from "./Navegacion-Componets/DocenteNav";
 import EstudianteNav from "./Navegacion-Componets/EstudianteNav";
+import { IoLogOut } from "react-icons/io5";
 import {
   logo,
   navStyle,
@@ -43,6 +44,7 @@ function Navegacion() {
     "/docenteadmin",
     "/roles-admin",
     "/talleres",
+    "/usuarios",
   ].includes(location.pathname);
 
   const isDocentePath = location.pathname === "/docente";
@@ -77,8 +79,9 @@ function Navegacion() {
               </li>
               <li>
                 <button style={logoutButtonStyle} onClick={handleLogout}>
-                  Cerrar Sesión
+                  <IoLogOut />
                 </button>
+                
               </li>
             </>
           ) : (
@@ -121,7 +124,7 @@ function Navegacion() {
             </li>
             <li>
               <button style={logoutButtonStyle} onClick={handleLogout}>
-                Cerrar Sesión
+                <IoLogOut/>
               </button>
             </li>
           </>

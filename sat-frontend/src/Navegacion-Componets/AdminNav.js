@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import {logo, navStyle,ulStyle, linkStyle, logoutButtonStyle,} from "./NavStyles";
-
+import { IoLogOut } from "react-icons/io5";
 function AdminNav({ user, onLogout }) {
   return (
     <nav style={navStyle}>
@@ -33,13 +33,18 @@ function AdminNav({ user, onLogout }) {
             Talleres
           </Link>
         </li>
+        <li>
+          <Link style={linkStyle} to="/usuarios">
+            Usuarios
+          </Link>
+        </li>
         {user && (
           <li>
             <span style={{ color: "#fff", marginRight: "1rem" }}>
               Bienvenido, {user.user_name || user.nombres}
             </span>
             <button style={logoutButtonStyle} onClick={onLogout}>
-              Cerrar Sesión
+              <IoLogOut />
             </button>
           </li>
         )}

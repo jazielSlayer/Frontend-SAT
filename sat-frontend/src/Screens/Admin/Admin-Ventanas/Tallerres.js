@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getAllTalleres, getTaller, createTaller, updateTaller, deleteTaller } from "../../../API/Admin/Taller";
 import { getAllMetodologias } from "../../../API/Admin/Metodologia.js";
 import { TallerStyles } from "../../Components screens/Styles.js";
+import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 function Talleres() {
   const [talleres, setTalleres] = useState([]);
   const [metodologias, setMetodologias] = useState([]);
@@ -174,13 +175,13 @@ function Talleres() {
                             onClick={() => handleEdit(taller.id)}
                             style={TallerStyles.editButton}
                           >
-                            Editar
+                            <AiFillEdit />
                           </button>
                           <button
                             onClick={() => handleDelete(taller.id)}
                             style={TallerStyles.deleteButton}
                           >
-                            Eliminar
+                            <AiFillDelete />
                           </button>
                         </div>
                       </td>

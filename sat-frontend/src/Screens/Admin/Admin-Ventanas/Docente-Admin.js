@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getDocentes, createDocente, updateDocente, deleteDocente } from "../../../API/Admin/Docente_admin";
 import { getAllPersonas } from "../../../API/Admin/Persona";
 import { DocenteStyles } from "../../Components screens/Styles";
+import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 function DocenteAdmin() {
   const [docentes, setDocentes] = useState([]);
   const [personas, setPersonas] = useState([]);
@@ -170,13 +171,13 @@ function DocenteAdmin() {
                           onClick={() => handleEdit(docente)}
                           style={DocenteStyles.editButton}
                         >
-                          Editar
+                          <AiFillEdit />
                         </button>
                         <button
                           onClick={() => handleDelete(docente.id)}
                           style={DocenteStyles.deleteButton}
                         >
-                          Eliminar
+                          <AiFillDelete />
                         </button>
                       </td>
                     </tr>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { IoLogOut } from "react-icons/io5";
 import {
   logo,
   navStyle,
@@ -34,7 +35,7 @@ function DocenteNav({ user, onLogout }) {
               Prof. {user.user_name || user.nombres}
             </span>
             <button style={logoutButtonStyle} onClick={onLogout}>
-              Cerrar Sesión
+              <IoLogOut />
             </button>
           </li>
         )}

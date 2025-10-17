@@ -21,7 +21,7 @@ export const ulStyle = {
 export const linkStyle = {
   color: "#fff",
   textDecoration: "none",
-  padding: "0.5rem 1rem",
+  padding: "0.3rem ",
   borderRadius: "4px",
   transition: "background-color 0.3s",
 };
@@ -30,6 +30,7 @@ export const buttonStyle = {
   ...linkStyle,
   background: "none",
   border: "none",
+  borderRadius:'2px',
   cursor: "pointer",
   fontSize: "inherit",
   fontFamily: "inherit",
@@ -37,6 +38,7 @@ export const buttonStyle = {
 
 export const logoutButtonStyle = {
   ...buttonStyle,
-  backgroundColor: "#dc3545",
+  
+  backgroundColor: "#b81422ff",
   color: "#fff",
 };

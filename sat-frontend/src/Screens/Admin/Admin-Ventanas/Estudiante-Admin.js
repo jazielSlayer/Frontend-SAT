@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import { getEstudiantes, createEstudiante, updateEstudiante, deleteEstudiante } from "../../../API/Admin/Estudiante_admin";
 import { EstudianteStyles } from "../../Components screens/Styles";
 
@@ -149,13 +150,13 @@ function AdminEstudiantes() {
                             onClick={() => handleEdit(estudiante)}
                             style={EstudianteStyles.editButton}
                           >
-                            Editar
+                            <AiFillEdit />
                           </button>
                           <button
                             onClick={() => handleDelete(estudiante.id)}
                             style={EstudianteStyles.deleteButton}
                           >
-                            Eliminar
+                            <AiFillDelete />
                           </button>
                         </div>
                       </td>
