@@ -213,10 +213,10 @@ function RolesAdmin() {
         padding: "16px",
       }}>
         <div style={{
-          backgroundColor: "#2d3748",
+          backgroundColor: "#02022ea7",
           borderRadius: "12px",
           padding: "24px",
-          maxWidth: "800px",
+          maxWidth: "1000px",
           width: "100%",
           maxHeight: "90vh",
           overflowY: "auto",
@@ -237,7 +237,7 @@ function RolesAdmin() {
             <button
               onClick={() => setShowPermissionsModal(null)}
               style={{
-                color: "#a0aec0",
+                color: "#06053cff",
                 fontSize: "24px",
                 cursor: "pointer",
               }}
@@ -249,7 +249,7 @@ function RolesAdmin() {
           {error && <p style={styles.errorMessage}>Error: {error}</p>}
 
           <div style={{ marginBottom: "24px" }}>
-            <p style={{ color: "#e2e8f0", fontSize: "14px" }}>
+            <p style={{ color: "#c0c9c9ff", fontSize: "14px" }}>
               Selecciona los permisos para asignarlos al rol. Puedes asignar múltiples permisos.
             </p>
           </div>
@@ -259,7 +259,7 @@ function RolesAdmin() {
               <div key={category} style={{
                 padding: "16px",
                 borderRadius: "8px",
-                border: "1px solid #4a5568",
+                border: "1px solid #030e21ff",
               }}>
                 <h4 style={{
                   fontSize: "18px",
@@ -270,7 +270,7 @@ function RolesAdmin() {
                 }}>
                   {category}
                 </h4>
-                <div style={{ display: "grid", gap: "12px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "70px" }}>
                   {categoryPermissions.map((permission) => (
                     <label
                       key={permission.id}
@@ -292,12 +292,13 @@ function RolesAdmin() {
                           width: "20px",
                           height: "20px",
                           backgroundColor: "#2d3748",
-                          borderColor: "#4a5568",
+                          borderColor: "#000000ff",
                           borderRadius: "4px",
                           marginRight: "12px",
+                          display: "inline-block"
                         }}
                       />
-                      <span style={{ color: "#ffffff", fontSize: "14px" }}>
+                      <span style={{ color: "#ddddedff", fontSize: "14px" }}>
                         {permission.name.replace(category + ".", "")}
                       </span>
                     </label>

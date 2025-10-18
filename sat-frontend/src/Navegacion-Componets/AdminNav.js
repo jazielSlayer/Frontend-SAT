@@ -45,7 +45,6 @@ function AdminNav({ user, onLogout }) {
         {user && (
           <li class="open_submenu">
             <button
-              
               onClick={(e) => {
                 e.preventDefault();
                 const subMenu = document.querySelector('.submenu');

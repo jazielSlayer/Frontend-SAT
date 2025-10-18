@@ -7,6 +7,7 @@ import {
   linkStyle,
   logoutButtonStyle,
 } from "./NavStyles";
+import { FaCircleUser } from "react-icons/fa6";
 
 function DocenteNav({ user, onLogout }) {
   return (
@@ -30,14 +31,42 @@ function DocenteNav({ user, onLogout }) {
           <span style={{ ...linkStyle, opacity: 0.7 }}>Seguimiento</span>
         </li>
         {user && (
-          <li>
-            <span style={{ color: "#fff", marginRight: "1rem" }}>
-              Prof. {user.user_name || user.nombres}
-            </span>
-            <button style={logoutButtonStyle} onClick={onLogout}>
-              <IoLogOut />
-            </button>
-          </li>
+           <li class="open_submenu">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const subMenu = document.querySelector('.submenu');
+                          const openSubmenu = document.querySelector('.open_submenu')
+                          subMenu.classList.toggle('show');
+                          document.addEventListener('click', function(e) {
+                            if (subMenu.classList.contains('show')
+                            && !subMenu.contains(e.target)
+                            && !openSubmenu.contains(e.target)){
+          
+                                subMenu.classList.remove('show');
+                            }
+                        });
+                          
+                        }}
+                      >
+                        <FaCircleUser style={{ fontSize: '40px' }}/>
+                      </button>
+                      <i class="fa-solid fa-chevron-down"></i>
+                      <div class="submenu">
+                        <ul>
+                          <li>
+                            <span style={{ color: '#fff', marginRight: '1rem' }}>
+                              Bienvenido, {user.user_name || user.nombres}
+                            </span>
+                          </li>
+                          <li>
+                            <button style={logoutButtonStyle} onClick={onLogout}>
+                              <IoLogOut />
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </li>
         )}
       </ul>
     </nav>
