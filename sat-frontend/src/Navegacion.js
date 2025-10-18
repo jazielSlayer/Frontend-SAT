@@ -4,6 +4,7 @@ import AdminNav from "./Navegacion-Componets/AdminNav";
 import DocenteNav from "./Navegacion-Componets/DocenteNav";
 import EstudianteNav from "./Navegacion-Componets/EstudianteNav";
 import { IoLogOut } from "react-icons/io5";
+import { FaCircleUser } from "react-icons/fa6";
 import {
   logo,
   navStyle,
@@ -71,19 +72,26 @@ function Navegacion() {
         </div>
         <ul style={{ ...ulStyle, justifyContent: "flex-end" }}>
           {user ? (
-            <>
-              <li>
-                <span style={{ color: "#fff", marginRight: "1rem" }}>
-                  Bienvenido, {user.user_name || user.nombres}
-                </span>
-              </li>
-              <li>
-                <button style={logoutButtonStyle} onClick={handleLogout}>
-                  <IoLogOut />
-                </button>
+            <li class="open_submenu">
+              
+                <FaCircleUser />
                 
-              </li>
-            </>
+                <i class="fa-solid fa-chevron-down"></i>
+              <div class="submenu">
+                <ul>
+                    <li>
+                    <span style={{ color: "#fff", marginRight: "1rem" }}>
+                      Bienvenido, {user.user_name || user.nombres}
+                    </span>
+                    </li>
+                    <li>
+                    <button style={logoutButtonStyle} onClick={handleLogout}>
+                      <IoLogOut />
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </li>
           ) : (
             <>
               <li>

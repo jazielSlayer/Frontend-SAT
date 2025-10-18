@@ -1,0 +1,110 @@
+body {
+  font-family: 'Rubik', sans-serif;
+}
+
+a {
+  display: inline-block;
+  position: relative;
+  text-decoration: none;
+  color: black;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: rgb(154, 0, 209);
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  background-color: rgba(154, 0, 209, 0.1);
+}
+
+header {
+  position: relative;
+  background-color: white;
+  width: 100%;
+  min-height: 80px;
+  box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+header nav ul {
+  display: flex;
+  gap: 10px;
+  list-style: none;
+}
+
+header nav a {
+  font-size: 14px;
+  margin-left: 6px;
+}
+
+.open_submenu {
+  position: relative;
+}
+
+.open_submenu button {
+  display: inline-block;
+  position: relative;
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: 500;
+  padding: 0px 1px;
+  border-radius: 1000px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.open_submenu button:hover {
+  background-color: rgba(154, 0, 209, 0.1);
+}
+
+.open_submenu .fa-solid.fa-chevron-down {
+  margin-left: 5px;
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+
+.open_submenu .submenu.show ~ .fa-solid.fa-chevron-down {
+  transform: rotate(180deg);
+}
+
+.submenu {
+  position: absolute;
+  top: 100%;
+  left: -200px;
+  background-color: rgba(24, 6, 93, 0.473);
+  box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  max-height: 0;
+  width: 250px; /* Ancho fijo de 250px */
+  transition: max-height 2s ease;
+  overflow: hidden;
+}
+
+.submenu.show {
+  max-height: 400px; /* Alto máximo aumentado a 400px */
+}
+
+.submenu ul li {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 15px; /* Padding aumentado para ítems más grandes */
+}
+
+.submenu ul li button {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.submenu ul li button:hover {
+  background-color: rgba(154, 0, 209, 0.1);
+}

@@ -208,6 +208,7 @@ export const styles = {
       border: "1px solid #555",
       backgroundColor: "#222",
       color: "#fff",
+      boxSizing: "border-box",
     },
     formInputError: {
       width: "100%",
@@ -482,6 +483,7 @@ export const DocenteStyles = {
       border: "1px solid #555",
       backgroundColor: "#222",
       color: "#fff",
+      boxSizing: "border-box",
     },
     formCheckboxLabel: {
       display: "flex",
@@ -679,6 +681,7 @@ export const EstudianteStyles = {
       border: "1px solid #555",
       backgroundColor: "#222",
       color: "#fff",
+      boxSizing: "border-box",
     },
     formButtonContainer: {
       display: "flex",
