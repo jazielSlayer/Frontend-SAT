@@ -27,6 +27,7 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10; /* Asegura que el header esté por encima de otros elementos, pero debajo del submenú */
 }
 
 header nav ul {
@@ -42,6 +43,7 @@ header nav a {
 
 .open_submenu {
   position: relative;
+  z-index: 20; /* Asegura que el contenedor del submenú esté por encima del header */
 }
 
 .open_submenu button {
@@ -80,20 +82,21 @@ header nav a {
   box-shadow: 4px 4px 20px rgba(255, 254, 254, 0.1);
   border-radius: 10px;
   max-height: 0;
-  width: 250px; /* Ancho fijo de 250px */
+  width: 250px;
   transition: max-height 2s ease;
   overflow: hidden;
+  z-index: 30; /* Alto z-index para que el submenú esté por encima de todo */
 }
 
 .submenu.show {
-  max-height: 400px; /* Alto máximo aumentado a 400px */
+  max-height: 400px;
 }
 
 .submenu ul li {
   position: relative;
   display: block;
   width: 100%;
-  padding: 15px; /* Padding aumentado para ítems más grandes */
+  padding: 15px;
 }
 
 .submenu ul li button {
@@ -107,4 +110,96 @@ header nav a {
 
 .submenu ul li button:hover {
   background-color: rgba(154, 0, 209, 0.1);
+}
+
+table{
+  whidth: 100%;
+  table-layout: fixed;
+}
+
+div {
+  scrollbar-width: none;
+}
+ul,
+li {
+  list-style: none;
+  white-space: nowrap;
+}
+
+li {
+  display: inline;
+}
+
+img {
+  margin-top: -16px;
+}
+
+/* Main container */
+
+.main-container {
+  width: 1200px;
+  height: 700px;
+  margin: 0 auto;
+}
+
+/* Slider container */
+.slider-container {
+  position: relative;
+  height: 100%
+}
+
+/* dots carrusel */
+.dots-container {
+  display: flex;
+  justify-content: center;
+}
+
+.dot-container-item {
+  margin: 8px 3px;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+}
+
+/* Arrows */
+.leftArrow {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  left: 32px;
+  font-size: 50px;
+  font-weight: 700;
+  color: #fff;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.rightArrow {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  right: 32px;
+  font-size: 50px;
+  font-weight: 700;
+  color: #fff;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.container-images {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  border: 1px solid #000000;
+  overflow: hidden;
+}
+
+div.active {
+  background: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  color: #ffffff;
 }

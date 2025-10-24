@@ -68,7 +68,7 @@ const TeamSection = () => {
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
+      viewport={{ once: true, amount: 0.1 }}
       style={{
         padding: '4rem 2rem',
         maxWidth: '1200px',

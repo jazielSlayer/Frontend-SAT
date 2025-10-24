@@ -73,18 +73,34 @@ function Navegacion() {
         <ul style={{ ...ulStyle, justifyContent: "flex-end" }}>
           {user ? (
             <li class="open_submenu">
-              
-                <FaCircleUser />
-                
-                <i class="fa-solid fa-chevron-down"></i>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  const subMenu = document.querySelector('.submenu');
+                  const openSubmenu = document.querySelector('.open_submenu')
+                  subMenu.classList.toggle('show');
+                  document.addEventListener('click', function(e) {
+                    if (subMenu.classList.contains('show')
+                    && !subMenu.contains(e.target)
+                    && !openSubmenu.contains(e.target)){
+
+                        subMenu.classList.remove('show');
+                    }
+                });
+                  
+                }}
+              >
+                <FaCircleUser style={{ fontSize: '40px' }}/>
+              </button>
+              <i class="fa-solid fa-chevron-down"></i>
               <div class="submenu">
                 <ul>
-                    <li>
-                    <span style={{ color: "#fff", marginRight: "1rem" }}>
+                  <li>
+                    <span style={{ color: '#fff', marginRight: '1rem' }}>
                       Bienvenido, {user.user_name || user.nombres}
                     </span>
-                    </li>
-                    <li>
+                  </li>
+                  <li>
                     <button style={logoutButtonStyle} onClick={handleLogout}>
                       <IoLogOut />
                     </button>
