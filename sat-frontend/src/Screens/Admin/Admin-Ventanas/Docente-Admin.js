@@ -105,25 +105,25 @@ function DocenteAdmin() {
   };
 
   return (
-    <div style={DocenteStyles.container}>
-      <h2 style={DocenteStyles.title}>Administración de Docentes</h2>
+    <div className="container">
+      <h2 className="title">Administración de Docentes</h2>
 
-      {loading && <p style={DocenteStyles.loadingText}>Cargando docentes...</p>}
-      {error && <p style={DocenteStyles.errorText}>Error: {error}</p>}
+      {loading && <p className="loadingText">Cargando docentes...</p>}
+      {error && <p className="errorText">Error: {error}</p>}
 
       {!loading && !error && (
         <>
-          <div style={DocenteStyles.tableContainer}>
-            <table style={DocenteStyles.table}>
-              <thead style={DocenteStyles.tableHead}>
+          <div className="tableContainer">
+            <table className="table">
+              <thead className="tableHead">
                 <tr>
-                  <th style={DocenteStyles.tableHeader}>ID</th>
-                  <th style={DocenteStyles.tableHeader}>Nombre Completo</th>
-                  <th style={DocenteStyles.tableHeader}>Número Item</th>
-                  <th style={DocenteStyles.tableHeader}>Especialidad</th>
-                  <th style={DocenteStyles.tableHeader}>Tipo Contrato</th>
-                  <th style={DocenteStyles.tableHeader}>Estado</th>
-                  <th style={DocenteStyles.tableHeaderCenter}>Acciones</th>
+                  <th className="tableHeader">ID</th>
+                  <th className="tableHeader">Nombre Completo</th>
+                  <th className="tableHeader">Número Item</th>
+                  <th className="tableHeader">Especialidad</th>
+                  <th className="tableHeader">Tipo Contrato</th>
+                  <th className="tableHeader">Estado</th>
+                  <th className="tableHeader">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -131,60 +131,50 @@ function DocenteAdmin() {
                   docentes.map((docente, index) => (
                     <tr
                       key={docente.id}
-                      style={{
-                        ...DocenteStyles.tableRow,
-                        ...(index % 2 === 0 ? DocenteStyles.tableRowAlternate : {}),
-                      }}
+                      className={`tableRow ${index % 2 === 0 ? 'tableRowAlternate' : ''}`}
                     >
-                      <td style={DocenteStyles.tableCell}>{docente.id}</td>
-                      <td style={DocenteStyles.tableCellBold}>
+                      <td className="tableCell">{docente.id}</td>
+                      <td className="tableCellBold">
                         {getPersonaName(docente.per_id)}
                       </td>
-                      <td style={DocenteStyles.tableCell}>{docente.numero_item}</td>
-                      <td style={DocenteStyles.tableCell}>{docente.especialidad}</td>
-                      <td style={DocenteStyles.tableCell}>
+                      <td className="tableCell">{docente.numero_item}</td>
+                      <td className="tableCell">{docente.especialidad}</td>
+                      <td className="tableCell">
                         <span
-                          style={{
-                            ...DocenteStyles.statusBadge,
-                            ...(docente.tipo_contrato === "permanente"
-                              ? DocenteStyles.statusPermanente
-                              : DocenteStyles.statusTemporal),
-                          }}
+                          className={`statusBadge ${docente.tipo_contrato === 'permanente' ? 'statusPermanente' : 'statusTemporal'}`}
+                          
                         >
                           {docente.tipo_contrato}
                         </span>
                       </td>
-                      <td style={DocenteStyles.tableCell}>
+                      <td className="tableCell">
                         <span
-                          style={{
-                            ...DocenteStyles.statusBadge,
-                            ...(docente.estado
-                              ? DocenteStyles.statusActive
-                              : DocenteStyles.statusInactive),
-                          }}
+                          className={`statusBadge ${docente.estado === 1 ? 'statusActive' : 'statusInactive'}`}
                         >
                           {docente.estado ? "Activo" : "Inactivo"}
                         </span>
                       </td>
-                      <td style={DocenteStyles.tableCellCenter}>
-                        <button
+                      <td className="tableCell">
+                        <div className="actionContainer">
+                          <button
                           onClick={() => handleEdit(docente)}
-                          style={DocenteStyles.editButton}
+                          className="editButton"
                         >
                           <AiFillEdit />
                         </button>
                         <button
                           onClick={() => handleDelete(docente.id)}
-                          style={DocenteStyles.deleteButton}
+                          className="deleteButton"
                         >
                           <AiFillDelete />
                         </button>
+                       </div> 
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td style={DocenteStyles.noDataText} colSpan="7">
+                    <td className="noDataText" colSpan="7">
                       No hay docentes registrados
                     </td>
                   </tr>
@@ -193,20 +183,20 @@ function DocenteAdmin() {
             </table>
           </div>
 
-          <div style={DocenteStyles.formContainer}>
-            <h3 style={DocenteStyles.formTitle}>
+          <div className="formContainer">
+            <h3 className="formTitle">
               {editingDocente ? "Editar Docente" : "Agregar Nuevo Docente"}
             </h3>
             <form onSubmit={handleSubmit}>
-              <div style={DocenteStyles.formGrid}>
+              <div className="formGrid">
                 <div>
-                  <label style={DocenteStyles.formLabel}>Persona:</label>
+                  <label className="formLabel">Persona:</label>
                   <select
                     name="per_id"
                     value={editingDocente ? editingDocente.per_id : newDocente.per_id}
                     onChange={handleChange}
                     required
-                    style={DocenteStyles.formInput}
+                    className="formInput"
                   >
                     <option value="">Seleccionar Persona</option>
                     {editingDocente && (
@@ -223,7 +213,7 @@ function DocenteAdmin() {
                 </div>
 
                 <div>
-                  <label style={DocenteStyles.formLabel}>Número de Item:</label>
+                  <label className="formLabel">Número de Item:</label>
                   <input
                     type="text"
                     name="numero_item"
@@ -231,12 +221,12 @@ function DocenteAdmin() {
                     value={editingDocente ? editingDocente.numero_item : newDocente.numero_item}
                     onChange={handleChange}
                     required
-                    style={DocenteStyles.formInput}
+                    className="formInput"
                   />
                 </div>
 
                 <div>
-                  <label style={DocenteStyles.formLabel}>Especialidad:</label>
+                  <label className="formLabel">Especialidad:</label>
                   <input
                     type="text"
                     name="especialidad"
@@ -244,19 +234,19 @@ function DocenteAdmin() {
                     value={editingDocente ? editingDocente.especialidad : newDocente.especialidad}
                     onChange={handleChange}
                     required
-                    style={DocenteStyles.formInput}
+                    className="formInput"
                   />
                 </div>
 
                 <div>
-                  <label style={DocenteStyles.formLabel}>Tipo de Contrato:</label>
+                  <label className="formLabel">Tipo de Contrato:</label>
                   <select
                     name="tipo_contrato"
                     value={
                       editingDocente ? editingDocente.tipo_contrato : newDocente.tipo_contrato
                     }
                     onChange={handleChange}
-                    style={DocenteStyles.formInput}
+                    className="formInput"
                   >
                     <option value="permanente">Permanente</option>
                     <option value="temporal">Temporal</option>
@@ -278,7 +268,7 @@ function DocenteAdmin() {
                 </label>
               </div>
 
-              <div style={DocenteStyles.formButtonContainer}>
+              <div className="formButtonContainer">
                 <button
                   type="submit"
                   style={{
@@ -295,7 +285,7 @@ function DocenteAdmin() {
                   <button
                     type="button"
                     onClick={handleCancelEdit}
-                    style={DocenteStyles.cancelButton}
+                    className="cancelButton"
                   >
                     Cancelar
                   </button>
@@ -304,26 +294,26 @@ function DocenteAdmin() {
             </form>
           </div>
 
-          <div style={DocenteStyles.statsContainer}>
-            <div style={{ ...DocenteStyles.statCard, ...DocenteStyles.statCardTotal }}>
-              <h4 style={{ ...DocenteStyles.statTitle, ...DocenteStyles.statTitleTotal }}>
+          <div className="statsContainer">
+            <div className="statCard statCardTotal">
+              <h4 className="statTitle statTitleTotal">
                 Total Docentes
               </h4>
-              <p style={DocenteStyles.statValue}>{docentes.length}</p>
+              <p className="statValue">{docentes.length}</p>
             </div>
 
-            <div style={{ ...DocenteStyles.statCard, ...DocenteStyles.statCardActive }}>
-              <h4 style={{ ...DocenteStyles.statTitle, ...DocenteStyles.statTitleActive }}>
+            <div className="statCard statCardTipos">
+              <h4 className="statTitle statTitleTipos">
                 Docentes Activos
               </h4>
-              <p style={DocenteStyles.statValue}>{docentes.filter((d) => d.estado).length}</p>
+              <p className="statValue">{docentes.filter((d) => d.estado).length}</p>
             </div>
 
-            <div style={{ ...DocenteStyles.statCard, ...DocenteStyles.statCardPermanente }}>
-              <h4 style={{ ...DocenteStyles.statTitle, ...DocenteStyles.statTitlePermanente }}>
+            <div className="statCard statCardPermanente">
+              <h4 className="statTitle statTitlePermanente">
                 Permanentes
               </h4>
-              <p style={DocenteStyles.statValue}>
+              <p className="statValue">
                 {docentes.filter((d) => d.tipo_contrato === "permanente").length}
               </p>
             </div>

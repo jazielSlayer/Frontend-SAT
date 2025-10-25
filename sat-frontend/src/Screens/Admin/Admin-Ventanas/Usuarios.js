@@ -209,7 +209,7 @@ function Usuarios() {
             </button>
           </div>
 
-          {error && <p style={TallerStyles.errorText}>Error: {error}</p>}
+          {error && <p className="errorText">Error: {error}</p>}
 
           <div style={{ marginBottom: "24px" }}>
             <p style={{ color: "#e2e8f0", fontSize: "14px" }}>
@@ -286,26 +286,26 @@ function Usuarios() {
   };
 
   return (
-    <div style={TallerStyles.container}>
-      <h2 style={TallerStyles.title}>Gestión de Usuarios</h2>
+    <div className="container">
+      <h2 className="title">Gestión de Usuarios</h2>
 
-      {loading && <p style={TallerStyles.loadingText}>Cargando usuarios...</p>}
-      {error && <p style={TallerStyles.errorText}>Error: {error}</p>}
+      {loading && <p className="loadingText">Cargando usuarios...</p>}
+      {error && <p className="errorText">Error: {error}</p>}
 
       {!loading && !error && (
         <>
-          <div style={TallerStyles.tableContainer}>
-            <table style={TallerStyles.table}>
-              <thead style={TallerStyles.tableHead}>
+          <div className="tableContainer">
+            <table className="table">
+              <thead className="tableHead">
                 <tr>
-                  <th style={TallerStyles.tableHeader}>ID</th>
-                  <th style={TallerStyles.tableHeader}>Usuario</th>
-                  <th style={TallerStyles.tableHeader}>Nombre</th>
-                  <th style={TallerStyles.tableHeader}>Apellido Paterno</th>
-                  <th style={TallerStyles.tableHeader}>Apellido Materno</th>
-                  <th style={TallerStyles.tableHeader}>Rol</th>
-                  <th style={TallerStyles.tableHeader}>Email</th>
-                  <th style={TallerStyles.tableHeader}>Acciones</th>
+                  <th className="tableHeader">ID</th>
+                  <th className="tableHeader">Usuario</th>
+                  <th className="tableHeader">Nombre</th>
+                  <th className="tableHeader">Apellido Paterno</th>
+                  <th className="tableHeader">Apellido Materno</th>
+                  <th className="tableHeader">Rol</th>
+                  <th className="tableHeader">Email</th>
+                  <th className="tableHeader">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -318,30 +318,30 @@ function Usuarios() {
                         ...(index % 2 === 0 ? TallerStyles.tableRowAlternate : {}),
                       }}
                     >
-                      <td style={TallerStyles.tableCell}>{user.id}</td>
-                      <td style={TallerStyles.tableCellBold}>{user.user_name}</td>
-                      <td style={TallerStyles.tableCell}>{user.nombres}</td>
-                      <td style={TallerStyles.tableCell}>{user.apellidopat || "-"}</td>
-                      <td style={TallerStyles.tableCell}>{user.apellidomat || "-"}</td>
-                      <td style={TallerStyles.tableCell}>{user.role_name || "-"}</td>
-                      <td style={TallerStyles.tableCell}>{user.email}</td>
-                      <td style={TallerStyles.tableCell}>
-                        <div style={TallerStyles.actionContainer}>
+                      <td className="tableCell">{user.id}</td>
+                      <td className="tableCellBold">{user.user_name}</td>
+                      <td className="tableCell">{user.nombres}</td>
+                      <td className="tableCell">{user.apellidopat || "-"}</td>
+                      <td className="tableCell">{user.apellidomat || "-"}</td>
+                      <td className="tableCell">{user.role_name || "-"}</td>
+                      <td className="tableCell">{user.email}</td>
+                      <td className="tableCell">
+                        <div className="actionContainer">
                           <button
                             onClick={() => handleEdit(user.id)}
-                            style={TallerStyles.editButton}
+                            className="editButton"
                           >
                             <AiFillEdit />
                           </button>
                           <button
                             onClick={() => handleDelete(user.id)}
-                            style={TallerStyles.deleteButton}
+                            className="deleteButton"
                           >
                             <AiFillDelete />
                           </button>
                           <button
                             onClick={() => setShowUserRolesModal(user.id)}
-                            style={TallerStyles.editButton}
+                            className="editButton"
                           >
                             <MdManageAccounts />
                           </button>
@@ -351,7 +351,7 @@ function Usuarios() {
                   ))
                 ) : (
                   <tr>
-                    <td style={TallerStyles.noDataText} colSpan="8">
+                    <td className="noDataText" colSpan="8">
                       No hay usuarios registrados
                     </td>
                   </tr>
@@ -360,14 +360,14 @@ function Usuarios() {
             </table>
           </div>
 
-          <div style={TallerStyles.formContainer}>
-            <h3 style={TallerStyles.formTitle}>
+          <div className="formContainer">
+            <h3 className="formTitle">
               {editingUser ? "Editar Usuario" : "Agregar Nuevo Usuario"}
             </h3>
             <form onSubmit={handleSubmit}>
-              <div style={TallerStyles.formGrid}>
+              <div className="formGrid">
                 <div>
-                  <label style={TallerStyles.formLabel}>Nombre de Usuario:</label>
+                  <label className="formLabel">Nombre de Usuario:</label>
                   <input
                     type="text"
                     name="user_name"
@@ -375,11 +375,11 @@ function Usuarios() {
                     value={formData.user_name}
                     onChange={handleInputChange}
                     required
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Email:</label>
+                  <label className="formLabel">Email:</label>
                   <input
                     type="email"
                     name="email"
@@ -387,11 +387,11 @@ function Usuarios() {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Nombres:</label>
+                  <label className="formLabel">Nombres:</label>
                   <input
                     type="text"
                     name="nombres"
@@ -399,50 +399,50 @@ function Usuarios() {
                     value={formData.nombres}
                     onChange={handleInputChange}
                     required
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Apellido Paterno:</label>
+                  <label className="formLabel">Apellido Paterno:</label>
                   <input
                     type="text"
                     name="apellidopat"
                     placeholder="Apellido Paterno"
                     value={formData.apellidopat}
                     onChange={handleInputChange}
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Apellido Materno:</label>
+                  <label className="formLabel">Apellido Materno:</label>
                   <input
                     type="text"
                     name="apellidomat"
                     placeholder="Apellido Materno"
                     value={formData.apellidomat}
                     onChange={handleInputChange}
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Carnet:</label>
+                  <label className="formLabel">Carnet:</label>
                   <input
                     type="text"
                     name="carnet"
                     placeholder="Carnet"
                     value={formData.carnet}
                     onChange={handleInputChange}
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Rol:</label>
+                  <label className="formLabel">Rol:</label>
                   <select
                     name="id_roles"
                     value={formData.id_roles}
                     onChange={handleInputChange}
                     required
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   >
                     <option value="">Selecciona Rol</option>
                     {roles.length > 0 ? (
@@ -457,13 +457,12 @@ function Usuarios() {
                   </select>
                 </div>
               </div>
-              <div style={TallerStyles.formButtonContainer}>
+              <div className="formButtonContainer">
                 <button
                   type="submit"
-                  style={{
-                    ...TallerStyles.submitButton,
-                    ...(editingUser ? TallerStyles.submitButtonUpdate : TallerStyles.submitButtonCreate),
-                  }}
+                  className={`submitButton ${
+                    editingUser ? "submitButtonUpdate" : "submitButtonCreate"
+                  }`}
                 >
                   {editingUser ? "Actualizar Usuario" : "Agregar Usuario"}
                 </button>
@@ -471,7 +470,7 @@ function Usuarios() {
                   <button
                     type="button"
                     onClick={handleCancelEdit}
-                    style={TallerStyles.cancelButton}
+                    className="cancelButton"
                   >
                     Cancelar Edición
                   </button>
@@ -480,18 +479,18 @@ function Usuarios() {
             </form>
           </div>
 
-          <div style={TallerStyles.statsContainer}>
+          <div className="statsContainer">
             <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTotal }}>
               <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTotal }}>
                 Total Usuarios
               </h4>
-              <p style={TallerStyles.statValue}>{users.length}</p>
+              <p className="statValue">{users.length}</p>
             </div>
             <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTipos }}>
               <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTipos }}>
                 Roles Únicos
               </h4>
-              <p style={TallerStyles.statValue}>{uniqueRoles.length}</p>
+              <p className="statValue">{uniqueRoles.length}</p>
             </div>
           </div>
 

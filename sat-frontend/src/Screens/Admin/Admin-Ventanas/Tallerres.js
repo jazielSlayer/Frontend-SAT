@@ -128,27 +128,27 @@ function Talleres() {
   };
 
   return (
-    <div style={TallerStyles.container}>
-      <h2 style={TallerStyles.title}>Gestión de Talleres</h2>
+    <div className="container">
+      <h2 className="title">Gestión de Talleres</h2>
 
-      {loading && <p style={TallerStyles.loadingText}>Cargando talleres...</p>}
-      {error && <p style={TallerStyles.errorText}>Error: {error}</p>}
+      {loading && <p className="loadingText">Cargando talleres...</p>}
+      {error && <p className="errorText">Error: {error}</p>}
 
       {!loading && !error && (
         <>
-          <div style={TallerStyles.tableContainer}>
-            <table style={TallerStyles.table}>
-              <thead style={TallerStyles.tableHead}>
+          <div className="tableContainer">
+            <table className="table">
+              <thead className="tableHead">
                 <tr>
-                  <th style={TallerStyles.tableHeader}>ID</th>
-                  <th style={TallerStyles.tableHeader}>Título</th>
-                  <th style={TallerStyles.tableHeader}>Metodología</th>
-                  <th style={TallerStyles.tableHeader}>Tipo</th>
-                  <th style={TallerStyles.tableHeader}>Evaluación</th>
-                  <th style={TallerStyles.tableHeader}>Duración</th>
-                  <th style={TallerStyles.tableHeader}>Resultado</th>
-                  <th style={TallerStyles.tableHeader}>Fecha</th>
-                  <th style={TallerStyles.tableHeader}>Acciones</th>
+                  <th className="tableHeader">ID</th>
+                  <th className="tableHeader">Título</th>
+                  <th className="tableHeader">Metodología</th>
+                  <th className="tableHeader">Tipo</th>
+                  <th className="tableHeader">Evaluación</th>
+                  <th className="tableHeader">Duración</th>
+                  <th className="tableHeader">Resultado</th>
+                  <th className="tableHeader">Fecha</th>
+                  <th className="tableHeader">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -161,25 +161,25 @@ function Talleres() {
                         ...(index % 2 === 0 ? TallerStyles.tableRowAlternate : {}),
                       }}
                     >
-                      <td style={TallerStyles.tableCell}>{taller.id}</td>
-                      <td style={TallerStyles.tableCellBold}>{taller.titulo}</td>
-                      <td style={TallerStyles.tableCell}>{getMetodologiaNombre(taller.id_metodologia)}</td>
-                      <td style={TallerStyles.tableCell}>{taller.tipo_taller}</td>
-                      <td style={TallerStyles.tableCell}>{taller.evaluacion_final || "-"}</td>
-                      <td style={TallerStyles.tableCell}>{taller.duracion || "-"}</td>
-                      <td style={TallerStyles.tableCell}>{taller.resultado || "-"}</td>
-                      <td style={TallerStyles.tableCell}>{taller.fecha_realizacion}</td>
-                      <td style={TallerStyles.tableCell}>
-                        <div style={TallerStyles.actionContainer}>
+                      <td className="tableCell">{taller.id}</td>
+                      <td className="tableCellBold">{taller.titulo}</td>
+                      <td className="tableCell">{getMetodologiaNombre(taller.id_metodologia)}</td>
+                      <td className="tableCell">{taller.tipo_taller}</td>
+                      <td className="tableCell">{taller.evaluacion_final || "-"}</td>
+                      <td className="tableCell">{taller.duracion || "-"}</td>
+                      <td className="tableCell">{taller.resultado || "-"}</td>
+                      <td className="tableCell">{taller.fecha_realizacion}</td>
+                      <td className="tableCell">
+                        <div className="actionContainer">
                           <button
                             onClick={() => handleEdit(taller.id)}
-                            style={TallerStyles.editButton}
+                            className="editButton"
                           >
                             <AiFillEdit />
                           </button>
                           <button
                             onClick={() => handleDelete(taller.id)}
-                            style={TallerStyles.deleteButton}
+                            className="deleteButton"
                           >
                             <AiFillDelete />
                           </button>
@@ -189,7 +189,7 @@ function Talleres() {
                   ))
                 ) : (
                   <tr>
-                    <td style={TallerStyles.noDataText} colSpan="9">
+                    <td className="noDataText" colSpan="9">
                       No hay talleres registrados
                     </td>
                   </tr>
@@ -198,14 +198,14 @@ function Talleres() {
             </table>
           </div>
 
-          <div style={TallerStyles.formContainer}>
-            <h3 style={TallerStyles.formTitle}>
+          <div className="formContainer">
+            <h3 className="formTitle">
               {editingTaller ? "Editar Taller" : "Agregar Nuevo Taller"}
             </h3>
             <form onSubmit={handleSubmit}>
-              <div style={TallerStyles.formGrid}>
+              <div className="formGrid">
                 <div>
-                  <label style={TallerStyles.formLabel}>Título:</label>
+                  <label className="formLabel">Título:</label>
                   <input
                     type="text"
                     name="titulo"
@@ -213,17 +213,17 @@ function Talleres() {
                     value={formData.titulo}
                     onChange={handleInputChange}
                     required
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Metodología:</label>
+                  <label className="formLabel">Metodología:</label>
                   <select
                     name="id_metodologia"
                     value={formData.id_metodologia}
                     onChange={handleInputChange}
                     required
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   >
                     <option value="">Selecciona Metodología</option>
                     {metodologias.length > 0 ? (
@@ -236,13 +236,13 @@ function Talleres() {
                   </select>
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Tipo de Taller:</label>
+                  <label className="formLabel">Tipo de Taller:</label>
                   <select
                     name="tipo_taller"
                     value={formData.tipo_taller}
                     onChange={handleInputChange}
                     required
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   >
                     <option value="">Selecciona Tipo</option>
                     <option value="Teórico">Teórico</option>
@@ -251,57 +251,56 @@ function Talleres() {
                   </select>
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Evaluación Final:</label>
+                  <label className="formLabel">Evaluación Final:</label>
                   <input
                     type="text"
                     name="evaluacion_final"
                     placeholder="Evaluación Final"
                     value={formData.evaluacion_final}
                     onChange={handleInputChange}
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Duración:</label>
+                  <label className="formLabel">Duración:</label>
                   <input
                     type="text"
                     name="duracion"
                     placeholder="Duración"
                     value={formData.duracion}
                     onChange={handleInputChange}
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Resultado:</label>
+                  <label className="formLabel">Resultado:</label>
                   <input
                     type="text"
                     name="resultado"
                     placeholder="Resultado"
                     value={formData.resultado}
                     onChange={handleInputChange}
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
                 <div>
-                  <label style={TallerStyles.formLabel}>Fecha de Realización:</label>
+                  <label className="formLabel">Fecha de Realización:</label>
                   <input
                     type="date"
                     name="fecha_realizacion"
                     value={formData.fecha_realizacion}
                     onChange={handleInputChange}
                     required
-                    style={TallerStyles.formInput}
+                    className="formInput"
                   />
                 </div>
               </div>
-              <div style={TallerStyles.formButtonContainer}>
+              <div className="formButtonContainer">
                 <button
                   type="submit"
-                  style={{
-                    ...TallerStyles.submitButton,
-                    ...(editingTaller ? TallerStyles.submitButtonUpdate : TallerStyles.submitButtonCreate),
-                  }}
+                  className={`submitButton ${
+                    editingTaller ? "submitButtonUpdate" : "submitButtonCreate"
+                  }`}
                 >
                   {editingTaller ? "Actualizar Taller" : "Agregar Taller"}
                 </button>
@@ -309,7 +308,7 @@ function Talleres() {
                   <button
                     type="button"
                     onClick={handleCancelEdit}
-                    style={TallerStyles.cancelButton}
+                    className="cancelButton"
                   >
                     Cancelar Edición
                   </button>
@@ -318,18 +317,18 @@ function Talleres() {
             </form>
           </div>
 
-          <div style={TallerStyles.statsContainer}>
-            <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTotal }}>
-              <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTotal }}>
+          <div className="statsContainer">
+            <div className={`statCard statCardTotal`}>
+              <h4 className={`statTitle statTitleTotal`}>
                 Total Talleres
               </h4>
-              <p style={TallerStyles.statValue}>{talleres.length}</p>
+              <p className="statValue">{talleres.length}</p>
             </div>
-            <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTipos }}>
-              <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTipos }}>
+            <div className={`statCard statCardTipos`}>
+              <h4 className={`statTitle statTitleTipos`}>
                 Tipos Únicos
               </h4>
-              <p style={TallerStyles.statValue}>{uniqueTipos.length}</p>
+              <p className={`statValue`}>{uniqueTipos.length}</p>
             </div>
           </div>
         </>

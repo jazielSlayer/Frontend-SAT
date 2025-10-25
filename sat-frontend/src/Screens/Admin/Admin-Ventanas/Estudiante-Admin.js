@@ -94,25 +94,25 @@ function AdminEstudiantes() {
   };
 
   return (
-    <div style={EstudianteStyles.container}>
-      <h2 style={EstudianteStyles.title}>Administración de Estudiantes</h2>
+    <div className="container">
+      <h2 className="title">Administración de Estudiantes</h2>
 
-      {loading && <p style={EstudianteStyles.loadingText}>Cargando estudiantes...</p>}
-      {error && <p style={EstudianteStyles.errorText}>Error: {error}</p>}
+      {loading && <p className="loadingText">Cargando estudiantes...</p>}
+      {error && <p className="errorText">Error: {error}</p>}
 
       {!loading && !error && (
         <>
-          <div style={EstudianteStyles.tableContainer}>
-            <table style={EstudianteStyles.table}>
-              <thead style={EstudianteStyles.tableHead}>
+          <div className="tableContainer">
+            <table className="table">
+              <thead className="tableHead">
                 <tr>
-                  <th style={EstudianteStyles.tableHeader}>ID</th>
-                  <th style={EstudianteStyles.tableHeader}>Nombre Completo</th>
-                  <th style={EstudianteStyles.tableHeader}>Matrícula</th>
-                  <th style={EstudianteStyles.tableHeader}>Programa</th>
-                  <th style={EstudianteStyles.tableHeader}>Fecha Inscripción</th>
-                  <th style={EstudianteStyles.tableHeader}>Estado</th>
-                  <th style={EstudianteStyles.tableHeader}>Acciones</th>
+                  <th className="tableHeader">ID</th>
+                  <th className="tableHeader">Nombre Completo</th>
+                  <th className="tableHeader">Matrícula</th>
+                  <th className="tableHeader">Programa</th>
+                  <th className="tableHeader">Fecha Inscripción</th>
+                  <th className="tableHeader">Estado</th>
+                  <th className="tableHeader">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,26 +120,19 @@ function AdminEstudiantes() {
                   estudiantes.map((estudiante, index) => (
                     <tr
                       key={estudiante.id}
-                      style={{
-                        ...EstudianteStyles.tableRow,
-                        ...(index % 2 === 0 ? EstudianteStyles.tableRowAlternate : {}),
-                      }}
+                      className={`tableRow ${index % 2 === 0 ? "tableRowAlternate" : ""}`}
                     >
-                      <td style={EstudianteStyles.tableCell}>{estudiante.id}</td>
-                      <td style={EstudianteStyles.tableCellBold}>
+                      <td className="tableCell">{estudiante.id}</td>
+                      <td className="tableCellBold">
                         {estudiante.nombres} {estudiante.apellidopat} {estudiante.apellidomat}
                       </td>
-                      <td style={EstudianteStyles.tableCell}>{estudiante.numero_matricula}</td>
-                      <td style={EstudianteStyles.tableCell}>{estudiante.nombre_programa}</td>
-                      <td style={EstudianteStyles.tableCell}>{estudiante.fecha_inscripcion}</td>
-                      <td style={EstudianteStyles.tableCell}>
+                      <td className="tableCell">{estudiante.numero_matricula}</td>
+                      <td className="tableCell">{estudiante.nombre_programa}</td>
+                      <td className="tableCell">{estudiante.fecha_inscripcion}</td>
+                      <td className="tableCell">
                         <span
-                          style={{
-                            ...EstudianteStyles.statusBadge,
-                            ...(estudiante.estado === 1
-                              ? EstudianteStyles.statusActive
-                              : EstudianteStyles.statusInactive),
-                          }}
+                          className={`statusBadge ${estudiante.estado === 1 ? 'statusActive' : 'statusInactive'}`}
+                          
                         >
                           {estudiante.estado === 1 ? "Activo" : "Inactivo"}
                         </span>
