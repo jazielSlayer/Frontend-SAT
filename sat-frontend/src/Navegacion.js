@@ -19,11 +19,14 @@ function Navegacion() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-  }, [location]);
+  const userData = localStorage.getItem("user");
+  console.log("userData from localStorage:", userData);
+  if (userData) {
+    const parsedUser = JSON.parse(userData);
+    console.log("Parsed user:", parsedUser);
+    setUser(parsedUser);
+  }
+}, [location]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -51,6 +54,46 @@ function Navegacion() {
   const isDocentePath = location.pathname === "/docente";
   const isEstudiantePath = location.pathname === "/estudiante";
   const isRoot = location.pathname === "/";
+  
+  const renderNavLinks = () => {
+    console.log("Rendering nav links for role:", user?.role)
+    switch (user.role) {
+      case "Admin":
+        return (
+          <>
+            <li>
+              <Link style={linkStyle} to="/admin" >
+                Panel Admin
+              </Link>
+            </li>
+          </>
+        );
+      case "docente":
+        return (
+          <>
+            <li>
+              <Link style={linkStyle} to="/docente">
+                Panel Docente
+              </Link>
+            </li>
+            {/* Add more docente-specific links as defined in DocenteNav */}
+          </>
+        );
+      case "estudiante":
+        return (
+          <>
+            <li>
+              <Link style={linkStyle} to="/estudiante">
+                Panel Estudiante
+              </Link>
+            </li>
+            {/* Add more estudiante-specific links as defined in EstudianteNav */}
+          </>
+        );
+      default:
+        return null;
+    }
+  };
 
   if (isAdminPath) {
     return <AdminNav user={user} onLogout={handleLogout} />;
@@ -83,7 +126,6 @@ function Navegacion() {
                     if (subMenu.classList.contains('show')
                     && !subMenu.contains(e.target)
                     && !openSubmenu.contains(e.target)){
-
                         subMenu.classList.remove('show');
                     }
                 });
@@ -100,11 +142,13 @@ function Navegacion() {
                       Bienvenido, {user.user_name || user.nombres}
                     </span>
                   </li>
+                  {renderNavLinks()}
                   <li>
                     <button style={logoutButtonStyle} onClick={handleLogout}>
                       <IoLogOut />
                     </button>
                   </li>
+                  
                 </ul>
               </div>
             </li>
