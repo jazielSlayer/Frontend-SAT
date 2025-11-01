@@ -1,6 +1,5 @@
 .EstudianteContainer {
     color: #fff;
-    position: relative;
 }
 .Title {
     text-align: center;
@@ -10,11 +9,13 @@
 .Progress {
     display: grid;
     place-items: center;
-    width: 64px;
-    height: 64px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     cursor: default;
-
+    position: absolute;
+    left: 20%;
+    
 }
 .Progress.Section {
    color: aqua;
@@ -24,8 +25,8 @@
 .Progress-Bar {
     display: grid;
     place-items: center;
-    width: 56px;
-    height: 56px;
+    width: 165px;
+    height: 165px;
     border-radius: 50%;
     background: #1d1e22;
 }

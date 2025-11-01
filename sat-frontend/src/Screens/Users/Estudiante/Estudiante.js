@@ -8,6 +8,7 @@ function Estudiante() {
             90%
           </div>
       </div>
+      
     </div>
   );
 }
