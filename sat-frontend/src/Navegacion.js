@@ -53,7 +53,7 @@ function Navegacion() {
 
   const isDocentePath = location.pathname === "/docente";
   const isEstudiantePath = location.pathname === "/estudiante";
-  const isRoot = location.pathname === "/";
+  const isRoot = location.pathname === "/login";
   
   const renderNavLinks = () => {
     console.log("Rendering nav links for role:", user?.role)
@@ -154,16 +154,7 @@ function Navegacion() {
             </li>
           ) : (
             <>
-              <li>
-                <Link style={linkStyle} to="/login">
-                  Iniciar Sesión
-                </Link>
-              </li>
-              <li>
-                <Link style={linkStyle} to="/register">
-                  Registrarse
-                </Link>
-              </li>
+              
             </>
           )}
         </ul>
@@ -173,38 +164,7 @@ function Navegacion() {
 
   
   return (
-    <nav style={navStyle}>
-      <div>
-        <img src={logo} alt="Logo" style={{ height: "40px" }} />
-      </div>
-      <ul style={ulStyle}>
-        <li>
-          <Link style={linkStyle} to="/">
-            Inicio
-          </Link>
-        </li>
-        {user ? (
-          <>
-            <li>
-              <span style={{ color: "#fff", marginRight: "1rem" }}>
-                {user.user_name || user.nombres}
-              </span>
-            </li>
-            <li>
-              <button style={logoutButtonStyle} onClick={handleLogout}>
-                <IoLogOut/>
-              </button>
-            </li>
-          </>
-        ) : (
-          <li>
-            <Link style={linkStyle} to="/login">
-              Iniciar Sesión
-            </Link>
-          </li>
-        )}
-      </ul>
-    </nav>
+    <></>
   );
 }
 

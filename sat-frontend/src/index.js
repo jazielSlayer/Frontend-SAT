@@ -5,7 +5,6 @@ import Navegacion from "./Navegacion";
 import ProtectedRoute from "./ProtectedRout";
 
 
-import Bienvenida from "./Screens/Bienvenida";
 import Admin from "./Screens/Admin/Admin";
 import AdminEstudiantes from "./Screens/Admin/Admin-Ventanas/Estudiante-Admin";
 import DocenteAdmin from "./Screens/Admin/Admin-Ventanas/Docente-Admin";
@@ -62,7 +61,7 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <Navegacion />
         <Routes>
-  <Route path="/" element={<Bienvenida />} />
+  <Route path="/" element={<Login />} />
   <Route
     path="/admin"
     element={
