@@ -37,7 +37,8 @@ function Navegacion() {
   if (
     location.pathname === "/login" ||
     location.pathname === "/register" ||
-    location.pathname === "/register-step2"
+    location.pathname === "/register-step2" ||
+    location.pathname === "/autenticacion-login"
   ) {
     return null;
   }

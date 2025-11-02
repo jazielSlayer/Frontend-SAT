@@ -17,7 +17,7 @@ import RolesAdmin from "./Screens/Admin/Admin-Ventanas/AdminRoles";
 import Talleres from "./Screens/Admin/Admin-Ventanas/Tallerres";
 import AutenticacionUser from "./Screens/Login/Register/AutenticacionUser";
 import Usuarios from "./Screens/Admin/Admin-Ventanas/Usuarios";
-
+import AutenticacionLogin from "./Screens/Login/LoginAuth";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -61,57 +61,58 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <Navegacion />
         <Routes>
-  <Route path="/" element={<Login />} />
-  <Route
-    path="/admin"
-    element={
-      <ProtectedRoute requiredRole="admin">
-        <Admin />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-    path="/Estudiante-Admin"
-    element={
-      <ProtectedRoute requiredRole="admin">
-        <AdminEstudiantes />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-    path="/docenteadmin"
-    element={
-      <ProtectedRoute requiredRole="admin">
-        <DocenteAdmin />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-    path="/docente"
-    element={
-      <ProtectedRoute requiredRole="docente">
-        <Docente />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-    path="/estudiante"
-    element={
-      <ProtectedRoute requiredRole="estudiante">
-        <Estudiante />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-    path="/usuarios"
-    element={
-      <ProtectedRoute requiredRole="admin">
-        <Usuarios />
-      </ProtectedRoute>
-    }
-  />
+          <Route path="/" element={<Login />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Admin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/Estudiante-Admin"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminEstudiantes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/docenteadmin"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <DocenteAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/docente"
+              element={
+                <ProtectedRoute requiredRole="docente">
+                  <Docente />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/estudiante"
+              element={
+                <ProtectedRoute requiredRole="estudiante">
+                  <Estudiante />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/usuarios"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Usuarios />
+                </ProtectedRoute>
+              }
+            />
   <Route path="/login" element={<Login />} />
   <Route path="/register" element={<RegisterPersona />} />
+  <Route path="/autenticacion-login" element={<AutenticacionLogin />} />
   <Route path="/register-step2" element={<AutenticacionUser />} />
   <Route path="/register-step3" element={<RegisterUsuario />} />
   <Route
@@ -130,7 +131,7 @@ createRoot(document.getElementById("root")).render(
       </ProtectedRoute>
     }
   />
-</Routes>
+        </Routes>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

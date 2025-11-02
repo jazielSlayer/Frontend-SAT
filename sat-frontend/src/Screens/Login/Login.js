@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../index";
 import { loginUser } from "../../API/Login/Login";
+import { sendAuthCode } from "../../API/Verficacion/Verificacion"; // Importamos
 
 function Login() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -25,21 +26,22 @@ function Login() {
       if (typeof login !== 'function') {
         throw new Error('Contexto de autenticación no está configurado correctamente');
       }
+
+      // 1. Autenticación con email y contraseña
       const userData = await loginUser(credentials, login);
       console.log('userData in Login.js:', userData);
 
-      if (userData.roles.some(role => role.name.toLowerCase() === 'admin')) {
-        navigate('/admin');
-      } else if (userData.roles.some(role => role.name.toLowerCase() === 'docente')) {
-        navigate('/docente');
-      } else if (userData.roles.some(role => role.name.toLowerCase() === 'estudiante')) {
-        navigate('/estudiante');
-      } else {
-        setError('No tienes un rol válido. Contacta al administrador.');
-        localStorage.removeItem('user');
-        localStorage.removeItem('authToken');
-        return;
-      }
+      // 2. Extraer datos necesarios
+      const { personaId, email, nombres, roles } = userData;
+
+      // 3. Enviar código de verificación al correo
+      await sendAuthCode(email);
+
+      // 4. Redirigir a AutenticacionLogin con datos necesarios
+      navigate('/autenticacion-login', {
+        state: { personaId, email, nombres, roles } // Pasamos roles también
+      });
+
     } catch (err) {
       if (err.message.includes('Usuario no encontrado') || err.message.includes('404')) {
         setError('Usuario no registrado. Verifica tu correo o regístrate.');
@@ -69,7 +71,7 @@ function Login() {
           <input
             type="email"
             name="email"
-            placeholder="Correo electrónico"
+            placeholder="email"
             value={credentials.email}
             onChange={handleChange}
             style={styles.input}
