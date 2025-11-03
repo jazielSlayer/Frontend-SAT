@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import {logo, navStyle,ulStyle, linkStyle, logoutButtonStyle,} from "./NavStyles";
 import { IoLogOut } from "react-icons/io5";
 import { FaCircleUser } from "react-icons/fa6";
+import { LogoStyles } from "./NavStyles";
 
 function AdminNav({ user, onLogout }) {
   
@@ -9,7 +10,7 @@ function AdminNav({ user, onLogout }) {
   return (
     <nav style={navStyle}>
       <div>
-        <img src={logo} alt="Logo" style={{ height: "40px" }} />
+        <img src={logo} alt="Logo" style={ LogoStyles } />
       </div>
       <ul style={ulStyle}>
         <li>

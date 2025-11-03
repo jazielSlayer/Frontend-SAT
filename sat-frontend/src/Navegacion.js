@@ -11,6 +11,7 @@ import {
   ulStyle,
   linkStyle,
   logoutButtonStyle,
+  LogoStyles,
 } from "./Navegacion-Componets/NavStyles";
 
 function Navegacion() {
@@ -112,7 +113,7 @@ function Navegacion() {
     return (
       <nav style={navStyle}>
         <div>
-          <img src={logo} alt="Logo" style={{ height: "40px" }} />
+          <img src={logo} alt="Logo" style={LogoStyles} />
         </div>
         <ul style={{ ...ulStyle, justifyContent: "flex-end" }}>
           {user ? (

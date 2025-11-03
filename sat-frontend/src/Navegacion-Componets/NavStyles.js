@@ -1,5 +1,9 @@
 export const logo = "/logousb.png";
 
+export const LogoStyles = {
+  height: "40px", display: "block", margin: "0 auto" 
+};
+
 export const navStyle = {
   background: "#07053b8e",
   borderRadius: "8px",

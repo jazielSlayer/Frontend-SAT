@@ -6,6 +6,7 @@ import {
   ulStyle,
   linkStyle,
   logoutButtonStyle,
+  LogoStyles,
 } from "./NavStyles";
 import { FaCircleUser } from "react-icons/fa6";
 
@@ -13,7 +14,7 @@ function EstudianteNav({ user, onLogout }) {
   return (
     <nav style={navStyle}>
       <div>
-        <img src={logo} alt="Logo" style={{ height: "40px" }} />
+        <img src={logo} alt="Logo" style={LogoStyles} />
       </div>
       <ul style={ulStyle}>
         <li>
