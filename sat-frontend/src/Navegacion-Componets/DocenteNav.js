@@ -32,7 +32,7 @@ function DocenteNav({ user, onLogout }) {
           <span style={{ ...linkStyle, opacity: 0.7 }}>Seguimiento</span>
         </li>
         {user && (
-           <li class="open_submenu">
+          <li class="open_submenu">
                       <button
                         onClick={(e) => {
                           e.preventDefault();
@@ -67,7 +67,7 @@ function DocenteNav({ user, onLogout }) {
                           </li>
                         </ul>
                       </div>
-                    </li>
+          </li>
         )}
       </ul>
     </nav>

@@ -43,6 +43,7 @@ function AdminNav({ user, onLogout }) {
             Usuarios
           </Link>
         </li>
+        {/* Submenu for user profile no modificar */}
         {user && (
           <li class="open_submenu">
             <button

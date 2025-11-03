@@ -242,6 +242,7 @@ th, td {
   min-height: 100vh;
   padding: 20px;
   font-family: Arial, sans-serif;
+  width: 100%;
 }
 
 .title {
