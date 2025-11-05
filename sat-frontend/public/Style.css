@@ -4,21 +4,7 @@ body {
 }
 
 
-a {
-  display: inline-block;
-  position: relative;
-  text-decoration: none;
-  color: black;
-  font-weight: 500;
-  padding: 10px 20px;
-  border-radius: 10px;
-  color: rgb(154, 0, 209);
-  transition: all 0.3s ease;
-}
 
-a:hover {
-  background-color: rgba(154, 0, 209, 0.1);
-}
 
 header {
   position: relative;
@@ -43,76 +29,6 @@ header nav a {
   margin-left: 6px;
 }
 
-.open_submenu {
-  position: relative;
-  z-index: 20; /* Asegura que el contenedor del submenú esté por encima del header */
-}
-
-.open_submenu button {
-  display: inline-block;
-  position: relative;
-  text-decoration: none;
-  color: #ffffff;
-  font-weight: 500;
-  padding: 0px 1px;
-  border-radius: 1000px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.open_submenu button:hover {
-  background-color: rgba(154, 0, 209, 0.1);
-}
-
-.open_submenu .fa-solid.fa-chevron-down {
-  margin-left: 5px;
-  font-size: 12px;
-  transition: transform 0.3s ease;
-}
-
-.open_submenu .submenu.show ~ .fa-solid.fa-chevron-down {
-  transform: rotate(180deg);
-}
-
-.submenu {
-  position: absolute;
-  top: 100%;
-  left: -200px;
-  background-color: rgba(24, 6, 93, 0.473);
-  box-shadow: 4px 4px 20px rgba(255, 254, 254, 0.1);
-  border-radius: 10px;
-  max-height: 0;
-  width: 250px;
-  transition: max-height 2s ease;
-  overflow: hidden;
-  z-index: 30; /* Alto z-index para que el submenú esté por encima de todo */
-}
-
-.submenu.show {
-  max-height: 400px;
-}
-
-.submenu ul li {
-  position: relative;
-  display: block;
-  width: 100%;
-  padding: 15px;
-}
-
-.submenu ul li button {
-  display: block;
-  width: 75%;
-  background: none;
-  border: none;
-  text-align: center;
-  cursor: pointer;
-}
-
-.submenu ul li button:hover {
-  background-color: rgba(154, 0, 209, 0.1);
-}
 
 
 div {

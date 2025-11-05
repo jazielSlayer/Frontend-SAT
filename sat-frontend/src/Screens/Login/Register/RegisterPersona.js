@@ -22,10 +22,28 @@ function RegisterPersona() {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setPersonaData({ ...personaData, [e.target.name]: e.target.value });
-    setError('');
-    setSuccess('');
-  };
+  const { name, value } = e.target;
+  let errorMessage = '';
+
+  if (name === 'nombres' || name === 'apellidopat' || name === 'apellidomat') {
+    if (!/^[A-Za-z\s]*$/.test(value)) {
+      errorMessage = 'Solo se permiten letras y espacios';
+    }
+  } else if (name === 'telefono' || name === 'carnet') {
+    if (!/^\d*$/.test(value)) {
+      errorMessage = 'Solo se permiten números';
+    }
+  }
+
+  if (errorMessage) {
+    setError(errorMessage);
+    return;
+  }
+
+  setPersonaData({ ...personaData, [e.target.name]: e.target.value });
+  setError('');
+  
+};
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -89,7 +107,7 @@ function RegisterPersona() {
           <div style={styles.inputRow}>
             {/** que solo permita letras y no numeros */}
             <input
-              type="character"
+              type="text"
               name="nombres"
               placeholder="Nombres"
               value={personaData.nombres}
@@ -97,9 +115,9 @@ function RegisterPersona() {
               style={{...styles.input, width: '48%'}}
               required
             />
-            {/** que solo permita letras y no numeros */}
+
             <input
-              type="character"
+              type="text"
               name="apellidopat"
               placeholder="Apellido Paterno"
               value={personaData.apellidopat}
@@ -107,17 +125,16 @@ function RegisterPersona() {
               style={{...styles.input, width: '48%'}}
               required
             />
-          </div>
-          {/** que solo permita letras y no numeros */}
-          <input
-            type="character"
-            name="apellidomat"
-            placeholder="Apellido Materno"
-            value={personaData.apellidomat}
-            onChange={handleChange}
-            style={styles.input}
-            required
-          />
+            </div>
+            <input
+              type="text"
+              name="apellidomat"
+              placeholder="Apellido Materno"
+              value={personaData.apellidomat}
+              onChange={handleChange}
+              style={styles.input}
+              required
+            />
           
           <input
             type="text"
@@ -139,30 +156,13 @@ function RegisterPersona() {
             required
           />
           
-          <input
-            onClick={(e) => {
-              e.preventDefault();
-              const input = document.querySelector('input[name="telefono"]');
-              input.addEventListener('input', function(e) {
-                // Remueve cualquier carácter que no sea número
-                this.value = this.value.replace(/[^0-9]/g, '');
-
-                // Si se intentó ingresar algo no numérico, muestra alerta
-                if (e.data && !/[0-9]/.test(e.data)) {
-                  alert('⚠️ Solo se permiten números. Por favor, ingresa solo dígitos.');
-                  // Opcional: enfocar de nuevo
-                  this.focus();
-                }
-              });
-            }}
-            type="numeric"
+           <input
+            type="tel"
             name="telefono"
-            inputmode="numeric"
             placeholder="Teléfono"
             value={personaData.telefono}
             onChange={handleChange}
             style={styles.input}
-            required
           />
           
           <input
