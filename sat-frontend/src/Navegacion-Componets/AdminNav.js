@@ -1,96 +1,90 @@
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { logo } from "./NavStyles";
-import { IoLogOut } from "react-icons/io5";
+
 import { FaCircleUser } from "react-icons/fa6";
 import { FaBars } from "react-icons/fa";
-import { logoutButtonStyle } from "./NavStyles";
+
 
 function AdminNav({ user, onLogout }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const navRef = useRef(null);
+
   const toggleMenu = () => {
-    document.querySelector('.nav-list').classList.toggle('active');
+    setCollapsed((s) => !s);
+  };
+
+
+  // Cierra el menú si se hace click fuera del nav
+  useEffect(() => {
+    function handleDocumentClick(e) {
+      if (!navRef.current) return;
+      if (!navRef.current.contains(e.target) && collapsed) {
+        setCollapsed(false);
+      }
+    }
+
+    document.addEventListener("click", handleDocumentClick);
+    return () => document.removeEventListener("click", handleDocumentClick);
+  }, [collapsed]);
+
+  const onNavLinkClick = () => {
+    // cierra el menú al clicar una opción
+    setCollapsed(false);
   };
 
   return (
-    <nav className="admin-nav">
-      <div className="nav-logo">
-        <img src={logo} alt="Logo" />
+    <nav ref={navRef} className={`admin-nav ${collapsed ? "nav-collapsed" : ""}`}>
+      <div className="nav-header">
+        <div className="nav-logo">
+          <img src={logo} alt="Logo" />
+        </div>
+        <div className="nav-controls">
+          <button className="menu-toggle" onClick={(e) => { e.stopPropagation(); toggleMenu(); }}>
+            <FaBars />
+          </button>
+          {user && (
+            <li className="open_submenu">
+              <Link className="nav-link" to="/AdminUser" onClick={(e) => { e.stopPropagation(); onNavLinkClick(); }}>
+                <FaCircleUser style={{ fontSize: "40px" }} />
+              </Link>
+            </li>
+          )}
+        </div>
       </div>
-      
-      <button className="menu-toggle" onClick={toggleMenu}>
-        <FaBars />
-      </button>
 
-      <ul className="nav-list">
+      <ul className="nav-list" onClick={(e) => e.stopPropagation()}>
         <li>
-          <Link className="nav-link" to="/admin">
+          <Link className="nav-link" to="/admin" onClick={onNavLinkClick}>
             Dashboard
           </Link>
         </li>
         <li>
-          <Link className="nav-link" to="/docenteadmin">
+          <Link className="nav-link" to="/docenteadmin" onClick={onNavLinkClick}>
             Docentes
           </Link>
         </li>
         <li>
-          <Link className="nav-link" to="/Estudiante-Admin">
+          <Link className="nav-link" to="/Estudiante-Admin" onClick={onNavLinkClick}>
             Estudiantes
           </Link>
         </li>
         <li>
-          <Link className="nav-link" to="/roles-admin">
+          <Link className="nav-link" to="/roles-admin" onClick={onNavLinkClick}>
             Roles
           </Link>
         </li>
         <li>
-          <Link className="nav-link" to="/talleres">
+          <Link className="nav-link" to="/talleres" onClick={onNavLinkClick}>
             Talleres
           </Link>
         </li>
         <li>
-          <Link className="nav-link" to="/usuarios">
+          <Link className="nav-link" to="/usuarios" onClick={onNavLinkClick}>
             Usuarios
           </Link>
         </li>
       </ul>
-      {/**sub Menu user */}
-      {user && (
-          <li class="open_submenu">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                   const subMenu = document.querySelector('.submenu');
-                   const openSubmenu = document.querySelector('.open_submenu')
-                   subMenu.classList.toggle('show');
-                   document.addEventListener('click', function(e) {
-                    if (subMenu.classList.contains('show')
-                      && !subMenu.contains(e.target)
-                      && !openSubmenu.contains(e.target)){
-                  
-                      subMenu.classList.remove('show');
-                      }
-                    });                   
-              }}
-              >
-                <FaCircleUser style={{ fontSize: '40px' }}/>
-            </button>
-                <i class="fa-solid fa-chevron-down"></i>
-                <div class="submenu">
-                  <ul>
-                    <li>
-                      <span style={{ color: '#fff', marginRight: '1rem' }}>
-                        Bienvenido, {user.user_name || user.nombres}
-                      </span>
-                    </li>
-                    <li>
-                      <button style={logoutButtonStyle} onClick={onLogout}>
-                        <IoLogOut />
-                      </button>
-                    </li>
-                  </ul>
-                  </div>
-            </li>
-        )}
-      
     </nav>
   );
 }

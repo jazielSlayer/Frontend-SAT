@@ -18,6 +18,8 @@ import Talleres from "./Screens/Admin/Admin-Ventanas/Tallerres";
 import AutenticacionUser from "./Screens/Login/Register/AutenticacionUser";
 import Usuarios from "./Screens/Admin/Admin-Ventanas/Usuarios";
 import AutenticacionLogin from "./Screens/Login/LoginAuth";
+import AdminUser from "./Screens/Admin/AdminUser";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -69,6 +71,13 @@ createRoot(document.getElementById("root")).render(
                   <Admin />
                 </ProtectedRoute>
               }
+            />
+            <Route path="/AdminUser" 
+                element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminUser />
+                </ProtectedRoute>
+              } 
             />
             <Route
               path="/Estudiante-Admin"
