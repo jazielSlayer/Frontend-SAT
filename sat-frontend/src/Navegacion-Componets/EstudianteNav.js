@@ -19,22 +19,22 @@ function EstudianteNav({ user, onLogout }) {
       <ul style={ulStyle}>
         <li>
           <Link style={linkStyle} to="/estudiante">
-            Dashboard
+            Inicio
           </Link>
         </li>
         <li>
           <Link style={{ ...linkStyle, opacity: 0.7 }} to="/estudiante">
-            Mis Proyectos
+            Documentacion
           </Link>
         </li>
         <li>
           <Link style={{ ...linkStyle, opacity: 0.7 }} to="/estudiante">
-            Módulos
+            Estado de proyectos
           </Link>
         </li>
         <li>
           <Link style={{ ...linkStyle, opacity: 0.7 }} to="/estudiante">
-            Pagos
+            Pagos QR
           </Link>
         </li>
         {user && (
@@ -63,6 +63,11 @@ function EstudianteNav({ user, onLogout }) {
                           <li>
                             <span style={{ color: '#fff', marginRight: '1rem' }}>
                               Bienvenido, {user.user_name || user.nombres}
+                            </span>
+                          </li>
+                          <li>
+                            <span style={{ color: '#fff', marginRight: '1rem' }}>
+                              Editar perfil
                             </span>
                           </li>
                           <li>

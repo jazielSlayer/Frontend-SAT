@@ -105,7 +105,7 @@ function DocenteAdmin() {
   };
 
   return (
-    <div className="container">
+    <div className="bg-gray-900 min-h-screen p-4 " style={{color: "white"}}>
       <h2 className="title">Administración de Docentes</h2>
 
       {loading && <p className="loadingText">Cargando docentes...</p>}

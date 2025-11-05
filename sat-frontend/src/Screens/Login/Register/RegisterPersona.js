@@ -87,8 +87,9 @@ function RegisterPersona() {
         
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.inputRow}>
+            {/** que solo permita letras y no numeros */}
             <input
-              type="text"
+              type="character"
               name="nombres"
               placeholder="Nombres"
               value={personaData.nombres}
@@ -96,8 +97,9 @@ function RegisterPersona() {
               style={{...styles.input, width: '48%'}}
               required
             />
+            {/** que solo permita letras y no numeros */}
             <input
-              type="text"
+              type="character"
               name="apellidopat"
               placeholder="Apellido Paterno"
               value={personaData.apellidopat}
@@ -106,14 +108,15 @@ function RegisterPersona() {
               required
             />
           </div>
-          
+          {/** que solo permita letras y no numeros */}
           <input
-            type="text"
+            type="character"
             name="apellidomat"
             placeholder="Apellido Materno"
             value={personaData.apellidomat}
             onChange={handleChange}
             style={styles.input}
+            required
           />
           
           <input
@@ -137,12 +140,29 @@ function RegisterPersona() {
           />
           
           <input
-            type="tel"
+            onClick={(e) => {
+              e.preventDefault();
+              const input = document.querySelector('input[name="telefono"]');
+              input.addEventListener('input', function(e) {
+                // Remueve cualquier carácter que no sea número
+                this.value = this.value.replace(/[^0-9]/g, '');
+
+                // Si se intentó ingresar algo no numérico, muestra alerta
+                if (e.data && !/[0-9]/.test(e.data)) {
+                  alert('⚠️ Solo se permiten números. Por favor, ingresa solo dígitos.');
+                  // Opcional: enfocar de nuevo
+                  this.focus();
+                }
+              });
+            }}
+            type="numeric"
             name="telefono"
+            inputmode="numeric"
             placeholder="Teléfono"
             value={personaData.telefono}
             onChange={handleChange}
             style={styles.input}
+            required
           />
           
           <input
@@ -152,6 +172,7 @@ function RegisterPersona() {
             value={personaData.fecha_nacimiento}
             onChange={handleChange}
             style={styles.input}
+            required
           />
           
           <textarea
@@ -160,6 +181,7 @@ function RegisterPersona() {
             value={personaData.direccion}
             onChange={handleChange}
             style={{...styles.input, height: '80px', resize: 'vertical'}}
+            required
           />
           
           <button 

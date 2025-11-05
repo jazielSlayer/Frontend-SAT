@@ -296,7 +296,7 @@ function Admin() {
   ), [userCount, estudiantes.length, docentes.length, modulos.length]);
 
   return (
-    <div className="container">
+    <div className="bg-gray-900 min-h-screen p-4">
       <h1 className="text-center text-3xl font-bold mb-6" style={{ color: "white", textShadow: "2px 2px 4px rgba(0, 0, 0, 1)" }}>
         Panel de Administración
       </h1>
