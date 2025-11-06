@@ -32,7 +32,6 @@ function AdminNav({ user, onLogout }) {
   }, [collapsed]);
 
   const onNavLinkClick = () => {
-    // cierra el menú al clicar una opción
     setCollapsed(false);
   };
 
@@ -89,7 +88,7 @@ function AdminNav({ user, onLogout }) {
         <li className="open_submenu user-icon-wrapper">
             <Link className="nav-link user-link" to="/AdminUser" onClick={(e) => { e.stopPropagation(); onNavLinkClick(); }}>
               <FaCircleUser className="nav-icon" />
-              <span className="nav-text">Perfil</span>
+              <span className="nav-text">Perfil {user.user_name || user.nombres} </span>
             </Link>
         </li>
       </ul>
