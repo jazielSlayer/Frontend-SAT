@@ -42,7 +42,8 @@ function Navegacion() {
     "/roles-admin",
     "/talleres",
     "/usuarios",
-    "/AdminUser"
+    "/AdminUser",
+    "/estudiante-view"
   ].includes(location.pathname);
 
   const isDocentePath = location.pathname === "/docente";

@@ -119,27 +119,46 @@ createRoot(document.getElementById("root")).render(
                 </ProtectedRoute>
               }
             />
-  <Route path="/login" element={<Login />} />
-  <Route path="/register" element={<RegisterPersona />} />
-  <Route path="/autenticacion-login" element={<AutenticacionLogin />} />
-  <Route path="/register-step2" element={<AutenticacionUser />} />
-  <Route path="/register-step3" element={<RegisterUsuario />} />
-  <Route
-    path="/roles-admin"
-    element={
-      <ProtectedRoute requiredRole="admin">
-        <RolesAdmin />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-    path="/talleres"
-    element={
-      <ProtectedRoute requiredRole="admin">
-        <Talleres />
-      </ProtectedRoute>
-    }
-  />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<RegisterPersona />} />
+            <Route path="/autenticacion-login" element={<AutenticacionLogin />} />
+            <Route path="/register-step2" element={<AutenticacionUser />} />
+            <Route path="/register-step3" element={<RegisterUsuario />} />
+            <Route
+              path="/roles-admin"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <RolesAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/talleres"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Talleres />
+                </ProtectedRoute>
+              }
+            />
+
+            {/**Vista para el admin de la perspectiva del estudiante */}
+            <Route
+              path="/estudiante-view"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Estudiante />
+                </ProtectedRoute>
+              }
+            />
+            {/**Vista para el admin de la perspectiva del estudiante */}
+            <Route
+              path="/docentegu"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Docente />
+                </ProtectedRoute>
+              }
+            />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

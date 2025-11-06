@@ -115,7 +115,7 @@ function Admin() {
                   const tipo = tipos[idx];
                   const filtered = talleresArray.filter(t => t.tipo_taller === tipo);
                   return filtered.map(t => 
-                    `\n- Título: ${t.titulo || t.nombre || '-'} \n  ID Metodología: ${t.id_metodologia || '-'} \n  Evaluación: ${t.evaluacion_final || '-'} \n  Duración: ${t.duracion || '-'} \n  Resultado: ${t.resultado || '-'} \n  Fecha: ${t.fecha_realizacion ? new Date(t.fecha_realizacion).toLocaleDateString() : '-'}`
+                    `\n- Título: ${t.titulo || t.nombre || '-'} \n  ID Metodología: ${t.id_metodologia || '-'} \n  Evaluación: ${t.evaluacion_final || '-'} \n  Duración: ${t.duracion || '-'} \n  Resultado: ${t.resultado || '-'} \n  Fecha: ${t.fecha_realizacion ? new Date(t.fecha_realizacion).toLocaleDateString() : '-'}` 
                   ).join('\n');
                 }
               }
@@ -199,48 +199,24 @@ function Admin() {
   }, [initializeCharts, loading]);
 
   const StatWidget = useMemo(() => ({ title, value, description, bgColor }) => (
-    <div style={{
-      padding: '5px',
-      background: bgColor,
-      borderRadius: '10px',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      <h3 style={{ color: '#fff', marginBottom: '15px', fontSize: '18px' }}>{title}</h3>
-      <p style={{ fontSize: '32px', color: '#fff', margin: '10px 0' }}>{value}</p>
-      <p style={{ color: '#aaa', fontSize: '14px' }}>{description}</p>
+    <div className="stat-widget" style={{ background: bgColor }}>
+      <h3 className="stat-title">{title}</h3>
+      <p className="stat-value">{value}</p>
+      <p className="stat-desc">{description}</p>
     </div>
   ), []);
 
   const ChartWidget = useMemo(() => ({ title, id, bgColor, customHeight, customWidth }) => (
-    <div style={{
-      padding: '30px',
-      background: bgColor,
-      borderRadius: '10px',
-      width: customWidth || '92%',
-      height: customHeight || '350px'
-    }}>
-      <h3 style={{ color: '#fff', marginBottom: '15px' }}>{title}</h3>
-      <div style={{ 
-        width: '100%',
-        height: customHeight ? `${parseInt(customHeight) - 80}px` : '220px',
-        position: 'relative'
-      }}>
-        <canvas id={id} style={{ width: '100%', height: '100%' }} />
+    <div className="chart-widget" style={{ background: bgColor, width: customWidth || undefined, height: customHeight || undefined }}>
+      <h3 className="chart-title">{title}</h3>
+      <div className="chart-canvas-wrapper">
+        <canvas id={id} className="chart-canvas" />
       </div>
     </div>
   ), []);
 
   const renderGrid = useMemo(() => (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(4, 1fr)',
-      gridAutoRows: 'minmax(100px, auto)',
-      gap: '20px',
-      padding: '20px',
-      borderRadius: '15px',
-    }}>
+    <div className="admin-grid">
       <StatWidget
         title="Usuarios"
         value={userCount}
@@ -266,24 +242,21 @@ function Admin() {
         bgColor="rgba(4, 22, 70, 0.55)"
       />
 
-      <div style={{ gridColumn: 'span 2' }}>
+      <div className="span-2">
         <ChartWidget
           title="Distribución de Usuarios"
           id="userDistribution"
           bgColor="rgba(41, 98, 255, 0.2)"
         />
       </div>
-      <div style={{ gridColumn: 'span 2' }}>
+      <div className="span-2">
         <ChartWidget
           title="Distribución de Talleres por Tipo"
           id="talleresChart"
           bgColor="rgba(255, 152, 0, 0.2)"
         />
       </div>
-      <div style={{ 
-        gridColumn: 'span 4',
-        minHeight: '500px'
-      }}>
+      <div className="span-4 large-chart">
         <ChartWidget
           title="Metodologías"
           id="metodologiasChart"
@@ -296,26 +269,19 @@ function Admin() {
   ), [userCount, estudiantes.length, docentes.length, modulos.length]);
 
   return (
-    <div className="bg-gray-900 min-h-screen p-4">
-      <h1 className="text-center text-3xl font-bold mb-6" style={{ color: "white", textShadow: "2px 2px 4px rgba(0, 0, 0, 1)" }}>
+    <div className="admin-page bg-gray-900 min-h-screen p-4">
+      <h1 className="admin-title">
         Panel de Administración
       </h1>
-      
+
       {error && (
-        <div style={{ 
-          backgroundColor: "rgba(244, 67, 54, 0.2)", 
-          color: "#fff", 
-          padding: "15px", 
-          borderRadius: "8px",
-          marginBottom: "20px",
-          textAlign: "center"
-        }}>
+        <div className="admin-error">
           Error: {error}
         </div>
       )}
 
       {loading ? (
-        <div style={{ textAlign: "center", color: "#fff", padding: "20px" }}>
+        <div className="admin-loading">
           Cargando...
         </div>
       ) : renderGrid}
