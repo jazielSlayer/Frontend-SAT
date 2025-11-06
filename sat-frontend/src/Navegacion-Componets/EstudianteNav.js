@@ -1,84 +1,155 @@
+//Inicio, Documentacion, Estado de proyectos, pagos QR y perfil EstudianteNav
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { IoLogOut } from "react-icons/io5";
-import {
-  logo,
-  navStyle,
-  ulStyle,
-  linkStyle,
-  logoutButtonStyle,
-  LogoStyles,
-} from "./NavStyles";
+import { logo } from "./NavStyles";
+
 import { FaCircleUser } from "react-icons/fa6";
+import { FaBars } from "react-icons/fa";
+import { MdHomeFilled } from "react-icons/md";
+import { FaUserTie } from "react-icons/fa";
+import { PiStudentFill } from "react-icons/pi";
+import { GiScrollUnfurled } from "react-icons/gi";
+
 
 function EstudianteNav({ user, onLogout }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const navRef = useRef(null);
+
+  const toggleMenu = () => {
+    setCollapsed((s) => !s);
+  };
+
+  useEffect(() => {
+    function handleDocumentClick(e) {
+      if (!navRef.current) return;
+      if (!navRef.current.contains(e.target) && collapsed) {
+        setCollapsed(false);
+      }
+    }
+
+    document.addEventListener("click", handleDocumentClick);
+    return () => document.removeEventListener("click", handleDocumentClick);
+  }, [collapsed]);
+
+  // Detectar scroll para ocultar/mostrar navegación en móvil
+  useEffect(() => {
+    const handleScroll = () => {
+      const isMobile = window.innerWidth <= 768;
+      
+      if (!isMobile) return; // Solo funciona en móvil
+      
+      const currentScrollY = window.scrollY;
+      
+      // Si el scroll es hacia abajo y ha pasado de 10px, ocultar
+      if (currentScrollY > lastScrollY && currentScrollY > 10) {
+        setIsVisible(false);
+        setCollapsed(false); // Cerrar el menú si está abierto
+      } 
+      // Si el scroll es hacia arriba, mostrar
+      else if (currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
+  // Ajustar el padding del body según el estado de la navegación
+  useEffect(() => {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+      // En móvil: padding-top solo cuando está cerrado y visible
+      document.body.style.paddingTop = isVisible ? '80px' : '0';
+      document.body.style.paddingLeft = '0';
+    } else {
+      // En desktop: padding-left fijo de 50px (solo cuando está minimizado)
+      document.body.style.paddingTop = '0';
+      document.body.style.paddingLeft = '50px';
+    }
+
+    // Limpiar los estilos al desmontar el componente
+    return () => {
+      document.body.style.paddingTop = '0';
+      document.body.style.paddingLeft = '0';
+    };
+  }, [collapsed, isVisible]);
+
+  // Detectar cambios de tamaño de ventana
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= 768;
+      
+      if (isMobile) {
+        document.body.style.paddingTop = isVisible ? '80px' : '0';
+        document.body.style.paddingLeft = '0';
+      } else {
+        setIsVisible(true); // Siempre visible en desktop
+        document.body.style.paddingTop = '0';
+        document.body.style.paddingLeft = '50px';
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [collapsed, isVisible]);
+
+  const onNavLinkClick = () => {
+    setCollapsed(false);
+  };
+
   return (
-    <nav style={navStyle}>
-      <div>
-        <img src={logo} alt="Logo" style={LogoStyles} />
+    <nav 
+      ref={navRef} 
+      className={`admin-nav ${collapsed ? "nav-collapsed" : ""} ${!isVisible ? "nav-hidden" : ""}`}
+    >
+      <div className="nav-header">
+        <div className="nav-logo">
+          <img src={logo} alt="Logo" />
+        </div>
+        <div className="nav-controls">
+          <button className="menu-toggle" onClick={(e) => { e.stopPropagation(); toggleMenu(); }}>
+            <FaBars />
+          </button>
+        </div>
       </div>
-      <ul style={ulStyle}>
+
+      <ul className="nav-list" onClick={(e) => e.stopPropagation()}>
         <li>
-          <Link style={linkStyle} to="/estudiante">
-            Inicio
+          <Link className="nav-link" to="/estudiante" onClick={onNavLinkClick}>
+            <MdHomeFilled className="nav-icon" />
+            <span className="nav-text">Inicio</span>
           </Link>
         </li>
         <li>
-          <Link style={{ ...linkStyle, opacity: 0.7 }} to="/estudiante">
-            Documentacion
+          <Link className="nav-link" to="/estudiante" onClick={onNavLinkClick}>
+            <FaUserTie className="nav-icon" />
+            <span className="nav-text">Documentacion</span>
           </Link>
         </li>
         <li>
-          <Link style={{ ...linkStyle, opacity: 0.7 }} to="/estudiante">
-            Estado de proyectos
+          <Link className="nav-link" to="/estudiante" onClick={onNavLinkClick}>
+            <PiStudentFill className="nav-icon" />
+            <span className="nav-text">Estado de proyectos</span>
           </Link>
         </li>
         <li>
-          <Link style={{ ...linkStyle, opacity: 0.7 }} to="/estudiante">
-            Pagos QR
+          <Link className="nav-link" to="/estudiante" onClick={onNavLinkClick}>
+            <GiScrollUnfurled className="nav-icon" />
+            <span className="nav-text">pagos QR</span>
           </Link>
         </li>
-        {user && (
-           <li class="open_submenu">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  const subMenu = document.querySelector('.submenu');
-                  const openSubmenu = document.querySelector('.open_submenu')
-                  subMenu.classList.toggle('show');
-                  document.addEventListener('click', function(e) {
-                    if (subMenu.classList.contains('show')
-                    && !subMenu.contains(e.target)
-                    && !openSubmenu.contains(e.target)){
-                        subMenu.classList.remove('show');
-                    }
-                  });
-                          
-                }}
-              >
-                <FaCircleUser style={{ fontSize: '40px' }}/>
-              </button>
-                      <i class="fa-solid fa-chevron-down"></i>
-                      <div class="submenu">
-                        <ul>
-                          <li>
-                            <span style={{ color: '#fff', marginRight: '1rem' }}>
-                              Bienvenido, {user.user_name || user.nombres}
-                            </span>
-                          </li>
-                          <li>
-                            <span style={{ color: '#fff', marginRight: '1rem' }}>
-                              Editar perfil
-                            </span>
-                          </li>
-                          <li>
-                            <button style={logoutButtonStyle} onClick={onLogout}>
-                              <IoLogOut />
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-            </li>
-        )}
+        <li className="open_submenu user-icon-wrapper">
+            <Link className="nav-link user-link" to="/estudiante" onClick={(e) => { e.stopPropagation(); onNavLinkClick(); }}>
+              <FaCircleUser className="nav-icon" />
+              <span className="nav-text">Perfil {user.user_name || user.nombres} </span>
+            </Link>
+        </li>
       </ul>
     </nav>
   );
