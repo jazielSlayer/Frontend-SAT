@@ -4,7 +4,12 @@ import { logo } from "./NavStyles";
 
 import { FaCircleUser } from "react-icons/fa6";
 import { FaBars } from "react-icons/fa";
-
+import { MdHomeFilled } from "react-icons/md";
+import { FaUserTie } from "react-icons/fa";
+import { PiStudentFill } from "react-icons/pi";
+import { GiScrollUnfurled } from "react-icons/gi";
+import { GrWorkshop } from "react-icons/gr";
+import { FaUsersGear } from "react-icons/fa6";
 
 function AdminNav({ user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -14,8 +19,6 @@ function AdminNav({ user, onLogout }) {
     setCollapsed((s) => !s);
   };
 
-
-  // Cierra el menú si se hace click fuera del nav
   useEffect(() => {
     function handleDocumentClick(e) {
       if (!navRef.current) return;
@@ -43,46 +46,51 @@ function AdminNav({ user, onLogout }) {
           <button className="menu-toggle" onClick={(e) => { e.stopPropagation(); toggleMenu(); }}>
             <FaBars />
           </button>
-          {user && (
-            <li className="open_submenu">
-              <Link className="nav-link" to="/AdminUser" onClick={(e) => { e.stopPropagation(); onNavLinkClick(); }}>
-                <FaCircleUser style={{ fontSize: "40px" }} />
-              </Link>
-            </li>
-          )}
         </div>
       </div>
 
       <ul className="nav-list" onClick={(e) => e.stopPropagation()}>
         <li>
           <Link className="nav-link" to="/admin" onClick={onNavLinkClick}>
-            Dashboard
+            <MdHomeFilled className="nav-icon" />
+            <span className="nav-text">Dashboard</span>
           </Link>
         </li>
         <li>
           <Link className="nav-link" to="/docenteadmin" onClick={onNavLinkClick}>
-            Docentes
+            <FaUserTie className="nav-icon" />
+            <span className="nav-text">Docentes</span>
           </Link>
         </li>
         <li>
           <Link className="nav-link" to="/Estudiante-Admin" onClick={onNavLinkClick}>
-            Estudiantes
+            <PiStudentFill className="nav-icon" />
+            <span className="nav-text">Estudiantes</span>
           </Link>
         </li>
         <li>
           <Link className="nav-link" to="/roles-admin" onClick={onNavLinkClick}>
-            Roles
+            <GiScrollUnfurled className="nav-icon" />
+            <span className="nav-text">Roles</span>
           </Link>
         </li>
         <li>
           <Link className="nav-link" to="/talleres" onClick={onNavLinkClick}>
-            Talleres
+            <GrWorkshop className="nav-icon" />
+            <span className="nav-text">Talleres</span>
           </Link>
         </li>
         <li>
           <Link className="nav-link" to="/usuarios" onClick={onNavLinkClick}>
-            Usuarios
+            <FaUsersGear className="nav-icon"/>
+            <span className="nav-text">Usuarios</span>
           </Link>
+        </li>
+        <li className="open_submenu user-icon-wrapper">
+            <Link className="nav-link user-link" to="/AdminUser" onClick={(e) => { e.stopPropagation(); onNavLinkClick(); }}>
+              <FaCircleUser className="nav-icon" />
+              <span className="nav-text">Perfil</span>
+            </Link>
         </li>
       </ul>
     </nav>

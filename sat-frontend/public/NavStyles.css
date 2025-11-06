@@ -51,12 +51,18 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 250px;
+  width: 80px; /* Ancho reducido cuando está oculto */
   background-color: #040c637a;
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
-  z-index: 10000; /* asegurar que esté al frente */
+  z-index: 10000;
+  overflow: hidden; /* Oculta el contenido que sobresale */
+}
+
+/* Expande el nav al hacer hover */
+.admin-nav:hover {
+  width: 250px;
 }
 
 .nav-header {
@@ -66,10 +72,18 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 250px; /* Mantiene el ancho mínimo del contenido */
 }
 
 .nav-logo img {
   height: 40px;
+  opacity: 0; /* Oculta el logo cuando está colapsado */
+  transition: opacity 0.3s ease;
+}
+
+/* Muestra el logo al hacer hover */
+.admin-nav:hover .nav-logo img {
+  opacity: 1;
 }
 
 .nav-controls {
@@ -85,6 +99,7 @@
   list-style: none;
   margin: 0;
   padding: 1rem;
+  min-width: 250px; /* Mantiene el ancho mínimo del contenido */
 }
 
 
@@ -94,8 +109,15 @@
   font-size: 1rem;
   padding: 0.75rem 1rem;
   border-radius: 6px;
-  display: block;
+  display: flex;
+  align-items: center;
   transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+/* Muestra los links al hacer hover */
+.admin-nav:hover .nav-link {
+  opacity: 1;
 }
 
 .nav-link:hover {
@@ -105,7 +127,14 @@
 
 .open_submenu {
   position: relative;
-  z-index: 20; /* Asegura que el contenedor del submenú esté por encima del header */
+  z-index: 20;
+  opacity: 0; /* Oculta el icono de usuario cuando está colapsado */
+  transition: opacity 0.3s ease;
+}
+
+/* Muestra el usuario al hacer hover */
+.admin-nav:hover .open_submenu {
+  opacity: 1;
 }
 
 .open_submenu button {
@@ -215,6 +244,37 @@
   font-size: 1.25rem;
 }
 
+.nav-icon {
+  font-size: 1.5rem;
+  min-width: 1.5rem;
+  opacity: 1; /* Siempre visibles */
+  transition: none;
+  margin-right: 0.75rem;
+}
+
+.nav-text {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.admin-nav:hover .nav-text {
+  opacity: 1;
+}
+.user-icon-wrapper {
+  opacity: 1 !important; /* Siempre visible */
+}
+
+.user-icon {
+  font-size: 40px;
+  opacity: 1;
+  transition: none;
+}
+
+.user-link {
+  opacity: 1 !important;
+}
+
 @media (max-width: 768px) {
   .admin-nav {
     width: 100%;
@@ -222,9 +282,18 @@
     bottom: auto;
   }
 
+  /* En móvil no aplicamos el hover, usamos el toggle */
+  .admin-nav:hover {
+    width: 100%;
+  }
+
+  .nav-logo img {
+    opacity: 1; /* Siempre visible en móvil */
+  }
+
   .nav-collapsed {
     height: 100vh;
-    z-index: 10001; /* estar por encima cuando está abierto */
+    z-index: 10001;
   }
 
   .menu-toggle {
@@ -240,4 +309,9 @@
     margin-top: 1rem;
   }
 
+  /* En móvil mostramos todo cuando está colapsado (abierto) */
+  .nav-collapsed .nav-link,
+  .nav-collapsed .open_submenu {
+    opacity: 1;
+  }
 }
