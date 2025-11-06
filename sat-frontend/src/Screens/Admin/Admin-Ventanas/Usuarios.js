@@ -4,6 +4,7 @@ import { getUsersWithRoles, getAllRoles, assignRoleToUser } from "../../../API/A
 import { TallerStyles } from "../../Components screens/Styles.js";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import { MdManageAccounts } from "react-icons/md"
+import { buildPDFAdmin } from "../../../API/Admin/PDFs.js";
 
 
 function Usuarios() {
@@ -466,6 +467,7 @@ function Usuarios() {
                 >
                   {editingUser ? "Actualizar Usuario" : "Agregar Usuario"}
                 </button>
+                
                 {editingUser && (
                   <button
                     type="button"
@@ -478,7 +480,13 @@ function Usuarios() {
               </div>
             </form>
           </div>
-
+          <div className="formContainer">
+            <button style={{...TallerStyles.cancelButton,...(operationLoading ? { opacity: 0.5, cursor: "not-allowed" } : {}),}} 
+                onClick={buildPDFAdmin}
+                >
+                  PDF
+            </button>
+          </div>
           <div className="statsContainer">
             <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTotal }}>
               <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTotal }}>
