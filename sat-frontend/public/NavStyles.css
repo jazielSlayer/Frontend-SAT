@@ -47,6 +47,7 @@
 }
 
 .admin-nav {
+  transition: transform 0.3s ease-in-out;
   position: fixed;
   left: 0;
   top: 0;
@@ -281,10 +282,16 @@
     height: 80px;
     bottom: auto;
   }
-
+  .admin-nav.nav-hidden {
+    transform: translateY(-100%);
+  }
   /* En móvil no aplicamos el hover, usamos el toggle */
   .admin-nav:hover {
     width: 100%;
+  }
+
+  .admin-nav {
+    transition: transform 0.3s ease-in-out, width 0.3s ease, height 0.3s ease;
   }
 
   .nav-logo img {

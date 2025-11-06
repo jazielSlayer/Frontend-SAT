@@ -13,6 +13,8 @@ import { FaUsersGear } from "react-icons/fa6";
 
 function AdminNav({ user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const navRef = useRef(null);
 
   const toggleMenu = () => {
@@ -31,12 +33,81 @@ function AdminNav({ user, onLogout }) {
     return () => document.removeEventListener("click", handleDocumentClick);
   }, [collapsed]);
 
+  // Detectar scroll para ocultar/mostrar navegación en móvil
+  useEffect(() => {
+    const handleScroll = () => {
+      const isMobile = window.innerWidth <= 768;
+      
+      if (!isMobile) return; // Solo funciona en móvil
+      
+      const currentScrollY = window.scrollY;
+      
+      // Si el scroll es hacia abajo y ha pasado de 10px, ocultar
+      if (currentScrollY > lastScrollY && currentScrollY > 10) {
+        setIsVisible(false);
+        setCollapsed(false); // Cerrar el menú si está abierto
+      } 
+      // Si el scroll es hacia arriba, mostrar
+      else if (currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
+  // Ajustar el padding del body según el estado de la navegación
+  useEffect(() => {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+      // En móvil: padding-top solo cuando está cerrado y visible
+      document.body.style.paddingTop = isVisible ? '80px' : '0';
+      document.body.style.paddingLeft = '0';
+    } else {
+      // En desktop: padding-left fijo de 50px (solo cuando está minimizado)
+      document.body.style.paddingTop = '0';
+      document.body.style.paddingLeft = '50px';
+    }
+
+    // Limpiar los estilos al desmontar el componente
+    return () => {
+      document.body.style.paddingTop = '0';
+      document.body.style.paddingLeft = '0';
+    };
+  }, [collapsed, isVisible]);
+
+  // Detectar cambios de tamaño de ventana
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= 768;
+      
+      if (isMobile) {
+        document.body.style.paddingTop = isVisible ? '80px' : '0';
+        document.body.style.paddingLeft = '0';
+      } else {
+        setIsVisible(true); // Siempre visible en desktop
+        document.body.style.paddingTop = '0';
+        document.body.style.paddingLeft = '50px';
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [collapsed, isVisible]);
+
   const onNavLinkClick = () => {
     setCollapsed(false);
   };
 
   return (
-    <nav ref={navRef} className={`admin-nav ${collapsed ? "nav-collapsed" : ""}`}>
+    <nav 
+      ref={navRef} 
+      className={`admin-nav ${collapsed ? "nav-collapsed" : ""} ${!isVisible ? "nav-hidden" : ""}`}
+    >
       <div className="nav-header">
         <div className="nav-logo">
           <img src={logo} alt="Logo" />
