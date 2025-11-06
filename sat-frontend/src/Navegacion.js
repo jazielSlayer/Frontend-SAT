@@ -2,8 +2,9 @@ import {  useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AdminNav from "./Navegacion-Componets/AdminNav";
 import DocenteNav from "./Navegacion-Componets/DocenteNav";
+import DocenteNavView from "./Navegacion-Componets/DocenteView";
 import EstudianteNav from "./Navegacion-Componets/EstudianteNav";
-
+import EstudianteNavView from "./Navegacion-Componets/EstudianteView";
 
 function Navegacion() {
   const location = useLocation();
@@ -42,11 +43,21 @@ function Navegacion() {
     "/roles-admin",
     "/talleres",
     "/usuarios",
-    "/AdminUser",
-    "/estudiante-view"
+    "/AdminUser"
+  ].includes(location.pathname); 
+
+  const isAdminViewDocente = [
+    "/docente-view",
   ].includes(location.pathname);
 
-  const isDocentePath = location.pathname === "/docente";
+  const isAdminViewEstudiante = [
+    "/estudiante-view",
+  ].includes(location.pathname);
+
+  const isDocentePath = [
+    "/docente"
+  ].includes(location.pathname);
+
   const isEstudiantePath = location.pathname === "/estudiante";
  
   
@@ -54,6 +65,14 @@ function Navegacion() {
 
   if (isAdminPath) {
     return <AdminNav user={user} onLogout={handleLogout} />;
+  }
+
+  if (isAdminViewDocente) {
+    return <DocenteNavView user={user} onLogout={handleLogout} />;
+  }
+  
+  if (isAdminViewEstudiante) {
+    return <EstudianteNavView user={user} onLogout={handleLogout} />;
   }
 
   if (isDocentePath) {

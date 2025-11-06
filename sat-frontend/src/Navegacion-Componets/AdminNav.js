@@ -156,10 +156,22 @@ function AdminNav({ user, onLogout }) {
             <span className="nav-text">Usuarios</span>
           </Link>
         </li>
+        <li>
+          <Link className="nav-link" to="/estudiante-view" onClick={onNavLinkClick}>
+            <FaUsersGear className="nav-icon"/>
+            <span className="nav-text">Estudiante</span>
+          </Link>
+        </li>
+        <li>
+          <Link className="nav-link" to="/docente-view" onClick={onNavLinkClick}>
+            <FaUsersGear className="nav-icon"/>
+            <span className="nav-text">Docente</span>
+          </Link>
+        </li>
         <li className="open_submenu user-icon-wrapper">
             <Link className="nav-link user-link" to="/AdminUser" onClick={(e) => { e.stopPropagation(); onNavLinkClick(); }}>
               <FaCircleUser className="nav-icon" />
-              <span className="nav-text">Perfil {user.user_name || user.nombres} </span>
+              <span className="nav-text">Perfil {/**user.user_name*/} </span>
             </Link>
         </li>
       </ul>

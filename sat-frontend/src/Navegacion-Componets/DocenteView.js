@@ -6,12 +6,10 @@ import { logo } from "./NavStyles";
 
 import { FaCircleUser } from "react-icons/fa6";
 import { FaBars } from "react-icons/fa";
-import { MdHomeFilled } from "react-icons/md";
-import { FaUserTie } from "react-icons/fa";
-import { PiStudentFill } from "react-icons/pi";
+import DocenteNav from "./DocenteNav";
 
 
-function DocenteNav({ user, onLogout }) {
+function DocenteNavView({ user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -120,28 +118,11 @@ function DocenteNav({ user, onLogout }) {
       </div>
 
       <ul className="nav-list" onClick={(e) => e.stopPropagation()}>
-        <li>
-          <Link className="nav-link" to="/docente" onClick={onNavLinkClick}>
-            <MdHomeFilled className="nav-icon" />
-            <span className="nav-text">proyectos</span>
-          </Link>
-        </li>
-        <li>
-          <Link className="nav-link" to="/docente" onClick={onNavLinkClick}>
-            <FaUserTie className="nav-icon" />
-            <span className="nav-text">modulos </span>
-          </Link>
-        </li>
-        <li>
-          <Link className="nav-link" to="/docente" onClick={onNavLinkClick}>
-            <PiStudentFill className="nav-icon" />
-            <span className="nav-text">seguiemiento</span>
-          </Link>
-        </li>
+        <DocenteNav />
         <li className="open_submenu user-icon-wrapper">
-            <Link className="nav-link user-link" to="/AdminUser" onClick={(e) => { e.stopPropagation(); onNavLinkClick(); }}>
+            <Link className="nav-link user-link" to="/admin" onClick={(e) => { e.stopPropagation(); onNavLinkClick(); }}>
               <FaCircleUser className="nav-icon" />
-              <span className="nav-text">Perfil {/**user.user_name || user.nombres*/} </span>
+              <span className="nav-text">Admin {/**user.user_name || user.nombres*/} </span>
             </Link>
         </li>
       </ul>
@@ -149,4 +130,4 @@ function DocenteNav({ user, onLogout }) {
   );
 }
 
-export default DocenteNav;
+export default DocenteNavView;

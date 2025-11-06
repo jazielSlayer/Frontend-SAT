@@ -1,5 +1,4 @@
-// ruta para proyectos modulos y seguiemiento, inicio
-//DocenteNav
+//Inicio, Documentacion, Estado de proyectos, pagos QR y perfil EstudianteNav
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { logo } from "./NavStyles";
@@ -9,9 +8,10 @@ import { FaBars } from "react-icons/fa";
 import { MdHomeFilled } from "react-icons/md";
 import { FaUserTie } from "react-icons/fa";
 import { PiStudentFill } from "react-icons/pi";
+import { GiScrollUnfurled } from "react-icons/gi";
 
 
-function DocenteNav({ user, onLogout }) {
+function EstudianteNavView({ user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -121,27 +121,33 @@ function DocenteNav({ user, onLogout }) {
 
       <ul className="nav-list" onClick={(e) => e.stopPropagation()}>
         <li>
-          <Link className="nav-link" to="/docente" onClick={onNavLinkClick}>
+          <Link className="nav-link" to="/estudiante" onClick={onNavLinkClick}>
             <MdHomeFilled className="nav-icon" />
-            <span className="nav-text">proyectos</span>
+            <span className="nav-text">Inicio</span>
           </Link>
         </li>
         <li>
-          <Link className="nav-link" to="/docente" onClick={onNavLinkClick}>
+          <Link className="nav-link" to="/estudiante" onClick={onNavLinkClick}>
             <FaUserTie className="nav-icon" />
-            <span className="nav-text">modulos </span>
+            <span className="nav-text">Documentacion</span>
           </Link>
         </li>
         <li>
-          <Link className="nav-link" to="/docente" onClick={onNavLinkClick}>
+          <Link className="nav-link" to="/estudiante" onClick={onNavLinkClick}>
             <PiStudentFill className="nav-icon" />
-            <span className="nav-text">seguiemiento</span>
+            <span className="nav-text">Estado de proyectos</span>
+          </Link>
+        </li>
+        <li>
+          <Link className="nav-link" to="/estudiante" onClick={onNavLinkClick}>
+            <GiScrollUnfurled className="nav-icon" />
+            <span className="nav-text">pagos QR</span>
           </Link>
         </li>
         <li className="open_submenu user-icon-wrapper">
-            <Link className="nav-link user-link" to="/AdminUser" onClick={(e) => { e.stopPropagation(); onNavLinkClick(); }}>
+            <Link className="nav-link user-link" to="/admin" onClick={(e) => { e.stopPropagation(); onNavLinkClick(); }}>
               <FaCircleUser className="nav-icon" />
-              <span className="nav-text">Perfil {/**user.user_name || user.nombres*/} </span>
+              <span className="nav-text">Admin {/**user.user_name || user.nombres*/} </span>
             </Link>
         </li>
       </ul>
@@ -149,4 +155,4 @@ function DocenteNav({ user, onLogout }) {
   );
 }
 
-export default DocenteNav;
+export default EstudianteNavView;

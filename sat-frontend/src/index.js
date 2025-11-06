@@ -20,6 +20,7 @@ import Usuarios from "./Screens/Admin/Admin-Ventanas/Usuarios";
 import AutenticacionLogin from "./Screens/Login/LoginAuth";
 import AdminUser from "./Screens/Admin/AdminUser";
 
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -152,7 +153,7 @@ createRoot(document.getElementById("root")).render(
             />
             {/**Vista para el admin de la perspectiva del estudiante */}
             <Route
-              path="/docentegu"
+              path="/docente-view"
               element={
                 <ProtectedRoute requiredRole="admin">
                   <Docente />
