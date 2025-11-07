@@ -54,7 +54,6 @@ export const estudianteMenuItems = [
   }
 ];
 
-// Configuración de la última opción (Perfil o Admin)
 export const getLastMenuItem = (isAdminView, userRoute, user) => {
   if (isAdminView) {
     return {

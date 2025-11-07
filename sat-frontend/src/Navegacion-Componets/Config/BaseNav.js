@@ -1,4 +1,3 @@
-// src/components/Navegacion-Componets/BaseNav.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { logo } from "../NavStyles";
@@ -107,7 +106,6 @@ function BaseNav({ menuItems, lastMenuItem, user, onLogout }) {
       </div>
 
       <ul className="nav-list" onClick={(e) => e.stopPropagation()}>
-        {/* Renderizar items del menú dinámicamente */}
         {menuItems.map((item) => {
           const IconComponent = item.icon;
           return (
@@ -120,7 +118,6 @@ function BaseNav({ menuItems, lastMenuItem, user, onLogout }) {
           );
         })}
 
-        {/* Última opción: Perfil o Admin */}
         <li className="open_submenu user-icon-wrapper">
           <Link 
             className="nav-link user-link" 
