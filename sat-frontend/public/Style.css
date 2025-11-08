@@ -8,10 +8,9 @@ body {
 
 header {
   position: relative;
-  background-color: white;
+  background-color: rgba(3, 8, 60, 0.619);
   width: 100%;
   min-height: 80px;
-  box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;

@@ -19,7 +19,7 @@ import AutenticacionUser from "./Screens/Login/Register/AutenticacionUser";
 import Usuarios from "./Screens/Admin/Admin-Ventanas/Usuarios";
 import AutenticacionLogin from "./Screens/Login/LoginAuth";
 import AdminUser from "./Screens/Admin/AdminUser";
-
+import ProyectosAdmin from "./Screens/Admin/Admin-Ventanas/AdminProyects";
 
 const AuthContext = createContext();
 
@@ -157,6 +157,14 @@ createRoot(document.getElementById("root")).render(
               element={
                 <ProtectedRoute requiredRole="admin">
                   <Docente />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/proyectos/admin"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <ProyectosAdmin />
                 </ProtectedRoute>
               }
             />

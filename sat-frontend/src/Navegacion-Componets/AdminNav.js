@@ -12,6 +12,7 @@ import { GrWorkshop } from "react-icons/gr";
 import { FaUsersGear } from "react-icons/fa6";
 import { GiTeacher } from "react-icons/gi";
 import { PiStudentBold } from "react-icons/pi";
+import { PiProjectorScreenChartFill } from "react-icons/pi";
 
 function AdminNav({ user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -156,6 +157,12 @@ function AdminNav({ user, onLogout }) {
           <Link className="nav-link" to="/usuarios" onClick={onNavLinkClick}>
             <FaUsersGear className="nav-icon"/>
             <span className="nav-text">Usuarios</span>
+          </Link>
+        </li>
+        <li>
+          <Link className="nav-link" to="/proyectos/admin" onClick={onNavLinkClick}>
+            <PiProjectorScreenChartFill  className="nav-icon"/>
+            <span className="nav-text">Proyectos</span>
           </Link>
         </li>
         <li>
