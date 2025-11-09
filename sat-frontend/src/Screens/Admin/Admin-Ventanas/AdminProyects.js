@@ -130,10 +130,9 @@ const ProyectosView = () => {
 
   return (
     <div className="proyectos-container">
-        {/* === HEADER === */}
       <header className="proyectos-header">
         <h1 style={{padding: 15}}>Proyectos de Grado</h1>
-        <div className="header-actions">
+        <div className="header-actions" style={{padding: 15}}>
           <button className="btn-search" onClick={() => setShowSearch(true)}>
             Buscar
           </button>
@@ -143,7 +142,6 @@ const ProyectosView = () => {
         </div>
       </header>
 
-      {/* === ESTADÍSTICAS === */}
       <div className="stats-container">
         <div className="stat-card stat-total">
           <h4 className="stat-title">Total Proyectos</h4>

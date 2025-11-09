@@ -173,7 +173,7 @@ export async function getProyectoEstudiante(id_estudiante) {
 export async function getProyectoDocente(id_docente) {
   if (!id_docente || isNaN(id_docente)) throw new Error('ID de docente inválido');
   try {
-    const response = await fetch(`${API_URL}/proyectos/docente/${id_docente}`, {
+    const response = await fetch(`${API_URL}/proyecto/docente/${id_docente}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
