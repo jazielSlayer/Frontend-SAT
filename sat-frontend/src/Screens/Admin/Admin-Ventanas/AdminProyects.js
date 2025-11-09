@@ -8,9 +8,14 @@ import {
   searchProyectos
 } from '../../../API/Admin/Proyecto';
 
+// === SERVICIOS OFICIALES ===
+import { getEstudiantes } from '../../../API/Admin/Estudiante_admin';
+import { getDocentes } from '../../../API/Admin/Docente_admin';
 
 const ProyectosView = () => {
   const [proyectos, setProyectos] = useState([]);
+  const [estudiantes, setEstudiantes] = useState([]);
+  const [docentes, setDocentes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -25,25 +30,47 @@ const ProyectosView = () => {
   const [formData, setFormData] = useState({});
   const [searchFilters, setSearchFilters] = useState({});
 
-  // Cargar proyectos
+  // Búsqueda en selects
+  const [estSearch, setEstSearch] = useState('');
+  const [docSearch, setDocSearch] = useState('');
+
+  // === CARGAR DATOS INICIALES ===
   useEffect(() => {
-    loadProyectos();
+    const loadInitialData = async () => {
+      try {
+        setLoading(true);
+        const [proyectosData, estudiantesData, docentesData] = await Promise.all([
+          getAllProyectos(),
+          getEstudiantes(),
+          getDocentes()
+        ]);
+        setProyectos(proyectosData);
+        setEstudiantes(estudiantesData);
+        setDocentes(docentesData);
+      } catch (err) {
+        setError('Error al cargar datos');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadInitialData();
   }, []);
 
-  const loadProyectos = async () => {
-    try {
-      setLoading(true);
-      const data = await getAllProyectos();
-      setProyectos(data);
-    } catch (err) {
-      setError('Error al cargar proyectos');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // === FILTROS EN TIEMPO REAL ===
+  const filteredEstudiantes = estudiantes.filter(e =>
+    `${e.nombres} ${e.apellidopat} ${e.apellidomat} ${e.numero_matricula || ''}`
+      .toLowerCase()
+      .includes(estSearch.toLowerCase())
+  );
 
-  // === ESTADÍSTICAS EN TIEMPO REAL ===
+  const filteredDocentes = docentes.filter(d =>
+    `${d.nombres} ${d.apellidopat} ${d.apellidomat || ''} ${d.numero_item || ''}`
+      .toLowerCase()
+      .includes(docSearch.toLowerCase())
+  );
+
+  // === ESTADÍSTICAS ===
   const stats = {
     total: proyectos.length,
     calificados: proyectos.filter(p => p.calificacion).length,
@@ -55,7 +82,12 @@ const ProyectosView = () => {
     }).length
   };
 
-  // Abrir modal de detalles
+  // === HANDLERS ===
+  const loadProyectos = async () => {
+    const data = await getAllProyectos();
+    setProyectos(data);
+  };
+
   const openDetails = async (id) => {
     try {
       const proyecto = await getProyectoById(id);
@@ -66,25 +98,32 @@ const ProyectosView = () => {
     }
   };
 
-  // Crear
+  const openEdit = () => {
+    setFormData({
+      ...selectedProyecto,
+      id_estudiante: selectedProyecto.id_estudiante,
+      id_docente_guia: selectedProyecto.id_docente_guia,
+      id_docente_revisor: selectedProyecto.id_docente_revisor,
+      fecha_entrega: selectedProyecto.fecha_entrega?.split('T')[0] || '',
+      fecha_defensa: selectedProyecto.fecha_defensa?.split('T')[0] || '',
+    });
+    setShowEdit(true);
+    setShowDetails(false);
+  };
+
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
       await createProyecto(formData);
       setShowCreate(false);
       setFormData({});
+      setEstSearch('');
+      setDocSearch('');
       loadProyectos();
       alert('Proyecto creado');
     } catch (err) {
       alert(err.message || 'Error al crear');
     }
-  };
-
-  // Editar
-  const openEdit = () => {
-    setFormData(selectedProyecto);
-    setShowEdit(true);
-    setShowDetails(false);
   };
 
   const handleUpdate = async (e) => {
@@ -100,7 +139,6 @@ const ProyectosView = () => {
     }
   };
 
-  // Eliminar
   const handleDelete = async () => {
     if (!window.confirm('¿Eliminar este proyecto?')) return;
     try {
@@ -113,7 +151,6 @@ const ProyectosView = () => {
     }
   };
 
-  // Búsqueda
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
@@ -125,55 +162,32 @@ const ProyectosView = () => {
     }
   };
 
-  if (loading) return <div className="loading">Cargando proyectos...</div>;
+  if (loading) return <div className="loading">Cargando...</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="proyectos-container">
       <header className="proyectos-header">
-        <h1 style={{padding: 15}}>Proyectos de Grado</h1>
-        <div className="header-actions" style={{padding: 15}}>
-          <button className="btn-search" onClick={() => setShowSearch(true)}>
-            Buscar
-          </button>
-          <button className="btn-create" onClick={() => setShowCreate(true)}>
-            + Nuevo Proyecto
-          </button>
+        <h1 style={{ padding: 15 }}>Proyectos de Grado</h1>
+        <div className="header-actions" style={{ padding: 15 }}>
+          <button className="btn-search" onClick={() => setShowSearch(true)}>Buscar</button>
+          <button className="btn-create" onClick={() => setShowCreate(true)}>+ Nuevo Proyecto</button>
         </div>
       </header>
 
       <div className="stats-container">
-        <div className="stat-card stat-total">
-          <h4 className="stat-title">Total Proyectos</h4>
-          <p className="stat-value">{stats.total}</p>
-        </div>
-        <div className="stat-card stat-completed">
-          <h4 className="stat-title">Calificados</h4>
-          <p className="stat-value">{stats.calificados}</p>
-        </div>
-        <div className="stat-card stat-pending">
-          <h4 className="stat-title">En Curso</h4>
-          <p className="stat-value">{stats.enCurso}</p>
-        </div>
-        <div className="stat-card stat-overdue">
-          <h4 className="stat-title">Retrasados</h4>
-          <p className="stat-value">{stats.retrasados}</p>
-        </div>
+        <div className="stat-card stat-total"><h4>Total</h4><p>{stats.total}</p></div>
+        <div className="stat-card stat-completed"><h4>Calificados</h4><p>{stats.calificados}</p></div>
+        <div className="stat-card stat-pending"><h4>En Curso</h4><p>{stats.enCurso}</p></div>
+        <div className="stat-card stat-overdue"><h4>Retrasados</h4><p>{stats.retrasados}</p></div>
       </div>
 
-      
-
-      {/* === GRID DE PROYECTOS === */}
       <div className="proyectos-grid">
         {proyectos.length === 0 ? (
           <p className="no-data">No hay proyectos registrados</p>
         ) : (
           proyectos.map((proyecto) => (
-            <div
-              key={proyecto.id}
-              className="proyecto-card"
-              onClick={() => openDetails(proyecto.id)}
-            >
+            <div key={proyecto.id} className="proyecto-card" onClick={() => openDetails(proyecto.id)}>
               <div className="card-header">
                 <h3>{proyecto.titulo}</h3>
                 <span className={`status ${proyecto.calificacion ? 'completed' : 'pending'}`}>
@@ -190,10 +204,10 @@ const ProyectosView = () => {
         )}
       </div>
 
-      {/* === MODAL DETALLES === */}
+      {/* MODAL DETALLES */}
       {showDetails && selectedProyecto && (
         <div className="modal-overlay" onClick={() => setShowDetails(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h2>{selectedProyecto.titulo}</h2>
             <div className="modal-grid">
               <div>
@@ -211,12 +225,8 @@ const ProyectosView = () => {
                 <p><strong>Defensa:</strong> {selectedProyecto.fecha_defensa || 'No programada'}</p>
               </div>
             </div>
-            {selectedProyecto.resumen && (
-              <div className="resumen">
-                <p><strong>Resumen:</strong></p>
-                <p>{selectedProyecto.resumen}</p>
-              </div>
-            )}
+            {selectedProyecto.resumen && <div className="resumen"><p><strong>Resumen:</strong></p><p>{selectedProyecto.resumen}</p></div>}
+            {selectedProyecto.observacion && <div className="resumen"><p><strong>Observación:</strong></p><p>{selectedProyecto.observacion}</p></div>}
             <div className="modal-actions">
               <button className="btn-edit" onClick={openEdit}>Editar</button>
               <button className="btn-delete" onClick={handleDelete}>Eliminar</button>
@@ -226,41 +236,144 @@ const ProyectosView = () => {
         </div>
       )}
 
-      {/* === MODAL CREAR === */}
       {showCreate && (
         <div className="modal-overlay" onClick={() => setShowCreate(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h2>Crear Proyecto</h2>
             <form onSubmit={handleCreate}>
-              <input className='InputProyecto' placeholder="Título" onChange={(e) => setFormData({...formData, titulo: e.target.value})} required />
-              <input className='InputProyecto' placeholder="Línea de investigación" onChange={(e) => setFormData({...formData, linea_investigacion: e.target.value})} required />
-              <input className='InputProyecto' placeholder="Área de conocimiento" onChange={(e) => setFormData({...formData, area_conocimiento: e.target.value})} required />
-              <input className='InputProyecto' placeholder="ID Estudiante" type="number" onChange={(e) => setFormData({...formData, id_estudiante: e.target.value})} required />
-              <input className='InputProyecto' placeholder="ID Docente Guía" type="number" onChange={(e) => setFormData({...formData, id_docente_guia: e.target.value})} required />
-              <input className='InputProyecto' placeholder="ID Docente Revisor" type="number" onChange={(e) => setFormData({...formData, id_docente_revisor: e.target.value})} required />
-              <input className='InputProyecto' placeholder="Fecha entrega (YYYY-MM-DD)" onChange={(e) => setFormData({...formData, fecha_entrega: e.target.value})} required />
+              <div className="form-full">
+                <input className="InputProyecto" placeholder="Título" onChange={e => setFormData({...formData, titulo: e.target.value})} required />
+              </div>
+
+              <div className="form-row">
+                <input className="InputProyecto" placeholder="Línea de investigación" onChange={e => setFormData({...formData, linea_investigacion: e.target.value})} required />
+                <input className="InputProyecto" placeholder="Área de conocimiento" onChange={e => setFormData({...formData, area_conocimiento: e.target.value})} required />
+              </div>
+
+              <div className="select-container">
+                <select className="InputProyecto" onChange={e => setFormData({...formData, id_estudiante: e.target.value})} required>
+                  <option value="">Seleccione estudiante</option>
+                  {filteredEstudiantes.map(est => (
+                    <option key={est.id} value={est.id}>
+                      {est.nombres} {est.apellidopat} {est.apellidomat} - {est.numero_matricula}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="select-container">
+                <select className="InputProyecto" onChange={e => setFormData({...formData, id_docente_guia: e.target.value})} required>
+                  <option value="">Seleccione docente guía</option>
+                  {filteredDocentes.map(doc => (
+                    <option key={doc.id} value={doc.id}>
+                      {doc.nombres} {doc.apellidopat} ({doc.numero_item})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-full">
+                <select className="InputProyecto" onChange={e => setFormData({...formData, id_docente_revisor: e.target.value})} required>
+                  <option value="">Seleccione docente revisor</option>
+                  {filteredDocentes.map(doc => (
+                    <option key={doc.id} value={doc.id}>
+                      {doc.nombres} {doc.apellidopat} ({doc.numero_item})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-row form-row-3">
+                <input className="InputProyecto" type="date" onChange={e => setFormData({...formData, fecha_entrega: e.target.value})} required />
+                <input className="InputProyecto" type="date" onChange={e => setFormData({...formData, fecha_defensa: e.target.value})} />
+                <input className="InputProyecto" type="number" min="0" max="100" placeholder="Calificación" onChange={e => setFormData({...formData, calificacion: e.target.value})} />
+              </div>
+
+              <div className="form-full">
+                <textarea className="InputProyecto" placeholder="Resumen" onChange={e => setFormData({...formData, resumen: e.target.value})} />
+              </div>
+              <div className="form-full">
+                <textarea className="InputProyecto" placeholder="Observación" onChange={e => setFormData({...formData, observacion: e.target.value})} />
+              </div>
+
               <div className="modal-actions">
                 <button type="submit" className="btn-create">Crear</button>
-                <button type="button" className="btn-close" onClick={() => setShowCreate(false)}>Cancelar</button>
+                <button type="button" className="btn-close" onClick={() => { setShowCreate(false); setEstSearch(''); setDocSearch(''); }}>
+                  Cancelar
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* === MODAL EDITAR === */}
       {showEdit && (
         <div className="modal-overlay" onClick={() => setShowEdit(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h2>Editar Proyecto</h2>
             <form onSubmit={handleUpdate}>
-              <input className='InputProyecto' value={formData.titulo || ''} onChange={(e) => setFormData({...formData, titulo: e.target.value})} required />
-              <input className='InputProyecto' value={formData.linea_investigacion || ''} onChange={(e) => setFormData({...formData, linea_investigacion: e.target.value})} />
-              <input className='InputProyecto' value={formData.area_conocimiento || ''} onChange={(e) => setFormData({...formData, area_conocimiento: e.target.value})} />
-              <input className='InputProyecto' value={formData.calificacion || ''} onChange={(e) => setFormData({...formData, calificacion: e.target.value})} />
-              <input  className='InputProyecto'value={formData.fecha_entrega || ''} onChange={(e) => setFormData({...formData, fecha_entrega: e.target.value})} />
+              <div className="form-full">
+                <input className="InputProyecto" value={formData.titulo || ''} onChange={e => setFormData({...formData, titulo: e.target.value})} required />
+              </div>
+
+              <div className="form-row">
+                <input className="InputProyecto" value={formData.linea_investigacion || ''} onChange={e => setFormData({...formData, linea_investigacion: e.target.value})} required />
+                <input className="InputProyecto" value={formData.area_conocimiento || ''} onChange={e => setFormData({...formData, area_conocimiento: e.target.value})} required />
+              </div>
+
+              {/* Estudiante */}
+              <div className="form-full">
+                <select className="InputProyecto" value={formData.id_estudiante || ''} onChange={e => setFormData({...formData, id_estudiante: e.target.value})} required>
+                  <option value="">Seleccione estudiante</option>
+                  {estudiantes.map(est => (
+                    <option key={est.id} value={est.id}>
+                      {est.nombres} {est.apellidopat} {est.apellidomat} - {est.numero_matricula}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Guía */}
+              <div className="form-full">
+                <select className="InputProyecto" value={formData.id_docente_guia || ''} onChange={e => setFormData({...formData, id_docente_guia: e.target.value})} required>
+                  <option value="">Seleccione docente guía</option>
+                  {docentes.map(doc => (
+                    <option key={doc.id} value={doc.id}>
+                      {doc.nombres} {doc.apellidopat} ({doc.numero_item})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Revisor */}
+              <div className="form-full">
+                <select className="InputProyecto" value={formData.id_docente_revisor || ''} onChange={e => setFormData({...formData, id_docente_revisor: e.target.value})} required>
+                  <option value="">Seleccione docente revisor</option>
+                  {docentes.map(doc => (
+                    <option key={doc.id} value={doc.id}>
+                      {doc.nombres} {doc.apellidopat} ({doc.numero_item})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Fechas y Calificación */}
+              <div className="form-row form-row-3">
+                <input className="InputProyecto" type="date" value={formData.fecha_entrega || ''} onChange={e => setFormData({...formData, fecha_entrega: e.target.value})} required />
+                <input className="InputProyecto" type="date" value={formData.fecha_defensa || ''} onChange={e => setFormData({...formData, fecha_defensa: e.target.value})} />
+                <input className="InputProyecto" type="number" min="0" max="100" value={formData.calificacion || ''} onChange={e => setFormData({...formData, calificacion: e.target.value})} />
+              </div>
+
+              {/* Textareas */}
+              <div className="form-full">
+                <textarea className="InputProyecto" value={formData.resumen || ''} onChange={e => setFormData({...formData, resumen: e.target.value})} />
+              </div>
+              <div className="form-full">
+                <textarea className="InputProyecto" value={formData.observacion || ''} onChange={e => setFormData({...formData, observacion: e.target.value})} />
+              </div>
+
               <div className="modal-actions">
-                <button type="submit" className="btn-edit">Guardar</button>
+                <button type="submit" className="btn-edit">Guardar Cambios</button>
                 <button type="button" className="btn-close" onClick={() => setShowEdit(false)}>Cancelar</button>
               </div>
             </form>
@@ -268,15 +381,21 @@ const ProyectosView = () => {
         </div>
       )}
 
-      {/* === MODAL BUSCAR === */}
+      {/* MODAL BUSCAR */}
       {showSearch && (
         <div className="modal-overlay" onClick={() => setShowSearch(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h2>Buscar Proyectos</h2>
             <form onSubmit={handleSearch}>
-              <input className='InputProyecto' placeholder="Título" onChange={(e) => setSearchFilters({...searchFilters, titulo: e.target.value})} />
-              <input className='InputProyecto' placeholder="Área de conocimiento" onChange={(e) => setSearchFilters({...searchFilters, area_conocimiento: e.target.value})} />
-              <input className='InputProyecto' placeholder="Estudiante" onChange={(e) => setSearchFilters({...searchFilters, estudiante: e.target.value})} />
+              <div className="form-full">
+                <input className="InputProyecto" placeholder="Título" onChange={e => setSearchFilters({...searchFilters, titulo: e.target.value})} />
+              </div>
+              <div className="form-full">
+                <input className="InputProyecto" placeholder="Área de conocimiento" onChange={e => setSearchFilters({...searchFilters, area_conocimiento: e.target.value})} />
+              </div>
+              <div className="form-full">
+                <input className="InputProyecto" placeholder="Estudiante" onChange={e => setSearchFilters({...searchFilters, estudiante: e.target.value})} />
+              </div>
               <div className="modal-actions">
                 <button type="submit" className="btn-search">Buscar</button>
                 <button type="button" className="btn-close" onClick={() => setShowSearch(false)}>Cancelar</button>
