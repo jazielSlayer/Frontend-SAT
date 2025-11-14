@@ -54,13 +54,22 @@ function Navegacion() {
 
   const isAdminViewEstudiante = [
     "/estudiante-view",
+    "/estudiante/taller-1",
+    "/estudiante/taller-2",
+    "/estudiante/taller-3"
   ].includes(location.pathname);
 
   const isDocentePath = [
     "/docente"
   ].includes(location.pathname);
 
-  const isEstudiantePath = location.pathname === "/estudiante";
+  const isEstudiantePath = 
+  [ 
+    "/estudiante",
+    "/estudiante/taller-1",
+    "/estudiante/taller-2",
+    "/estudiante/taller-3", 
+  ].includes(location.pathname);
  
   
   
