@@ -44,7 +44,8 @@ function Navegacion() {
     "/talleres",
     "/usuarios",
     "/AdminUser",
-    "/proyectos/admin"
+    "/proyectos/admin",
+    
   ].includes(location.pathname); 
 
   const isAdminViewDocente = [

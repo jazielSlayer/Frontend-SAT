@@ -51,7 +51,25 @@ export const estudianteMenuItems = [
     icon: GiScrollUnfurled,
     label: "Pagos QR",
     key: "pagos-qr"
-  }
+  },
+  {
+    path: "/estudiante/taller-1",
+    icon: GiScrollUnfurled,
+    label: "Taller 1",
+    key: "Taller-1"
+  },
+  {
+    path: "/estudiante/taller-2",
+    icon: GiScrollUnfurled,
+    label: "Taller 2",
+    key: "Taller-2"
+  },
+  {
+    path: "/estudiante/taller-3",
+    icon: GiScrollUnfurled,
+    label: "Taller 3",
+    key: "Taller-3"
+  },
 ];
 
 export const getLastMenuItem = (isAdminView, userRoute, user) => {

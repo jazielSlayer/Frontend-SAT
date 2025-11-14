@@ -20,7 +20,9 @@ import Usuarios from "./Screens/Admin/Admin-Ventanas/Usuarios";
 import AutenticacionLogin from "./Screens/Login/LoginAuth";
 import AdminUser from "./Screens/Admin/AdminUser";
 import ProyectosAdmin from "./Screens/Admin/Admin-Ventanas/AdminProyects";
-
+import Taller1 from "./Screens/Users/Estudiante/Taller1";
+import Taller2 from "./Screens/Users/Estudiante/Taller2";
+import Taller3 from "./Screens/Users/Estudiante/Taller3";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -165,6 +167,30 @@ createRoot(document.getElementById("root")).render(
               element={
                 <ProtectedRoute requiredRole="admin">
                   <ProyectosAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/estudiante/taller-1"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Taller1 />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/estudiante/taller-2"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Taller2 />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/estudiante/taller-3"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Taller3 />
                 </ProtectedRoute>
               }
             />
