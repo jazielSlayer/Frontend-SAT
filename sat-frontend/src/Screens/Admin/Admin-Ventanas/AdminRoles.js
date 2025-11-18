@@ -13,6 +13,7 @@ import {
 } from "../../../API/Admin/Roles";
 import { styles } from "../../Components screens/Styles";
 
+
 function RolesAdmin() {
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
@@ -327,7 +328,7 @@ function RolesAdmin() {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="proyectos-container">
       <header className="proyectos-header">
         <h2 style={styles.title}>Administración de Roles y Permisos</h2>
         <div className="header-actions" style={{ padding: 15 }}>
@@ -445,36 +446,23 @@ function RolesAdmin() {
                 <form onSubmit={handleCreate}>
                   {error && <div style={styles.errorMessage}>Error: {error}</div>}
                   
-                  <div className="form-full">
-                    <label style={styles.formLabel}>Nombre del Rol:</label>
-                    <input
-                      className="InputProyecto"
-                      type="text"
-                      name="name"
-                      placeholder="Ej: Administrador, Docente, Estudiante"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      disabled={operationLoading}
-                    />
+                  <div className="form-row">
+                    <div>
+                      <label style={styles.formLabel}>Nombre del Rol:</label>
+                      <input
+                        className="InputProyecto"
+                        type="text"
+                        name="name"
+                        placeholder="Ej: Administrador, Docente, Estudiante"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        disabled={operationLoading}
+                      />
+                    </div>
                     {formErrors.name && <p style={styles.formErrorText}>{formErrors.name}</p>}
-                  </div>
-
-                  <div className="form-full">
-                    <label style={styles.formLabel}>Descripción:</label>
-                    <input
-                      className="InputProyecto"
-                      type="text"
-                      name="descripcion"
-                      placeholder="Ej: Rol con acceso completo al sistema"
-                      value={formData.descripcion}
-                      onChange={handleChange}
-                      disabled={operationLoading}
-                    />
-                  </div>
-
-                  <div className="form-full">
-                    <label style={styles.formLabel}>Ruta Inicial:</label>
+                    <div>
+                      <label style={styles.formLabel}>Ruta Inicial:</label>
                     <input
                       className="InputProyecto"
                       type="text"
@@ -488,6 +476,7 @@ function RolesAdmin() {
                     {formErrors.start_path && (
                       <p style={styles.formErrorText}>{formErrors.start_path}</p>
                     )}
+                    </div>
                   </div>
 
                   <div className="form-full">
@@ -520,6 +509,20 @@ function RolesAdmin() {
                       Rol por defecto para nuevos usuarios
                     </label>
                   </div>
+
+                  <div className="form-full">
+                    <label style={styles.formLabel}>Descripción:</label>
+                    <input
+                      className="InputProyecto"
+                      type="text"
+                      name="descripcion"
+                      placeholder="Ej: Rol con acceso completo al sistema"
+                      value={formData.descripcion}
+                      onChange={handleChange}
+                      disabled={operationLoading}
+                    />
+                  </div>
+                  
 
                   <div className="modal-actions">
                     <button
@@ -551,9 +554,11 @@ function RolesAdmin() {
                 <form onSubmit={handleUpdate}>
                   {error && <div style={styles.errorMessage}>Error: {error}</div>}
                   
-                  <div className="form-full">
-                    <label style={styles.formLabel}>Nombre del Rol:</label>
-                    <input
+                  <div className="form-row">
+                    
+                    <div>
+                      <label style={styles.formLabel}>Nombre</label>
+                      <input
                       className="InputProyecto"
                       type="text"
                       name="name"
@@ -563,41 +568,30 @@ function RolesAdmin() {
                       required
                       disabled={operationLoading}
                     />
+                    </div>
                     {formErrors.name && <p style={styles.formErrorText}>{formErrors.name}</p>}
-                  </div>
-
-                  <div className="form-full">
-                    <label style={styles.formLabel}>Descripción:</label>
-                    <input
-                      className="InputProyecto"
-                      type="text"
-                      name="descripcion"
-                      placeholder="Ej: Rol con acceso completo al sistema"
-                      value={formData.descripcion}
-                      onChange={handleChange}
-                      disabled={operationLoading}
-                    />
-                  </div>
-
-                  <div className="form-full">
-                    <label style={styles.formLabel}>Ruta Inicial:</label>
-                    <input
-                      className="InputProyecto"
-                      type="text"
-                      name="start_path"
-                      placeholder="Ej: /admin, /docente, /estudiante"
-                      value={formData.start_path}
-                      onChange={handleChange}
-                      required
-                      disabled={operationLoading}
-                    />
+                    <div>
+                      <label style={styles.formLabel}>Ruta</label>
+                      <input
+                        className="InputProyecto"
+                        type="text"
+                        name="start_path"
+                        placeholder="Ej: /admin, /docente, /estudiante"
+                        value={formData.start_path}
+                        onChange={handleChange}
+                        required
+                        disabled={operationLoading}
+                      />
+                    </div>
                     {formErrors.start_path && (
                       <p style={styles.formErrorText}>{formErrors.start_path}</p>
                     )}
                   </div>
 
-                  <div className="form-full">
-                    <label style={styles.formLabel}>Guard Name:</label>
+    
+                  <div className="form-row">
+                    <div>
+                      <label style={styles.formLabel}>Guard Name:</label>
                     <select
                       className="InputProyecto"
                       name="guard_name"
@@ -611,10 +605,11 @@ function RolesAdmin() {
                     {formErrors.guard_name && (
                       <p style={styles.formErrorText}>{formErrors.guard_name}</p>
                     )}
-                  </div>
-
-                  <div className="form-full">
-                    <label style={styles.formCheckboxLabel}>
+                    </div>
+                    <div >
+                      <label style={styles.formCheckboxLabel}>
+                        Rol por defecto para nuevos usuarios
+                      </label>
                       <input
                         type="checkbox"
                         name="is_default"
@@ -623,8 +618,20 @@ function RolesAdmin() {
                         disabled={operationLoading}
                         style={styles.formCheckbox}
                       />
-                      Rol por defecto para nuevos usuarios
-                    </label>
+                    </div>
+                  </div>
+
+                  <div className="form-full">
+                    <label style={styles.formLabel}>Descripción:</label>
+                    <input
+                      className="InputProyecto"
+                      type="text"
+                      name="descripcion"
+                      placeholder="Ej: Rol con acceso completo al sistema"
+                      value={formData.descripcion}
+                      onChange={handleChange}
+                      disabled={operationLoading}
+                    />
                   </div>
 
                   <div className="modal-actions">
