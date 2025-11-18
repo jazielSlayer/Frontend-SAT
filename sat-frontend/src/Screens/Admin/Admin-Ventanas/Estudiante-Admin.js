@@ -102,6 +102,32 @@ function AdminEstudiantes() {
 
       {!loading && !error && (
         <>
+        <div className="stats-container">
+            <div style={{ ...EstudianteStyles.statCard, ...EstudianteStyles.statCardTotal }}>
+              <h4 style={{ ...EstudianteStyles.statTitle, ...EstudianteStyles.statTitleTotal }}>
+                Total Estudiantes
+              </h4>
+              <p style={EstudianteStyles.statValue}>{estudiantes.length}</p>
+            </div>
+
+            <div style={{ ...EstudianteStyles.statCard, ...EstudianteStyles.statCardActive }}>
+              <h4 style={{ ...EstudianteStyles.statTitle, ...EstudianteStyles.statTitleActive }}>
+                Estudiantes Activos
+              </h4>
+              <p style={EstudianteStyles.statValue}>
+                {estudiantes.filter((e) => e.estado === 1).length}
+              </p>
+            </div>
+
+            <div style={{ ...EstudianteStyles.statCard, ...EstudianteStyles.statCardInactive }}>
+              <h4 style={{ ...EstudianteStyles.statTitle, ...EstudianteStyles.statTitleInactive }}>
+                Inactivos
+              </h4>
+              <p style={EstudianteStyles.statValue}>
+                {estudiantes.filter((e) => e.estado === 0).length}
+              </p>
+            </div>
+          </div>
           <div className="tableContainer">
             <table className="table">
               <thead className="tableHead">
@@ -246,33 +272,6 @@ function AdminEstudiantes() {
                 )}
               </div>
             </form>
-          </div>
-
-          <div style={EstudianteStyles.statsContainer}>
-            <div style={{ ...EstudianteStyles.statCard, ...EstudianteStyles.statCardTotal }}>
-              <h4 style={{ ...EstudianteStyles.statTitle, ...EstudianteStyles.statTitleTotal }}>
-                Total Estudiantes
-              </h4>
-              <p style={EstudianteStyles.statValue}>{estudiantes.length}</p>
-            </div>
-
-            <div style={{ ...EstudianteStyles.statCard, ...EstudianteStyles.statCardActive }}>
-              <h4 style={{ ...EstudianteStyles.statTitle, ...EstudianteStyles.statTitleActive }}>
-                Estudiantes Activos
-              </h4>
-              <p style={EstudianteStyles.statValue}>
-                {estudiantes.filter((e) => e.estado === 1).length}
-              </p>
-            </div>
-
-            <div style={{ ...EstudianteStyles.statCard, ...EstudianteStyles.statCardInactive }}>
-              <h4 style={{ ...EstudianteStyles.statTitle, ...EstudianteStyles.statTitleInactive }}>
-                Inactivos
-              </h4>
-              <p style={EstudianteStyles.statValue}>
-                {estudiantes.filter((e) => e.estado === 0).length}
-              </p>
-            </div>
           </div>
         </>
       )}

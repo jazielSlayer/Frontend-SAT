@@ -136,6 +136,20 @@ function Talleres() {
 
       {!loading && !error && (
         <>
+        <div className="stats-container">
+            <div className={`statCard statCardTotal`}>
+              <h4 className={`statTitle statTitleTotal`}>
+                Total Talleres
+              </h4>
+              <p className="statValue">{talleres.length}</p>
+            </div>
+            <div className={`statCard statCardTipos`}>
+              <h4 className={`statTitle statTitleTipos`}>
+                Tipos Únicos
+              </h4>
+              <p className={`statValue`}>{uniqueTipos.length}</p>
+            </div>
+          </div>
           <div className="tableContainer">
             <table className="table">
               <thead className="tableHead">
@@ -315,20 +329,7 @@ function Talleres() {
             </form>
           </div>
 
-          <div className="statsContainer">
-            <div className={`statCard statCardTotal`}>
-              <h4 className={`statTitle statTitleTotal`}>
-                Total Talleres
-              </h4>
-              <p className="statValue">{talleres.length}</p>
-            </div>
-            <div className={`statCard statCardTipos`}>
-              <h4 className={`statTitle statTitleTipos`}>
-                Tipos Únicos
-              </h4>
-              <p className={`statValue`}>{uniqueTipos.length}</p>
-            </div>
-          </div>
+          
         </>
       )}
     </div>

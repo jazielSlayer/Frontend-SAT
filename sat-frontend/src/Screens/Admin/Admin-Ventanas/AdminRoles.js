@@ -20,9 +20,15 @@ function RolesAdmin() {
   const [loading, setLoading] = useState(true);
   const [operationLoading, setOperationLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [editingRole, setEditingRole] = useState(null);
+  
+  // Modales
+  const [showCreate, setShowCreate] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   const [showPermissionsModal, setShowPermissionsModal] = useState(null);
-  const [newRole, setNewRole] = useState({
+  
+  // Datos
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [formData, setFormData] = useState({
     name: "",
     descripcion: "",
     start_path: "",
@@ -82,19 +88,38 @@ function RolesAdmin() {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const finalValue = type === "checkbox" ? checked : value;
-
-    if (editingRole) {
-      setEditingRole((prev) => ({ ...prev, [name]: finalValue }));
-    } else {
-      setNewRole((prev) => ({ ...prev, [name]: finalValue }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: finalValue }));
     setFormErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleSubmit = async (e) => {
+  const openCreate = () => {
+    setFormData({
+      name: "",
+      descripcion: "",
+      start_path: "",
+      is_default: false,
+      guard_name: "web",
+    });
+    setFormErrors({});
+    setShowCreate(true);
+  };
+
+  const openEdit = (role) => {
+    setSelectedRole(role);
+    setFormData({
+      name: role.name,
+      descripcion: role.descripcion || "",
+      start_path: role.start_path,
+      is_default: role.is_default,
+      guard_name: role.guard_name,
+    });
+    setFormErrors({});
+    setShowEdit(true);
+  };
+
+  const handleCreate = async (e) => {
     e.preventDefault();
-    const currentRole = editingRole || newRole;
-    const errors = validateForm(currentRole);
+    const errors = validateForm(formData);
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -104,35 +129,54 @@ function RolesAdmin() {
     setOperationLoading(true);
     setError(null);
     try {
-      if (editingRole) {
-        await updateRole(editingRole.id, editingRole);
-        setEditingRole(null);
-      } else {
-        await createRole(newRole);
-        setNewRole({
-          name: "",
-          descripcion: "",
-          start_path: "",
-          is_default: false,
-          guard_name: "web",
-        });
-      }
+      await createRole(formData);
+      setShowCreate(false);
+      setFormData({
+        name: "",
+        descripcion: "",
+        start_path: "",
+        is_default: false,
+        guard_name: "web",
+      });
       await fetchAllData();
+      alert("Rol creado exitosamente");
     } catch (err) {
-      setError(err.message || "Error al procesar el rol");
+      setError(err.message || "Error al crear el rol");
+      alert(err.message || "Error al crear el rol");
     } finally {
       setOperationLoading(false);
     }
   };
 
-  const handleEdit = (role) => {
-    setEditingRole({ ...role });
-    setFormErrors({});
-  };
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const errors = validateForm(formData);
 
-  const handleCancelEdit = () => {
-    setEditingRole(null);
-    setFormErrors({});
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setOperationLoading(true);
+    setError(null);
+    try {
+      await updateRole(selectedRole.id, formData);
+      setShowEdit(false);
+      setFormData({
+        name: "",
+        descripcion: "",
+        start_path: "",
+        is_default: false,
+        guard_name: "web",
+      });
+      await fetchAllData();
+      alert("Rol actualizado exitosamente");
+    } catch (err) {
+      setError(err.message || "Error al actualizar el rol");
+      alert(err.message || "Error al actualizar el rol");
+    } finally {
+      setOperationLoading(false);
+    }
   };
 
   const handleDelete = async (id, roleName) => {
@@ -142,8 +186,10 @@ function RolesAdmin() {
       try {
         await deleteRole(id);
         await fetchAllData();
+        alert("Rol eliminado exitosamente");
       } catch (err) {
         setError(err.message || "Error al eliminar el rol");
+        alert(err.message || "Error al eliminar el rol");
       } finally {
         setOperationLoading(false);
       }
@@ -167,6 +213,7 @@ function RolesAdmin() {
       }));
     } catch (err) {
       setError(err.message || "Error al actualizar permisos");
+      alert(err.message || "Error al actualizar permisos");
     } finally {
       setOperationLoading(false);
     }
@@ -202,49 +249,9 @@ function RolesAdmin() {
     const permissionCategories = getPermissionsByCategory();
 
     return (
-      <div style={{
-        position: "fixed",
-        inset: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 50,
-        padding: "16px",
-      }}>
-        <div style={{
-          backgroundColor: "#02022ea7",
-          borderRadius: "12px",
-          padding: "24px",
-          maxWidth: "1000px",
-          width: "100%",
-          maxHeight: "90vh",
-          overflowY: "auto",
-        }}>
-          <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "24px",
-          }}>
-            <h3 style={{
-              fontSize: "24px",
-              fontWeight: "bold",
-              color: "#ffffff",
-            }}>
-              Asignar Permisos a: {role.name}
-            </h3>
-            <button
-              onClick={() => setShowPermissionsModal(null)}
-              style={{
-                color: "#06053cff",
-                fontSize: "24px",
-                cursor: "pointer",
-              }}
-            >
-              ×
-            </button>
-          </div>
+      <div className="modal-overlay" onClick={() => setShowPermissionsModal(null)}>
+        <div className="modal-content modal-content-large" onClick={e => e.stopPropagation()}>
+          <h2>Asignar Permisos a: {role.name}</h2>
 
           {error && <p style={styles.errorMessage}>Error: {error}</p>}
 
@@ -260,10 +267,11 @@ function RolesAdmin() {
                 padding: "16px",
                 borderRadius: "8px",
                 border: "1px solid #030e21ff",
+                backgroundColor: "#1a1a2e",
               }}>
                 <h4 style={{
                   fontSize: "18px",
-                  fontWeight: "medium",
+                  fontWeight: "500",
                   color: "#ffffff",
                   marginBottom: "16px",
                   textTransform: "capitalize",
@@ -291,11 +299,7 @@ function RolesAdmin() {
                         style={{
                           width: "20px",
                           height: "20px",
-                          backgroundColor: "#2d3748",
-                          borderColor: "#000000ff",
-                          borderRadius: "4px",
                           marginRight: "12px",
-                          display: "inline-block"
                         }}
                       />
                       <span style={{ color: "#ddddedff", fontSize: "14px" }}>
@@ -308,14 +312,11 @@ function RolesAdmin() {
             ))}
           </div>
 
-          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "24px" }}>
+          <div className="modal-actions">
             <button
               onClick={() => setShowPermissionsModal(null)}
               disabled={operationLoading}
-              style={{
-                ...styles.cancelButton,
-                ...(operationLoading ? { opacity: 0.5, cursor: "not-allowed" } : {}),
-              }}
+              className="btn-close"
             >
               Cerrar
             </button>
@@ -327,13 +328,36 @@ function RolesAdmin() {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Administración de Roles y Permisos</h2>
+      <header className="proyectos-header">
+        <h2 style={styles.title}>Administración de Roles y Permisos</h2>
+        <div className="header-actions" style={{ padding: 15 }}>
+          <button className="btn-create" onClick={openCreate}>+ Nuevo Rol</button>
+        </div>
+      </header>
 
       {loading && <p style={styles.loadingText}>Cargando datos...</p>}
       {error && <div style={styles.errorMessage}>Error: {error}</div>}
 
       {!loading && !error && (
         <div>
+          <div className="stats-container">
+            <div style={{ ...styles.statCard, ...styles.statCardRoles }}>
+              <h4 style={{ ...styles.statTitle, ...styles.statTitleRoles }}>Total Roles</h4>
+              <p style={styles.statValue}>{roles.length}</p>
+            </div>
+            <div style={{ ...styles.statCard, ...styles.statCardPermissions }}>
+              <h4 style={{ ...styles.statTitle, ...styles.statTitlePermissions }}>
+                Total Permisos
+              </h4>
+              <p style={styles.statValue}>{permissions.length}</p>
+            </div>
+            <div style={{ ...styles.statCard, ...styles.statCardDefaultRoles }}>
+              <h4 style={{ ...styles.statTitle, ...styles.statTitleDefaultRoles }}>
+                Roles por Defecto
+              </h4>
+              <p style={styles.statValue}>{roles.filter((r) => r.is_default).length}</p>
+            </div>
+          </div>
           <div style={styles.rolesTableContainer}>
             <table style={styles.table}>
               <thead style={styles.tableHead}>
@@ -384,7 +408,7 @@ function RolesAdmin() {
                       </td>
                       <td style={styles.tableCellCenter}>
                         <button
-                          onClick={() => handleEdit(role)}
+                          onClick={() => openEdit(role)}
                           disabled={operationLoading}
                           style={operationLoading ? styles.editButtonDisabled : styles.editButton}
                         >
@@ -402,7 +426,7 @@ function RolesAdmin() {
                   ))
                 ) : (
                   <tr>
-                    <td style={styles.noDataText} colSpan="8">
+                    <td style={styles.noDataText} colSpan="7">
                       No hay roles registrados
                     </td>
                   </tr>
@@ -411,141 +435,225 @@ function RolesAdmin() {
             </table>
           </div>
 
-          <div style={styles.formContainer}>
-            <h3 style={styles.formTitle}>{editingRole ? "Editar Rol" : "Agregar Nuevo Rol"}</h3>
-            <form onSubmit={handleSubmit}>
-              {error && <div style={styles.errorMessage}>Error: {error}</div>}
-              <div style={styles.formGrid}>
-                <div>
-                  <label style={styles.formLabel}>Nombre del Rol:</label>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Ej: Administrador, Docente, Estudiante"
-                    value={editingRole ? editingRole.name : newRole.name}
-                    onChange={handleChange}
-                    required
-                    disabled={operationLoading}
-                    style={formErrors.name ? styles.formInputError : styles.formInput}
-                  />
-                  {formErrors.name && <p style={styles.formErrorText}>{formErrors.name}</p>}
-                </div>
+          
 
-                <div>
-                  <label style={styles.formLabel}>Descripción:</label>
-                  <input
-                    type="text"
-                    name="descripcion"
-                    placeholder="Ej: Rol con acceso completo al sistema"
-                    value={editingRole ? editingRole.descripcion || "" : newRole.descripcion}
-                    onChange={handleChange}
-                    disabled={operationLoading}
-                    style={styles.formInput}
-                  />
-                </div>
+          {/* MODAL CREAR */}
+          {showCreate && (
+            <div className="modal-overlay" onClick={() => setShowCreate(false)}>
+              <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <h2>Agregar Nuevo Rol</h2>
+                <form onSubmit={handleCreate}>
+                  {error && <div style={styles.errorMessage}>Error: {error}</div>}
+                  
+                  <div className="form-full">
+                    <label style={styles.formLabel}>Nombre del Rol:</label>
+                    <input
+                      className="InputProyecto"
+                      type="text"
+                      name="name"
+                      placeholder="Ej: Administrador, Docente, Estudiante"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      disabled={operationLoading}
+                    />
+                    {formErrors.name && <p style={styles.formErrorText}>{formErrors.name}</p>}
+                  </div>
 
-                <div>
-                  <label style={styles.formLabel}>Ruta Inicial:</label>
-                  <input
-                    type="text"
-                    name="start_path"
-                    placeholder="Ej: /admin, /docente, /estudiante"
-                    value={editingRole ? editingRole.start_path : newRole.start_path}
-                    onChange={handleChange}
-                    required
-                    disabled={operationLoading}
-                    style={formErrors.start_path ? styles.formInputError : styles.formInput}
-                  />
-                  {formErrors.start_path && (
-                    <p style={styles.formErrorText}>{formErrors.start_path}</p>
-                  )}
-                </div>
+                  <div className="form-full">
+                    <label style={styles.formLabel}>Descripción:</label>
+                    <input
+                      className="InputProyecto"
+                      type="text"
+                      name="descripcion"
+                      placeholder="Ej: Rol con acceso completo al sistema"
+                      value={formData.descripcion}
+                      onChange={handleChange}
+                      disabled={operationLoading}
+                    />
+                  </div>
 
-                <div>
-                  <label style={styles.formLabel}>Guard Name:</label>
-                  <select
-                    name="guard_name"
-                    value={editingRole ? editingRole.guard_name : newRole.guard_name}
-                    onChange={handleChange}
-                    disabled={operationLoading}
-                    style={formErrors.guard_name ? styles.formInputError : styles.formInput}
-                  >
-                    <option value="web">Web</option>
-                    <option value="api">API</option>
-                  </select>
-                  {formErrors.guard_name && (
-                    <p style={styles.formErrorText}>{formErrors.guard_name}</p>
-                  )}
-                </div>
+                  <div className="form-full">
+                    <label style={styles.formLabel}>Ruta Inicial:</label>
+                    <input
+                      className="InputProyecto"
+                      type="text"
+                      name="start_path"
+                      placeholder="Ej: /admin, /docente, /estudiante"
+                      value={formData.start_path}
+                      onChange={handleChange}
+                      required
+                      disabled={operationLoading}
+                    />
+                    {formErrors.start_path && (
+                      <p style={styles.formErrorText}>{formErrors.start_path}</p>
+                    )}
+                  </div>
+
+                  <div className="form-full">
+                    <label style={styles.formLabel}>Guard Name:</label>
+                    <select
+                      className="InputProyecto"
+                      name="guard_name"
+                      value={formData.guard_name}
+                      onChange={handleChange}
+                      disabled={operationLoading}
+                    >
+                      <option value="web">Web</option>
+                      <option value="api">API</option>
+                    </select>
+                    {formErrors.guard_name && (
+                      <p style={styles.formErrorText}>{formErrors.guard_name}</p>
+                    )}
+                  </div>
+
+                  <div className="form-full">
+                    <label style={styles.formCheckboxLabel}>
+                      <input
+                        type="checkbox"
+                        name="is_default"
+                        checked={formData.is_default}
+                        onChange={handleChange}
+                        disabled={operationLoading}
+                        style={styles.formCheckbox}
+                      />
+                      Rol por defecto para nuevos usuarios
+                    </label>
+                  </div>
+
+                  <div className="modal-actions">
+                    <button
+                      type="submit"
+                      disabled={operationLoading}
+                      className="btn-create"
+                    >
+                      {operationLoading ? "Procesando..." : "Crear Rol"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowCreate(false)}
+                      disabled={operationLoading}
+                      className="btn-close"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
               </div>
+            </div>
+          )}
 
-              <div style={{ marginBottom: "20px" }}>
-                <label style={styles.formCheckboxLabel}>
-                  <input
-                    type="checkbox"
-                    name="is_default"
-                    checked={editingRole ? editingRole.is_default : newRole.is_default}
-                    onChange={handleChange}
-                    disabled={operationLoading}
-                    style={styles.formCheckbox}
-                  />
-                  Rol por defecto para nuevos usuarios
-                </label>
+          {/* MODAL EDITAR */}
+          {showEdit && (
+            <div className="modal-overlay" onClick={() => setShowEdit(false)}>
+              <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <h2>Editar Rol</h2>
+                <form onSubmit={handleUpdate}>
+                  {error && <div style={styles.errorMessage}>Error: {error}</div>}
+                  
+                  <div className="form-full">
+                    <label style={styles.formLabel}>Nombre del Rol:</label>
+                    <input
+                      className="InputProyecto"
+                      type="text"
+                      name="name"
+                      placeholder="Ej: Administrador, Docente, Estudiante"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      disabled={operationLoading}
+                    />
+                    {formErrors.name && <p style={styles.formErrorText}>{formErrors.name}</p>}
+                  </div>
+
+                  <div className="form-full">
+                    <label style={styles.formLabel}>Descripción:</label>
+                    <input
+                      className="InputProyecto"
+                      type="text"
+                      name="descripcion"
+                      placeholder="Ej: Rol con acceso completo al sistema"
+                      value={formData.descripcion}
+                      onChange={handleChange}
+                      disabled={operationLoading}
+                    />
+                  </div>
+
+                  <div className="form-full">
+                    <label style={styles.formLabel}>Ruta Inicial:</label>
+                    <input
+                      className="InputProyecto"
+                      type="text"
+                      name="start_path"
+                      placeholder="Ej: /admin, /docente, /estudiante"
+                      value={formData.start_path}
+                      onChange={handleChange}
+                      required
+                      disabled={operationLoading}
+                    />
+                    {formErrors.start_path && (
+                      <p style={styles.formErrorText}>{formErrors.start_path}</p>
+                    )}
+                  </div>
+
+                  <div className="form-full">
+                    <label style={styles.formLabel}>Guard Name:</label>
+                    <select
+                      className="InputProyecto"
+                      name="guard_name"
+                      value={formData.guard_name}
+                      onChange={handleChange}
+                      disabled={operationLoading}
+                    >
+                      <option value="web">Web</option>
+                      <option value="api">API</option>
+                    </select>
+                    {formErrors.guard_name && (
+                      <p style={styles.formErrorText}>{formErrors.guard_name}</p>
+                    )}
+                  </div>
+
+                  <div className="form-full">
+                    <label style={styles.formCheckboxLabel}>
+                      <input
+                        type="checkbox"
+                        name="is_default"
+                        checked={formData.is_default}
+                        onChange={handleChange}
+                        disabled={operationLoading}
+                        style={styles.formCheckbox}
+                      />
+                      Rol por defecto para nuevos usuarios
+                    </label>
+                  </div>
+
+                  <div className="modal-actions">
+                    <button
+                      type="submit"
+                      disabled={operationLoading}
+                      className="btn-edit"
+                    >
+                      {operationLoading ? "Procesando..." : "Actualizar Rol"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowEdit(false)}
+                      disabled={operationLoading}
+                      className="btn-close"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
               </div>
-
-              <div style={styles.formButtonContainer}>
-                <button
-                  type="submit"
-                  disabled={operationLoading}
-                  style={{
-                    ...styles.submitButton,
-                    ...(editingRole ? styles.submitButtonUpdate : styles.submitButtonCreate),
-                    ...(operationLoading ? styles.submitButtonDisabled : {}),
-                  }}
-                >
-                  {operationLoading
-                    ? "Procesando..."
-                    : editingRole
-                    ? "Actualizar Rol"
-                    : "Crear Rol"}
-                </button>
-
-                {editingRole && (
-                  <button
-                    type="button"
-                    onClick={handleCancelEdit}
-                    disabled={operationLoading}
-                    style={operationLoading ? styles.cancelButtonDisabled : styles.cancelButton}
-                  >
-                    Cancelar
-                  </button>
-                )}
-              </div>
-            </form>
-          </div>
-
-          <div style={styles.statsContainer}>
-            <div style={{ ...styles.statCard, ...styles.statCardRoles }}>
-              <h4 style={{ ...styles.statTitle, ...styles.statTitleRoles }}>Total Roles</h4>
-              <p style={styles.statValue}>{roles.length}</p>
             </div>
-            <div style={{ ...styles.statCard, ...styles.statCardPermissions }}>
-              <h4 style={{ ...styles.statTitle, ...styles.statTitlePermissions }}>
-                Total Permisos
-              </h4>
-              <p style={styles.statValue}>{permissions.length}</p>
-            </div>
-            <div style={{ ...styles.statCard, ...styles.statCardDefaultRoles }}>
-              <h4 style={{ ...styles.statTitle, ...styles.statTitleDefaultRoles }}>
-                Roles por Defecto
-              </h4>
-              <p style={styles.statValue}>{roles.filter((r) => r.is_default).length}</p>
-            </div>
-          </div>
+          )}
 
           {renderPermissionsModal()}
         </div>
       )}
+
+      
     </div>
   );
 }

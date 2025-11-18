@@ -295,6 +295,28 @@ function Usuarios() {
 
       {!loading && !error && (
         <>
+        <div className="stats-container">
+            <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTotal }}>
+              <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTotal }}>
+                Total Usuarios
+              </h4>
+              <p className="statValue">{users.length}</p>
+            </div>
+            <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTipos }}>
+              <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTipos }}>
+                Roles Únicos
+              </h4>
+              <p className="statValue">{uniqueRoles.length}</p>
+            </div>
+          </div>
+          <div className="formContainer">
+            <button style={{...TallerStyles.cancelButton,...(operationLoading ? { opacity: 0.5, cursor: "not-allowed" } : {}),}} 
+                onClick={buildPDFAdmin}
+                >
+                  PDF
+            </button>
+          </div>
+          
           <div className="tableContainer">
             <table className="table">
               <thead className="tableHead">
@@ -478,27 +500,8 @@ function Usuarios() {
               </div>
             </form>
           </div>
-          <div className="formContainer">
-            <button style={{...TallerStyles.cancelButton,...(operationLoading ? { opacity: 0.5, cursor: "not-allowed" } : {}),}} 
-                onClick={buildPDFAdmin}
-                >
-                  PDF
-            </button>
-          </div>
-          <div className="statsContainer">
-            <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTotal }}>
-              <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTotal }}>
-                Total Usuarios
-              </h4>
-              <p className="statValue">{users.length}</p>
-            </div>
-            <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTipos }}>
-              <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTipos }}>
-                Roles Únicos
-              </h4>
-              <p className="statValue">{uniqueRoles.length}</p>
-            </div>
-          </div>
+          
+          
 
           {renderUserRolesModal()}
         </>
