@@ -3,6 +3,12 @@ body {
   position: relative
 }
 
+.containerTab {
+  color: #fff;
+  min-height: 100vh;
+  padding: "20px";
+  font-Family: 'Arial', sans-serif;
+}
 
 
 

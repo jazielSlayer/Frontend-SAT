@@ -211,7 +211,7 @@ const ProyectosView = () => {
             <h2>{selectedProyecto.titulo}</h2>
             <div className="modal-grid">
               <div>
-                <p><strong>ID:</strong> {selectedProyecto.id}</p>
+                
                 <p><strong>Estudiante:</strong> {selectedProyecto.estudiante_nombres} {selectedProyecto.estudiante_apellidopat} {selectedProyecto.estudiante_apellidomat}</p>
                 <p><strong>Matrícula:</strong> {selectedProyecto.numero_matricula}</p>
                 <p><strong>Guía:</strong> {selectedProyecto.guia_nombres} ({selectedProyecto.guia_numero_item})</p>

@@ -94,7 +94,7 @@ function AdminEstudiantes() {
   };
 
   return (
-    <div className="bg-gray-900 min-h-screen p-4 " style={{color: "white"}}>
+    <div className="containerTab">
       <h2 className="title">Administración de Estudiantes</h2>
 
       {loading && <p className="loadingText">Cargando estudiantes...</p>}
@@ -106,7 +106,6 @@ function AdminEstudiantes() {
             <table className="table">
               <thead className="tableHead">
                 <tr>
-                  <th className="tableHeader">ID</th>
                   <th className="tableHeader">Nombre Completo</th>
                   <th className="tableHeader">Matrícula</th>
                   <th className="tableHeader">Programa</th>
@@ -122,7 +121,6 @@ function AdminEstudiantes() {
                       key={estudiante.id}
                       className={`tableRow ${index % 2 === 0 ? "tableRowAlternate" : ""}`}
                     >
-                      <td className="tableCell">{estudiante.id}</td>
                       <td className="tableCellBold">
                         {estudiante.nombres} {estudiante.apellidopat} {estudiante.apellidomat}
                       </td>

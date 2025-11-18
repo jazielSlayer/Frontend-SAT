@@ -299,7 +299,6 @@ function Usuarios() {
             <table className="table">
               <thead className="tableHead">
                 <tr>
-                  <th className="tableHeader">ID</th>
                   <th className="tableHeader">Usuario</th>
                   <th className="tableHeader">Nombre</th>
                   <th className="tableHeader">Apellido Paterno</th>
@@ -319,7 +318,6 @@ function Usuarios() {
                         ...(index % 2 === 0 ? TallerStyles.tableRowAlternate : {}),
                       }}
                     >
-                      <td className="tableCell">{user.id}</td>
                       <td className="tableCellBold">{user.user_name}</td>
                       <td className="tableCell">{user.nombres}</td>
                       <td className="tableCell">{user.apellidopat || "-"}</td>

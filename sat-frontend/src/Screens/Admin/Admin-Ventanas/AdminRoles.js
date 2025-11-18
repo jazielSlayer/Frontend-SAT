@@ -338,7 +338,6 @@ function RolesAdmin() {
             <table style={styles.table}>
               <thead style={styles.tableHead}>
                 <tr>
-                  <th style={styles.tableHeader}>ID</th>
                   <th style={styles.tableHeader}>Nombre</th>
                   <th style={styles.tableHeader}>Descripción</th>
                   <th style={styles.tableHeader}>Ruta Inicial</th>
@@ -358,7 +357,6 @@ function RolesAdmin() {
                         ...(index % 2 === 0 ? styles.tableRowAlternate : {}),
                       }}
                     >
-                      <td style={styles.tableCell}>{role.id}</td>
                       <td style={styles.tableCellBold}>{role.name}</td>
                       <td style={styles.tableCell}>{role.descripcion || "Sin descripción"}</td>
                       <td style={styles.tableCell}>

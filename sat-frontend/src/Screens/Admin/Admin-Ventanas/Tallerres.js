@@ -140,7 +140,6 @@ function Talleres() {
             <table className="table">
               <thead className="tableHead">
                 <tr>
-                  <th className="tableHeader">ID</th>
                   <th className="tableHeader">Título</th>
                   <th className="tableHeader">Metodología</th>
                   <th className="tableHeader">Tipo</th>
@@ -161,7 +160,6 @@ function Talleres() {
                         ...(index % 2 === 0 ? TallerStyles.tableRowAlternate : {}),
                       }}
                     >
-                      <td className="tableCell">{taller.id}</td>
                       <td className="tableCellBold">{taller.titulo}</td>
                       <td className="tableCell">{getMetodologiaNombre(taller.id_metodologia)}</td>
                       <td className="tableCell">{taller.tipo_taller}</td>

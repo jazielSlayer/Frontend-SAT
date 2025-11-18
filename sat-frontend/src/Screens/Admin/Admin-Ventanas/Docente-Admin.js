@@ -3,6 +3,7 @@ import { getDocentes, createDocente, updateDocente, deleteDocente } from "../../
 import { getAllPersonas } from "../../../API/Admin/Persona";
 import { DocenteStyles } from "../../Components screens/Styles";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+
 function DocenteAdmin() {
   const [docentes, setDocentes] = useState([]);
   const [personas, setPersonas] = useState([]);
@@ -105,7 +106,7 @@ function DocenteAdmin() {
   };
 
   return (
-    <div className="bg-gray-900 min-h-screen p-4 " style={{color: "white"}}>
+    <div className="containerTab">
       <h2 className="title">Administración de Docentes</h2>
 
       {loading && <p className="loadingText">Cargando docentes...</p>}
@@ -117,7 +118,6 @@ function DocenteAdmin() {
             <table className="table">
               <thead className="tableHead">
                 <tr>
-                  <th className="tableHeader">ID</th>
                   <th className="tableHeader">Nombre Completo</th>
                   <th className="tableHeader">Número Item</th>
                   <th className="tableHeader">Especialidad</th>
@@ -133,7 +133,7 @@ function DocenteAdmin() {
                       key={docente.id}
                       className={`tableRow ${index % 2 === 0 ? 'tableRowAlternate' : ''}`}
                     >
-                      <td className="tableCell">{docente.id}</td>
+                      
                       <td className="tableCellBold">
                         {getPersonaName(docente.per_id)}
                       </td>
