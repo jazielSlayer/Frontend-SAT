@@ -13,6 +13,9 @@ import { FaUsersGear } from "react-icons/fa6";
 import { GiTeacher } from "react-icons/gi";
 import { PiStudentBold } from "react-icons/pi";
 import { PiProjectorScreenChartFill } from "react-icons/pi";
+import { IoLogOut } from "react-icons/io5";
+import { logoutButtonStyle } from "./NavStyles";
+
 
 function AdminNav({ user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -182,6 +185,11 @@ function AdminNav({ user, onLogout }) {
               <FaCircleUser className="nav-icon" />
               <span className="nav-text">Perfil {/**user.user_name*/} </span>
             </Link>
+        </li>
+        <li>
+                                        <button style={logoutButtonStyle} onClick={onLogout}>
+                                          <IoLogOut />
+                                        </button>
         </li>
       </ul>
     </nav>
