@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getDocentes, createDocente, updateDocente, deleteDocente } from "../../../API/Admin/Docente_admin";
 import { getAllPersonas } from "../../../API/Admin/Persona";
-import { DocenteStyles } from "../../Components screens/Styles";
+
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 
 function DocenteAdmin() {
