@@ -57,7 +57,6 @@ const ProyectosView = () => {
     loadInitialData();
   }, []);
 
-  // === FILTROS EN TIEMPO REAL ===
   const filteredEstudiantes = estudiantes.filter(e =>
     `${e.nombres} ${e.apellidopat} ${e.apellidomat} ${e.numero_matricula || ''}`
       .toLowerCase()
@@ -70,7 +69,7 @@ const ProyectosView = () => {
       .includes(docSearch.toLowerCase())
   );
 
-  // === ESTADÍSTICAS ===
+  
   const stats = {
     total: proyectos.length,
     calificados: proyectos.filter(p => p.calificacion).length,
