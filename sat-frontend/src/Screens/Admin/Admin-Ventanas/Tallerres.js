@@ -3,10 +3,13 @@ import { getAllTalleres, getTaller, createTaller, updateTaller, deleteTaller } f
 import { getAllMetodologias } from "../../../API/Admin/Metodologia.js";
 import { TallerStyles } from "../../Components screens/Styles.js";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+
 function Talleres() {
   const [talleres, setTalleres] = useState([]);
   const [metodologias, setMetodologias] = useState([]);
   const [editingTaller, setEditingTaller] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   const [formData, setFormData] = useState({
     titulo: "",
     id_metodologia: "",
@@ -17,41 +20,71 @@ function Talleres() {
     fecha_realizacion: "",
   });
   const [loading, setLoading] = useState(true);
+  const [operationLoading, setOperationLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [talleresData, metodologiasData] = await Promise.all([
-          getAllTalleres(),
-          getAllMetodologias(),
-        ]);
-        console.log("Talleres Data:", talleresData);
-        console.log("Metodologias Data:", metodologiasData);
-
-        const talleresArray = Array.isArray(talleresData) ? talleresData : (talleresData?.data || []);
-        const metodologiasArray = Array.isArray(metodologiasData) ? metodologiasData : (metodologiasData?.data || []);
-
-        setTalleres(talleresArray);
-        setMetodologias(metodologiasArray);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError(err.message);
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [talleresData, metodologiasData] = await Promise.all([
+        getAllTalleres(),
+        getAllMetodologias(),
+      ]);
+      console.log("Talleres Data:", talleresData);
+      console.log("Metodologias Data:", metodologiasData);
+
+      const talleresArray = Array.isArray(talleresData) ? talleresData : (talleresData?.data || []);
+      const metodologiasArray = Array.isArray(metodologiasData) ? metodologiasData : (metodologiasData?.data || []);
+
+      setTalleres(talleresArray);
+      setMetodologias(metodologiasArray);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const openCreate = () => {
+    setFormData({
+      titulo: "",
+      id_metodologia: "",
+      tipo_taller: "",
+      evaluacion_final: "",
+      duracion: "",
+      resultado: "",
+      fecha_realizacion: "",
+    });
+    setShowCreate(true);
+  };
+
+  const openEdit = async (id) => {
+    try {
+      const tallerData = await getTaller(id);
+      setFormData(tallerData.data);
+      setEditingTaller(tallerData.data);
+      setShowEdit(true);
+    } catch (err) {
+      setError(err.message);
+      alert(err.message || "Error al cargar el taller");
+    }
+  };
+
+  const handleCreate = async (e) => {
     e.preventDefault();
+    setOperationLoading(true);
+    setError(null);
     try {
       const dataToSend = {
         titulo: formData.titulo,
@@ -63,13 +96,8 @@ function Talleres() {
         fecha_realizacion: formData.fecha_realizacion,
       };
 
-      if (editingTaller) {
-        await updateTaller(editingTaller.id, dataToSend);
-      } else {
-        await createTaller(dataToSend);
-      }
-      const talleresData = await getAllTalleres();
-      setTalleres(talleresData.data || []);
+      await createTaller(dataToSend);
+      setShowCreate(false);
       setFormData({
         titulo: "",
         id_metodologia: "",
@@ -79,43 +107,66 @@ function Talleres() {
         resultado: "",
         fecha_realizacion: "",
       });
-      setEditingTaller(null);
+      await fetchData();
+      alert("Taller creado exitosamente");
     } catch (err) {
       setError(err.message);
+      alert(err.message || "Error al crear el taller");
+    } finally {
+      setOperationLoading(false);
     }
   };
 
-  const handleEdit = async (id) => {
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setOperationLoading(true);
+    setError(null);
     try {
-      const tallerData = await getTaller(id);
-      setFormData(tallerData.data);
-      setEditingTaller(tallerData.data);
+      const dataToSend = {
+        titulo: formData.titulo,
+        id_metodologia: parseInt(formData.id_metodologia),
+        tipo_taller: formData.tipo_taller,
+        evaluacion_final: formData.evaluacion_final || null,
+        duracion: formData.duracion || null,
+        resultado: formData.resultado || null,
+        fecha_realizacion: formData.fecha_realizacion,
+      };
+
+      await updateTaller(editingTaller.id, dataToSend);
+      setShowEdit(false);
+      setEditingTaller(null);
+      setFormData({
+        titulo: "",
+        id_metodologia: "",
+        tipo_taller: "",
+        evaluacion_final: "",
+        duracion: "",
+        resultado: "",
+        fecha_realizacion: "",
+      });
+      await fetchData();
+      alert("Taller actualizado exitosamente");
     } catch (err) {
       setError(err.message);
+      alert(err.message || "Error al actualizar el taller");
+    } finally {
+      setOperationLoading(false);
     }
   };
 
-  const handleCancelEdit = () => {
-    setEditingTaller(null);
-    setFormData({
-      titulo: "",
-      id_metodologia: "",
-      tipo_taller: "",
-      evaluacion_final: "",
-      duracion: "",
-      resultado: "",
-      fecha_realizacion: "",
-    });
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm("¿Estás seguro de eliminar este taller?")) {
+  const handleDelete = async (id, tallerTitulo) => {
+    if (window.confirm(`¿Estás seguro de eliminar el taller "${tallerTitulo}"? Esta acción no se puede deshacer.`)) {
+      setOperationLoading(true);
+      setError(null);
       try {
         await deleteTaller(id);
-        const talleresData = await getAllTalleres();
-        setTalleres(talleresData.data || []);
+        await fetchData();
+        alert("Taller eliminado exitosamente");
       } catch (err) {
         setError(err.message);
+        alert(err.message || "Error al eliminar el taller");
+      } finally {
+        setOperationLoading(false);
       }
     }
   };
@@ -128,40 +179,54 @@ function Talleres() {
   };
 
   return (
-    <div className="bg-gray-900 min-h-screen p-4 " style={{color: "white"}}>
-      <h2 className="title">Gestión de Talleres</h2>
+    <div className="proyectos-container">
+      <header className="proyectos-header">
+        <h2 style={TallerStyles.title}>Gestión de Talleres</h2>
+        <div className="header-actions" style={{ padding: 15 }}>
+          <button className="btn-create" onClick={openCreate}>
+            + Nuevo Taller
+          </button>
+        </div>
+      </header>
 
-      {loading && <p className="loadingText">Cargando talleres...</p>}
-      {error && <p className="errorText">Error: {error}</p>}
+      {loading && <p className="loading">Cargando talleres...</p>}
+      {error && <div className="error">Error: {error}</div>}
 
       {!loading && !error && (
         <>
-        <div className="stats-container">
-            <div className={`statCard statCardTotal`}>
-              <h4 className={`statTitle statTitleTotal`}>
-                Total Talleres
-              </h4>
-              <p className="statValue">{talleres.length}</p>
+          {/* ESTADÍSTICAS */}
+          <div className="stats-container">
+            <div className="stat-card stat-total">
+              <h4>Total Talleres</h4>
+              <p>{talleres.length}</p>
             </div>
-            <div className={`statCard statCardTipos`}>
-              <h4 className={`statTitle statTitleTipos`}>
-                Tipos Únicos
-              </h4>
-              <p className={`statValue`}>{uniqueTipos.length}</p>
+            <div className="stat-card stat-completed">
+              <h4>Tipos Únicos</h4>
+              <p>{uniqueTipos.length}</p>
+            </div>
+            <div className="stat-card stat-pending">
+              <h4>Metodologías</h4>
+              <p>{metodologias.length}</p>
+            </div>
+            <div className="stat-card stat-overdue">
+              <h4>Evaluados</h4>
+              <p>{talleres.filter(t => t.evaluacion_final).length}</p>
             </div>
           </div>
-          <div className="tableContainer">
-            <table className="table">
-              <thead className="tableHead">
+
+          {/* TABLA */}
+          <div style={TallerStyles.rolesTableContainer}>
+            <table style={TallerStyles.table}>
+              <thead style={TallerStyles.tableHead}>
                 <tr>
-                  <th className="tableHeader">Título</th>
-                  <th className="tableHeader">Metodología</th>
-                  <th className="tableHeader">Tipo</th>
-                  <th className="tableHeader">Evaluación</th>
-                  <th className="tableHeader">Duración</th>
-                  <th className="tableHeader">Resultado</th>
-                  <th className="tableHeader">Fecha</th>
-                  <th className="tableHeader">Acciones</th>
+                  <th style={TallerStyles.tableHeader}>Título</th>
+                  <th style={TallerStyles.tableHeader}>Metodología</th>
+                  <th style={TallerStyles.tableHeader}>Tipo</th>
+                  <th style={TallerStyles.tableHeader}>Evaluación</th>
+                  <th style={TallerStyles.tableHeader}>Duración</th>
+                  <th style={TallerStyles.tableHeader}>Resultado</th>
+                  <th style={TallerStyles.tableHeader}>Fecha</th>
+                  <th style={TallerStyles.tableHeaderCenter}>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -174,34 +239,45 @@ function Talleres() {
                         ...(index % 2 === 0 ? TallerStyles.tableRowAlternate : {}),
                       }}
                     >
-                      <td className="tableCellBold">{taller.titulo}</td>
-                      <td className="tableCell">{getMetodologiaNombre(taller.id_metodologia)}</td>
-                      <td className="tableCell">{taller.tipo_taller}</td>
-                      <td className="tableCell">{taller.evaluacion_final || "-"}</td>
-                      <td className="tableCell">{taller.duracion || "-"}</td>
-                      <td className="tableCell">{taller.resultado || "-"}</td>
-                      <td className="tableCell">{taller.fecha_realizacion}</td>
-                      <td className="tableCell">
-                        <div className="actionContainer">
-                          <button
-                            onClick={() => handleEdit(taller.id)}
-                            className="editButton"
-                          >
-                            <AiFillEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(taller.id)}
-                            className="deleteButton"
-                          >
-                            <AiFillDelete />
-                          </button>
-                        </div>
+                      <td style={TallerStyles.tableCellBold}>{taller.titulo}</td>
+                      <td style={TallerStyles.tableCell}>{getMetodologiaNombre(taller.id_metodologia)}</td>
+                      <td style={TallerStyles.tableCell}>
+                        <span
+                          style={{
+                            ...TallerStyles.statusBadge,
+                            ...(taller.tipo_taller === "Práctico" 
+                              ? TallerStyles.statusDefault 
+                              : TallerStyles.statusNotDefault),
+                          }}
+                        >
+                          {taller.tipo_taller}
+                        </span>
+                      </td>
+                      <td style={TallerStyles.tableCell}>{taller.evaluacion_final || "-"}</td>
+                      <td style={TallerStyles.tableCell}>{taller.duracion || "-"}</td>
+                      <td style={TallerStyles.tableCell}>{taller.resultado || "-"}</td>
+                      <td style={TallerStyles.tableCell}>{taller.fecha_realizacion}</td>
+                      <td style={TallerStyles.tableCellCenter}>
+                        <button
+                          onClick={() => openEdit(taller.id)}
+                          disabled={operationLoading}
+                          style={operationLoading ? TallerStyles.editButtonDisabled : TallerStyles.editButton}
+                        >
+                          <AiFillEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(taller.id, taller.titulo)}
+                          disabled={operationLoading}
+                          style={operationLoading ? TallerStyles.deleteButtonDisabled : TallerStyles.deleteButton}
+                        >
+                          <AiFillDelete />
+                        </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td className="noDataText" colSpan="9">
+                    <td style={TallerStyles.noDataText} colSpan="8">
                       No hay talleres registrados
                     </td>
                   </tr>
@@ -209,33 +285,42 @@ function Talleres() {
               </tbody>
             </table>
           </div>
+        </>
+      )}
 
-          <div className="formContainer">
-            <h3 className="formTitle">
-              {editingTaller ? "Editar Taller" : "Agregar Nuevo Taller"}
-            </h3>
-            <form onSubmit={handleSubmit}>
-              <div className="formGrid">
+      {/* MODAL CREAR */}
+      {showCreate && (
+        <div className="modal-overlay" onClick={() => setShowCreate(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Agregar Nuevo Taller</h2>
+            
+            <form onSubmit={handleCreate}>
+              {error && <div style={TallerStyles.errorMessage}>Error: {error}</div>}
+
+              <div className="form-row">
                 <div>
-                  <label className="formLabel">Título:</label>
+                  <label style={TallerStyles.formLabel}>Título:</label>
                   <input
+                    className="InputProyecto"
                     type="text"
                     name="titulo"
-                    placeholder="Título"
+                    placeholder="Ej: Taller de Programación"
                     value={formData.titulo}
                     onChange={handleInputChange}
                     required
-                    className="formInput"
+                    disabled={operationLoading}
                   />
                 </div>
+
                 <div>
-                  <label className="formLabel">Metodología:</label>
+                  <label style={TallerStyles.formLabel}>Metodología:</label>
                   <select
+                    className="InputProyecto"
                     name="id_metodologia"
                     value={formData.id_metodologia}
                     onChange={handleInputChange}
                     required
-                    className="formInput"
+                    disabled={operationLoading}
                   >
                     <option value="">Selecciona Metodología</option>
                     {metodologias.length > 0 ? (
@@ -247,14 +332,18 @@ function Talleres() {
                     )}
                   </select>
                 </div>
+              </div>
+
+              <div className="form-row">
                 <div>
-                  <label className="formLabel">Tipo de Taller:</label>
+                  <label style={TallerStyles.formLabel}>Tipo de Taller:</label>
                   <select
+                    className="InputProyecto"
                     name="tipo_taller"
                     value={formData.tipo_taller}
                     onChange={handleInputChange}
                     required
-                    className="formInput"
+                    disabled={operationLoading}
                   >
                     <option value="">Selecciona Tipo</option>
                     <option value="Teórico">Teórico</option>
@@ -262,75 +351,223 @@ function Talleres() {
                     <option value="Mixto">Mixto</option>
                   </select>
                 </div>
+
                 <div>
-                  <label className="formLabel">Evaluación Final:</label>
+                  <label style={TallerStyles.formLabel}>Fecha de Realización:</label>
                   <input
-                    type="text"
-                    name="evaluacion_final"
-                    placeholder="Evaluación Final"
-                    value={formData.evaluacion_final}
-                    onChange={handleInputChange}
-                    className="formInput"
-                  />
-                </div>
-                <div>
-                  <label className="formLabel">Duración:</label>
-                  <input
-                    type="text"
-                    name="duracion"
-                    placeholder="Duración"
-                    value={formData.duracion}
-                    onChange={handleInputChange}
-                    className="formInput"
-                  />
-                </div>
-                <div>
-                  <label className="formLabel">Resultado:</label>
-                  <input
-                    type="text"
-                    name="resultado"
-                    placeholder="Resultado"
-                    value={formData.resultado}
-                    onChange={handleInputChange}
-                    className="formInput"
-                  />
-                </div>
-                <div>
-                  <label className="formLabel">Fecha de Realización:</label>
-                  <input
+                    className="InputProyecto"
                     type="date"
                     name="fecha_realizacion"
                     value={formData.fecha_realizacion}
                     onChange={handleInputChange}
                     required
-                    className="formInput"
+                    disabled={operationLoading}
                   />
                 </div>
               </div>
-              <div className="formButtonContainer">
+
+              <div className="form-row-3">
+                <div>
+                  <label style={TallerStyles.formLabel}>Evaluación Final:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="evaluacion_final"
+                    placeholder="Ej: Aprobado, Excelente"
+                    value={formData.evaluacion_final}
+                    onChange={handleInputChange}
+                    disabled={operationLoading}
+                  />
+                </div>
+
+                <div>
+                  <label style={TallerStyles.formLabel}>Duración:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="duracion"
+                    placeholder="Ej: 4 horas, 2 días"
+                    value={formData.duracion}
+                    onChange={handleInputChange}
+                    disabled={operationLoading}
+                  />
+                </div>
+
+                <div>
+                  <label style={TallerStyles.formLabel}>Resultado:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="resultado"
+                    placeholder="Ej: Exitoso, Pendiente"
+                    value={formData.resultado}
+                    onChange={handleInputChange}
+                    disabled={operationLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="modal-actions">
                 <button
                   type="submit"
-                  className={`submitButton ${
-                    editingTaller ? "submitButtonUpdate" : "submitButtonCreate"
-                  }`}
+                  disabled={operationLoading}
+                  className="btn-create"
                 >
-                  {editingTaller ? "Actualizar Taller" : "Agregar Taller"}
+                  {operationLoading ? "Procesando..." : "Crear Taller"}
                 </button>
-                {editingTaller && (
-                  <button
-                    type="button"
-                    onClick={handleCancelEdit}
-                    className="cancelButton"
-                  >
-                    Cancelar Edición
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setShowCreate(false)}
+                  disabled={operationLoading}
+                  className="btn-close"
+                >
+                  Cancelar
+                </button>
               </div>
             </form>
           </div>
+        </div>
+      )}
 
-          
-        </>
+      {/* MODAL EDITAR */}
+      {showEdit && (
+        <div className="modal-overlay" onClick={() => setShowEdit(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Editar Taller</h2>
+            
+            <form onSubmit={handleUpdate}>
+              {error && <div style={TallerStyles.errorMessage}>Error: {error}</div>}
+
+              <div className="form-row">
+                <div>
+                  <label style={TallerStyles.formLabel}>Título:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="titulo"
+                    placeholder="Ej: Taller de Programación"
+                    value={formData.titulo}
+                    onChange={handleInputChange}
+                    required
+                    disabled={operationLoading}
+                  />
+                </div>
+
+                <div>
+                  <label style={TallerStyles.formLabel}>Metodología:</label>
+                  <select
+                    className="InputProyecto"
+                    name="id_metodologia"
+                    value={formData.id_metodologia}
+                    onChange={handleInputChange}
+                    required
+                    disabled={operationLoading}
+                  >
+                    <option value="">Selecciona Metodología</option>
+                    {metodologias.length > 0 ? (
+                      metodologias.map(m => (
+                        <option key={m.id} value={m.id}>{m.nombre}</option>
+                      ))
+                    ) : (
+                      <option disabled>No hay metodologías disponibles</option>
+                    )}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div>
+                  <label style={TallerStyles.formLabel}>Tipo de Taller:</label>
+                  <select
+                    className="InputProyecto"
+                    name="tipo_taller"
+                    value={formData.tipo_taller}
+                    onChange={handleInputChange}
+                    required
+                    disabled={operationLoading}
+                  >
+                    <option value="">Selecciona Tipo</option>
+                    <option value="Teórico">Teórico</option>
+                    <option value="Práctico">Práctico</option>
+                    <option value="Mixto">Mixto</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={TallerStyles.formLabel}>Fecha de Realización:</label>
+                  <input
+                    className="InputProyecto"
+                    type="date"
+                    name="fecha_realizacion"
+                    value={formData.fecha_realizacion}
+                    onChange={handleInputChange}
+                    required
+                    disabled={operationLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row-3">
+                <div>
+                  <label style={TallerStyles.formLabel}>Evaluación Final:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="evaluacion_final"
+                    placeholder="Ej: Aprobado, Excelente"
+                    value={formData.evaluacion_final}
+                    onChange={handleInputChange}
+                    disabled={operationLoading}
+                  />
+                </div>
+
+                <div>
+                  <label style={TallerStyles.formLabel}>Duración:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="duracion"
+                    placeholder="Ej: 4 horas, 2 días"
+                    value={formData.duracion}
+                    onChange={handleInputChange}
+                    disabled={operationLoading}
+                  />
+                </div>
+
+                <div>
+                  <label style={TallerStyles.formLabel}>Resultado:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="resultado"
+                    placeholder="Ej: Exitoso, Pendiente"
+                    value={formData.resultado}
+                    onChange={handleInputChange}
+                    disabled={operationLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="modal-actions">
+                <button
+                  type="submit"
+                  disabled={operationLoading}
+                  className="btn-edit"
+                >
+                  {operationLoading ? "Procesando..." : "Actualizar Taller"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowEdit(false)}
+                  disabled={operationLoading}
+                  className="btn-close"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

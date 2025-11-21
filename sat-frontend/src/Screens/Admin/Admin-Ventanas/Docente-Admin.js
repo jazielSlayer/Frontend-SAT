@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { getDocentes, createDocente, updateDocente, deleteDocente } from "../../../API/Admin/Docente_admin";
 import { getAllPersonas } from "../../../API/Admin/Persona";
-
+import { styles } from "../../Components screens/Styles";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 
 function DocenteAdmin() {
   const [docentes, setDocentes] = useState([]);
   const [personas, setPersonas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [operationLoading, setOperationLoading] = useState(false);
   const [error, setError] = useState(null);
   const [editingDocente, setEditingDocente] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -53,24 +54,31 @@ function DocenteAdmin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setOperationLoading(true);
+    setError(null);
     try {
       if (editingDocente) {
         await updateDocente(editingDocente.id, editingDocente);
-        setEditingDocente(null);
+        alert("Docente actualizado exitosamente");
       } else {
         await createDocente(newDocente);
-        setNewDocente({
-          per_id: "",
-          numero_item: "",
-          especialidad: "",
-          tipo_contrato: "permanente",
-          estado: true,
-        });
+        alert("Docente creado exitosamente");
       }
       setShowModal(false);
-      fetchData();
+      setEditingDocente(null);
+      setNewDocente({
+        per_id: "",
+        numero_item: "",
+        especialidad: "",
+        tipo_contrato: "permanente",
+        estado: true,
+      });
+      await fetchData();
     } catch (err) {
       setError(err.message);
+      alert(err.message || "Error al procesar la operación");
+    } finally {
+      setOperationLoading(false);
     }
   };
 
@@ -96,13 +104,19 @@ function DocenteAdmin() {
     setShowModal(false);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este docente?")) {
+  const handleDelete = async (id, docenteName) => {
+    if (window.confirm(`¿Estás seguro de que quieres eliminar a ${docenteName}? Esta acción no se puede deshacer.`)) {
+      setOperationLoading(true);
+      setError(null);
       try {
         await deleteDocente(id);
-        fetchData();
+        alert("Docente eliminado exitosamente");
+        await fetchData();
       } catch (err) {
         setError(err.message);
+        alert(err.message || "Error al eliminar el docente");
+      } finally {
+        setOperationLoading(false);
       }
     }
   };
@@ -120,62 +134,52 @@ function DocenteAdmin() {
   };
 
   return (
-    <div className="containerTab">
+    <div className="proyectos-container">
+      <header className="proyectos-header">
+        <h2 style={styles.title}>Administración de Docentes</h2>
+        <div className="header-actions" style={{ padding: 15 }}>
+          <button className="btn-create" onClick={handleAdd}>
+            + Nuevo Docente
+          </button>
+        </div>
+      </header>
 
-      {/* ---------------- TÍTULO + BOTÓN A LA DERECHA ---------------- */}
-      <div style={{ 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "center",
-        marginBottom: "20px",
-        width: "100%"
-      }}>
-        <h2 style={{ 
-          fontFamily: "'Poppins', 'Segoe UI', sans-serif",
-          fontSize: "32px",
-          fontWeight: "600",
-          color: "#ffffffff",
-          margin: 0,
-          textAlign: "center",
-          flex: 1,
-          letterSpacing: "-0.5 px"
-        }}>
-          Administración de Docentes
-        </h2>
-
-        <button
-          onClick={handleAdd}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#66bb6a",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "14px",
-            fontWeight: "500",
-          }}
-        >
-          + Agregar Docente
-        </button>
-      </div>
-      {/* --------------------------------------------------------------- */}
-
-      {loading && <p className="loadingText">Cargando docentes...</p>}
-      {error && <p className="errorText">Error: {error}</p>}
+      {loading && <p className="loading">Cargando docentes...</p>}
+      {error && <div className="error">Error: {error}</div>}
 
       {!loading && !error && (
         <>
-          <div className="tableContainer">
-            <table className="table">
-              <thead className="tableHead">
+          {/* ESTADÍSTICAS */}
+          <div className="stats-container">
+            <div className="stat-card stat-total">
+              <h4>Total Docentes</h4>
+              <p>{docentes.length}</p>
+            </div>
+            <div className="stat-card stat-completed">
+              <h4>Docentes Activos</h4>
+              <p>{docentes.filter((d) => d.estado).length}</p>
+            </div>
+            <div className="stat-card stat-pending">
+              <h4>Permanentes</h4>
+              <p>{docentes.filter((d) => d.tipo_contrato === "permanente").length}</p>
+            </div>
+            <div className="stat-card stat-overdue">
+              <h4>Temporales</h4>
+              <p>{docentes.filter((d) => d.tipo_contrato === "temporal").length}</p>
+            </div>
+          </div>
+
+          {/* TABLA */}
+          <div style={styles.rolesTableContainer}>
+            <table style={styles.table}>
+              <thead style={styles.tableHead}>
                 <tr>
-                  <th className="tableHeader">Nombre Completo</th>
-                  <th className="tableHeader">Número Item</th>
-                  <th className="tableHeader">Especialidad</th>
-                  <th className="tableHeader">Tipo Contrato</th>
-                  <th className="tableHeader">Estado</th>
-                  <th className="tableHeader">Acciones</th>
+                  <th style={styles.tableHeader}>Nombre Completo</th>
+                  <th style={styles.tableHeader}>Número Item</th>
+                  <th style={styles.tableHeader}>Especialidad</th>
+                  <th style={styles.tableHeader}>Tipo Contrato</th>
+                  <th style={styles.tableHeader}>Estado</th>
+                  <th style={styles.tableHeaderCenter}>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -183,52 +187,61 @@ function DocenteAdmin() {
                   docentes.map((docente, index) => (
                     <tr
                       key={docente.id}
-                      className={`tableRow ${index % 2 === 0 ? "tableRowAlternate" : ""}`}
+                      style={{
+                        ...styles.tableRow,
+                        ...(index % 2 === 0 ? styles.tableRowAlternate : {}),
+                      }}
                     >
-                      <td className="tableCellBold">
+                      <td style={styles.tableCellBold}>
                         {getPersonaName(docente.per_id)}
                       </td>
-                      <td className="tableCell">{docente.numero_item}</td>
-                      <td className="tableCell">{docente.especialidad}</td>
-                      <td className="tableCell">
+                      <td style={styles.tableCell}>{docente.numero_item}</td>
+                      <td style={styles.tableCell}>{docente.especialidad}</td>
+                      <td style={styles.tableCell}>
                         <span
-                          className={`statusBadge ${
-                            docente.tipo_contrato === "permanente" ? "statusPermanente" : "statusTemporal"
-                          }`}
+                          style={{
+                            ...styles.statusBadge,
+                            ...(docente.tipo_contrato === "permanente" 
+                              ? styles.statusDefault 
+                              : styles.statusNotDefault),
+                          }}
                         >
                           {docente.tipo_contrato}
                         </span>
                       </td>
-                      <td className="tableCell">
+                      <td style={styles.tableCell}>
                         <span
-                          className={`statusBadge ${
-                            docente.estado === 1 ? "statusActive" : "statusInactive"
-                          }`}
+                          style={{
+                            ...styles.statusBadge,
+                            ...(docente.estado 
+                              ? styles.statusDefault 
+                              : styles.statusNotDefault),
+                          }}
                         >
                           {docente.estado ? "Activo" : "Inactivo"}
                         </span>
                       </td>
-                      <td className="tableCell">
-                        <div className="actionContainer">
-                          <button
-                            onClick={() => handleEdit(docente)}
-                            className="editButton"
-                          >
-                            <AiFillEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(docente.id)}
-                            className="deleteButton"
-                          >
-                            <AiFillDelete />
-                          </button>
-                        </div>
+                      <td style={styles.tableCellCenter}>
+                        <button
+                          onClick={() => handleEdit(docente)}
+                          disabled={operationLoading}
+                          style={operationLoading ? styles.editButtonDisabled : styles.editButton}
+                        >
+                          <AiFillEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(docente.id, getPersonaName(docente.per_id))}
+                          disabled={operationLoading}
+                          style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
+                        >
+                          <AiFillDelete />
+                        </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td className="noDataText" colSpan="6">
+                    <td style={styles.noDataText} colSpan="6">
                       No hay docentes registrados
                     </td>
                   </tr>
@@ -236,392 +249,124 @@ function DocenteAdmin() {
               </tbody>
             </table>
           </div>
-
-          <div className="statsContainer">
-            <div className="statCard statCardTotal">
-              <h4 className="statTitle statTitleTotal">Total Docentes</h4>
-              <p className="statValue">{docentes.length}</p>
-            </div>
-
-            <div className="statCard statCardTipos">
-              <h4 className="statTitle statTitleTipos">Docentes Activos</h4>
-              <p className="statValue">
-                {docentes.filter((d) => d.estado).length}
-              </p>
-            </div>
-
-            <div className="statCard statCardPermanente">
-              <h4 className="statTitle statTitlePermanente">Permanentes</h4>
-              <p className="statValue">
-                {docentes.filter((d) => d.tipo_contrato === "permanente").length}
-              </p>
-            </div>
-          </div>
         </>
       )}
 
-      {/* ---------------------- MODAL ---------------------- */}
+      {/* MODAL CREAR/EDITAR */}
       {showModal && (
-        <div className="modal-overlay-emergente" onClick={handleCancelEdit}>
-          <div className="modal-emergente" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={handleCancelEdit}>
-              ×
-            </button>
+        <div className="modal-overlay" onClick={handleCancelEdit}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>{editingDocente ? "Editar Docente" : "Agregar Nuevo Docente"}</h2>
+            
+            <form onSubmit={handleSubmit}>
+              {error && <div style={styles.errorMessage}>Error: {error}</div>}
 
-            <h3 className="modal-title">
-              {editingDocente ? "Editar Docente" : "Nuevo Docente"}
-            </h3>
-
-            <form onSubmit={handleSubmit} className="modal-form">
-
-              <div className="form-section">
-                <h4 className="section-title">Datos personales</h4>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">Persona:</label>
-                    <select
-                      name="per_id"
-                      value={editingDocente ? editingDocente.per_id : newDocente.per_id}
-                      onChange={handleChange}
-                      required
-                      className="form-input-modal"
-                    >
-                      <option value="">Seleccionar Persona</option>
-
-                      {editingDocente && (
-                        <option value={editingDocente.per_id}>
-                          {getPersonaName(editingDocente.per_id)} (Actual)
-                        </option>
-                      )}
-
-                      {getAvailablePersonas().map((persona) => (
-                        <option key={persona.id} value={persona.id}>
-                          {persona.nombres} {persona.apellidopat} {persona.apellidomat}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Número de Item:</label>
-                    <input
-                      type="text"
-                      name="numero_item"
-                      placeholder="Ej: DOC001"
-                      value={editingDocente ? editingDocente.numero_item : newDocente.numero_item}
-                      onChange={handleChange}
-                      required
-                      className="form-input-modal"
-                    />
-                  </div>
+              <div className="form-row">
+                <div>
+                  <label style={styles.formLabel}>Persona:</label>
+                  <select
+                    className="InputProyecto"
+                    name="per_id"
+                    value={editingDocente ? editingDocente.per_id : newDocente.per_id}
+                    onChange={handleChange}
+                    required
+                    disabled={operationLoading}
+                  >
+                    <option value="">Seleccionar Persona</option>
+                    {editingDocente && (
+                      <option value={editingDocente.per_id}>
+                        {getPersonaName(editingDocente.per_id)} (Actual)
+                      </option>
+                    )}
+                    {getAvailablePersonas().map((persona) => (
+                      <option key={persona.id} value={persona.id}>
+                        {persona.nombres} {persona.apellidopat} {persona.apellidomat}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">Especialidad:</label>
-                    <input
-                      type="text"
-                      name="especialidad"
-                      placeholder="Ej: Matemáticas, Física, etc."
-                      value={editingDocente ? editingDocente.especialidad : newDocente.especialidad}
-                      onChange={handleChange}
-                      required
-                      className="form-input-modal"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Tipo de Contrato:</label>
-                    <select
-                      name="tipo_contrato"
-                      value={editingDocente ? editingDocente.tipo_contrato : newDocente.tipo_contrato}
-                      onChange={handleChange}
-                      className="form-input-modal"
-                    >
-                      <option value="permanente">Permanente</option>
-                      <option value="temporal">Temporal</option>
-                      <option value="interino">Interino</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="form-group-checkbox">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="estado"
-                      checked={editingDocente ? editingDocente.estado : newDocente.estado}
-                      onChange={handleChange}
-                      className="checkbox-input"
-                    />
-                    <span>Docente Activo</span>
-                  </label>
+                <div>
+                  <label style={styles.formLabel}>Número de Item:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="numero_item"
+                    placeholder="Ej: DOC001"
+                    value={editingDocente ? editingDocente.numero_item : newDocente.numero_item}
+                    onChange={handleChange}
+                    required
+                    disabled={operationLoading}
+                  />
                 </div>
               </div>
 
-              <div className="modal-actions">
-                <button type="button" onClick={handleCancelEdit} className="btn-cancel">
-                  Cancelar
-                </button>
+              <div className="form-row">
+                <div>
+                  <label style={styles.formLabel}>Especialidad:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="especialidad"
+                    placeholder="Ej: Matemáticas, Física, etc."
+                    value={editingDocente ? editingDocente.especialidad : newDocente.especialidad}
+                    onChange={handleChange}
+                    required
+                    disabled={operationLoading}
+                  />
+                </div>
 
-                <button type="submit" className="btn-submit">
-                  {editingDocente ? "Guardar" : "Guardar"}
+                <div>
+                  <label style={styles.formLabel}>Tipo de Contrato:</label>
+                  <select
+                    className="InputProyecto"
+                    name="tipo_contrato"
+                    value={editingDocente ? editingDocente.tipo_contrato : newDocente.tipo_contrato}
+                    onChange={handleChange}
+                    disabled={operationLoading}
+                  >
+                    <option value="permanente">Permanente</option>
+                    <option value="temporal">Temporal</option>
+                    <option value="interino">Interino</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-full">
+                <label style={styles.formCheckboxLabel}>
+                  <input
+                    type="checkbox"
+                    name="estado"
+                    checked={editingDocente ? editingDocente.estado : newDocente.estado}
+                    onChange={handleChange}
+                    disabled={operationLoading}
+                    style={styles.formCheckbox}
+                  />
+                  Docente Activo
+                </label>
+              </div>
+
+              <div className="modal-actions">
+                <button
+                  type="submit"
+                  disabled={operationLoading}
+                  className={editingDocente ? "btn-edit" : "btn-create"}
+                >
+                  {operationLoading ? "Procesando..." : (editingDocente ? "Actualizar Docente" : "Crear Docente")}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  disabled={operationLoading}
+                  className="btn-close"
+                >
+                  Cancelar
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
-      {/* ----------- ESTILOS (sin cambios excepto botón) ------------ */}
-      <style jsx>{`
-        .modal-overlay-emergente {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 9999;
-          animation: fadeIn 0.2s ease-out;
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes slideDown {
-          from {
-            transform: translateY(-20px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-
-        .modal-emergente {
-          background: #0f133fff;
-          border-radius: 8px;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
-          width: 90%;
-          max-width: 700px;
-          max-height: 90vh;
-          overflow-y: auto;
-          position: relative;
-          animation: slideDown 0.3s ease-out;
-        }
-
-        .modal-close-btn {
-          position: absolute;
-          top: 20px;
-          right: 20px;
-          background: transparent;
-          border: none;
-          font-size: 28px;
-          cursor: pointer;
-          color: #fff;
-          width: 32px;
-          height: 32px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 4px;
-          transition: all 0.2s ease;
-          z-index: 10;
-          line-height: 1;
-        }
-
-        .modal-close-btn:hover {
-          background: rgba(255, 255, 255, 0.1);
-          color: #fff;
-        }
-
-        .modal-title {
-          margin: 0;
-          padding: 24px 30px;
-          font-size: 20px;
-          font-weight: 500;
-          color: #fff;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-          background: rgba(0, 0, 0, 0.2);
-          border-radius: 8px 8px 0 0;
-          padding-right: 60px;
-        }
-
-        .modal-form {
-          padding: 30px;
-        }
-
-        .form-section {
-          margin-bottom: 20px;
-        }
-
-        .section-title {
-          font-size: 16px;
-          font-weight: 500;
-          color: #fff;
-          margin-bottom: 20px;
-          padding-bottom: 10px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .form-row {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          margin-bottom: 20px;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .form-label {
-          font-size: 14px;
-          font-weight: 500;
-          color: #fff;
-          margin-bottom: 8px;
-        }
-
-        .form-input-modal {
-          width: 100%;
-          padding: 10px 12px;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          border-radius: 4px;
-          font-size: 14px;
-          transition: border-color 0.2s;
-          box-sizing: border-box;
-          background: rgba(255, 255, 255, 0.1);
-          color: #fff;
-        }
-
-        .form-input-modal:focus {
-          outline: none;
-          border-color: #64b5f6;
-          box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
-        }
-
-        .form-input-modal option {
-          background: #000000ff;
-          color: #fff;
-        }
-
-        .form-group-checkbox {
-          margin: 20px 0;
-        }
-
-        .checkbox-label {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          cursor: pointer;
-          font-size: 14px;
-          color: #fff;
-        }
-
-        .checkbox-input {
-          width: 18px;
-          height: 18px;
-          cursor: pointer;
-        }
-
-        .modal-actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 10px;
-          margin-top: 30px;
-          padding-top: 20px;
-          border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-cancel {
-          padding: 10px 24px;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          border-radius: 4px;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          background: transparent;
-          color: #fff;
-          transition: all 0.2s;
-        }
-
-        .btn-cancel:hover {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .btn-submit {
-          padding: 10px 24px;
-          border: none;
-          border-radius: 4px;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          background: #66bb6a;
-          color: white;
-          transition: all 0.2s;
-        }
-
-        .btn-submit:hover {
-          background: #0ec3dbff;
-          box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-        }
-
-        .modal-emergente::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        .modal-emergente::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        .modal-emergente::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 3px;
-        }
-
-        .modal-emergente::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.5);
-        }
-
-        @media (max-width: 768px) {
-          .modal-emergente {
-            width: 95%;
-            max-height: 95vh;
-          }
-
-          .modal-title {
-            padding: 20px;
-            font-size: 18px;
-          }
-
-          .modal-form {
-            padding: 20px;
-          }
-
-          .form-row {
-            gap: 15px;
-          }
-
-          .modal-actions {
-            flex-direction: column-reverse;
-          }
-
-          .btn-cancel,
-          .btn-submit {
-            width: 100%;
-          }
-        }
-      `}</style>
     </div>
   );
 }
