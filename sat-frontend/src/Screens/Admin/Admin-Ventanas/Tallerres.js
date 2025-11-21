@@ -3,6 +3,7 @@ import { getAllTalleres, getTaller, createTaller, updateTaller, deleteTaller } f
 import { getAllMetodologias } from "../../../API/Admin/Metodologia.js";
 import { TallerStyles } from "../../Components screens/Styles.js";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+import { styles } from "../../Components screens/Styles";
 
 function Talleres() {
   const [talleres, setTalleres] = useState([]);
@@ -261,14 +262,14 @@ function Talleres() {
                         <button
                           onClick={() => openEdit(taller.id)}
                           disabled={operationLoading}
-                          style={operationLoading ? TallerStyles.editButtonDisabled : TallerStyles.editButton}
+                          style={operationLoading ? styles.editButtonDisabled : styles.editButton}
                         >
                           <AiFillEdit />
                         </button>
                         <button
                           onClick={() => handleDelete(taller.id, taller.titulo)}
                           disabled={operationLoading}
-                          style={operationLoading ? TallerStyles.deleteButtonDisabled : TallerStyles.deleteButton}
+                          style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
                         >
                           <AiFillDelete />
                         </button>

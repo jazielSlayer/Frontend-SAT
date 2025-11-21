@@ -5,6 +5,7 @@ import { TallerStyles } from "../../Components screens/Styles.js";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import { MdManageAccounts } from "react-icons/md";
 import { buildPDFAdmin } from "../../../API/Admin/PDFs.js";
+import { styles } from "../../Components screens/Styles";
 
 function Usuarios() {
   const [users, setUsers] = useState([]);
@@ -383,21 +384,21 @@ function Usuarios() {
                         <button
                           onClick={() => openEdit(user.id)}
                           disabled={operationLoading}
-                          style={operationLoading ? TallerStyles.editButtonDisabled : TallerStyles.editButton}
+                          style={operationLoading ? styles.editButtonDisabled : styles.editButton}
                         >
                           <AiFillEdit />
                         </button>
                         <button
                           onClick={() => handleDelete(user.id, user.user_name)}
                           disabled={operationLoading}
-                          style={operationLoading ? TallerStyles.deleteButtonDisabled : TallerStyles.deleteButton}
+                          style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
                         >
                           <AiFillDelete />
                         </button>
                         <button
                           onClick={() => setShowUserRolesModal(user.id)}
                           disabled={operationLoading}
-                          style={operationLoading ? TallerStyles.manageButtonDisabled : TallerStyles.manageButton}
+                          style={operationLoading ? styles.manageButtonDisabled : styles.manageButton}
                         >
                           <MdManageAccounts />
                         </button>

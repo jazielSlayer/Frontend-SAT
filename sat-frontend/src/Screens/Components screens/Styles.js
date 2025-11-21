@@ -169,6 +169,7 @@ export const styles = {
       border: "none",
       borderRadius: "4px",
       cursor: "pointer",
+      marginRight: "8px",
       fontSize: "12px",
     },
     deleteButtonDisabled: {
@@ -178,6 +179,7 @@ export const styles = {
       border: "none",
       borderRadius: "4px",
       cursor: "not-allowed",
+      marginRight: "8px",
       fontSize: "12px",
     },
     formContainer: {

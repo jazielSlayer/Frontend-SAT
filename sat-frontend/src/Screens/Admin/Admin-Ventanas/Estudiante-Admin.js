@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import { getEstudiantes, createEstudiante, updateEstudiante, deleteEstudiante } from "../../../API/Admin/Estudiante_admin";
 import { EstudianteStyles } from "../../Components screens/Styles";
+import { styles } from "../../Components screens/Styles";
 
 function AdminEstudiantes() {
   const [estudiantes, setEstudiantes] = useState([]);
@@ -252,14 +253,14 @@ function AdminEstudiantes() {
                         <button
                           onClick={() => openEdit(estudiante)}
                           disabled={operationLoading}
-                          style={operationLoading ? EstudianteStyles.editButtonDisabled : EstudianteStyles.editButton}
+                          style={operationLoading ? styles.editButtonDisabled : styles.editButton}
                         >
                           <AiFillEdit />
                         </button>
                         <button
                           onClick={() => handleDelete(estudiante.id, `${estudiante.nombres} ${estudiante.apellidopat}`)}
                           disabled={operationLoading}
-                          style={operationLoading ? EstudianteStyles.deleteButtonDisabled : EstudianteStyles.deleteButton}
+                          style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
                         >
                           <AiFillDelete />
                         </button>
