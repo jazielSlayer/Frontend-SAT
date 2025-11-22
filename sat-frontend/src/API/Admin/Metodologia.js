@@ -44,7 +44,7 @@ export async function getMetodologia(id) {
 // Creamos una nueva metodologia
 export async function createMetodologia(data) {
   try {
-    const response = await fetch(`${API_URL}/metodologias`, {
+    const response = await fetch(`${API_URL}/metodologia/crear`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
