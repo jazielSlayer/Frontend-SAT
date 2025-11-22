@@ -57,7 +57,6 @@ const ProyectosView = () => {
     loadInitialData();
   }, []);
 
-  // === FILTROS EN TIEMPO REAL ===
   const filteredEstudiantes = estudiantes.filter(e =>
     `${e.nombres} ${e.apellidopat} ${e.apellidomat} ${e.numero_matricula || ''}`
       .toLowerCase()
@@ -70,7 +69,7 @@ const ProyectosView = () => {
       .includes(docSearch.toLowerCase())
   );
 
-  // === ESTADÍSTICAS ===
+  
   const stats = {
     total: proyectos.length,
     calificados: proyectos.filter(p => p.calificacion).length,
@@ -221,6 +220,8 @@ const ProyectosView = () => {
                 <p><strong>Línea:</strong> {selectedProyecto.linea_investigacion}</p>
                 <p><strong>Área:</strong> {selectedProyecto.area_conocimiento}</p>
                 <p><strong>Calificación:</strong> {selectedProyecto.calificacion || 'Sin calificar'}</p>
+                <p><strong>Calificación 2:</strong> {selectedProyecto.calificacion2 || 'Sin calificar'}</p>
+                <p><strong>Calificación final:</strong> {selectedProyecto.calificacion_final || 'Sin calificar'}</p>
                 <p><strong>Entrega:</strong> {selectedProyecto.fecha_entrega}</p>
                 <p><strong>Defensa:</strong> {selectedProyecto.fecha_defensa || 'No programada'}</p>
               </div>
@@ -287,6 +288,8 @@ const ProyectosView = () => {
                 <input className="InputProyecto" type="date" onChange={e => setFormData({...formData, fecha_entrega: e.target.value})} required />
                 <input className="InputProyecto" type="date" onChange={e => setFormData({...formData, fecha_defensa: e.target.value})} />
                 <input className="InputProyecto" type="number" min="0" max="100" placeholder="Calificación" onChange={e => setFormData({...formData, calificacion: e.target.value})} />
+                <input className="InputProyecto" type="number" step="0.1" min="0" max="100" placeholder="Calificación 2" onChange={e => setFormData({...formData, calificacion2: e.target.value})} />
+                <input className="InputProyecto" type="number" step="0.1" min="0" max="100" placeholder="Calificación final" onChange={e => setFormData({...formData, calificacion_final: e.target.value})} />
               </div>
 
               <div className="form-full">
@@ -321,7 +324,6 @@ const ProyectosView = () => {
                 <input className="InputProyecto" value={formData.area_conocimiento || ''} onChange={e => setFormData({...formData, area_conocimiento: e.target.value})} required />
               </div>
 
-              {/* Estudiante */}
               <div className="form-full">
                 <select className="InputProyecto" value={formData.id_estudiante || ''} onChange={e => setFormData({...formData, id_estudiante: e.target.value})} required>
                   <option value="">Seleccione estudiante</option>
@@ -333,7 +335,6 @@ const ProyectosView = () => {
                 </select>
               </div>
 
-              {/* Guía */}
               <div className="form-full">
                 <select className="InputProyecto" value={formData.id_docente_guia || ''} onChange={e => setFormData({...formData, id_docente_guia: e.target.value})} required>
                   <option value="">Seleccione docente guía</option>
@@ -345,7 +346,6 @@ const ProyectosView = () => {
                 </select>
               </div>
 
-              {/* Revisor */}
               <div className="form-full">
                 <select className="InputProyecto" value={formData.id_docente_revisor || ''} onChange={e => setFormData({...formData, id_docente_revisor: e.target.value})} required>
                   <option value="">Seleccione docente revisor</option>
@@ -362,6 +362,8 @@ const ProyectosView = () => {
                 <input className="InputProyecto" type="date" value={formData.fecha_entrega || ''} onChange={e => setFormData({...formData, fecha_entrega: e.target.value})} required />
                 <input className="InputProyecto" type="date" value={formData.fecha_defensa || ''} onChange={e => setFormData({...formData, fecha_defensa: e.target.value})} />
                 <input className="InputProyecto" type="number" min="0" max="100" value={formData.calificacion || ''} onChange={e => setFormData({...formData, calificacion: e.target.value})} />
+                <input className="InputProyecto" type="number" min="0" max="100" value={formData.calificacion2 || ''} onChange={e => setFormData({...formData, calificacion2: e.target.value})} />
+                <input className="InputProyecto" type="number" min="0" max="100" value={formData.calificacion_final || ''} onChange={e => setFormData({...formData, calificacion_final: e.target.value})} />
               </div>
 
               {/* Textareas */}

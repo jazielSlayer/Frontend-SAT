@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { getUser, saveUser, updateUser, deleteUser  } from "../../../API/Admin/Users_Admin";
+import { getUser, saveUser, updateUser, deleteUser } from "../../../API/Admin/Users_Admin";
 import { getUsersWithRoles, getAllRoles, assignRoleToUser } from "../../../API/Admin/Roles.js";
 import { TallerStyles } from "../../Components screens/Styles.js";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
-import { MdManageAccounts } from "react-icons/md"
+import { MdManageAccounts } from "react-icons/md";
 import { buildPDFAdmin } from "../../../API/Admin/PDFs.js";
-
+import { styles } from "../../Components screens/Styles";
 
 function Usuarios() {
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   const [showUserRolesModal, setShowUserRolesModal] = useState(null);
   const [formData, setFormData] = useState({
     user_name: "",
@@ -26,71 +28,52 @@ function Usuarios() {
   const [operationLoading, setOperationLoading] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [usersData, rolesData] = await Promise.all([
-          getUsersWithRoles(),
-          getAllRoles(),
-        ]);
-        console.log("Users Data:", usersData);
-        console.log("Roles Data:", rolesData);
-
-        const usersArray = Array.isArray(usersData) ? usersData : (usersData?.data || []);
-        const rolesArray = Array.isArray(rolesData) ? rolesData : (rolesData?.data || []);
-
-        setUsers(usersArray);
-        setRoles(rolesArray);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError(err.message);
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [usersData, rolesData] = await Promise.all([
+        getUsersWithRoles(),
+        getAllRoles(),
+      ]);
+      console.log("Users Data:", usersData);
+      console.log("Roles Data:", rolesData);
+
+      const usersArray = Array.isArray(usersData) ? usersData : (usersData?.data || []);
+      const rolesArray = Array.isArray(rolesData) ? rolesData : (rolesData?.data || []);
+
+      setUsers(usersArray);
+      setRoles(rolesArray);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const dataToSend = {
-        user_name: formData.user_name,
-        email: formData.email,
-        nombres: formData.nombres,
-        apellidopat: formData.apellidopat || null,
-        apellidomat: formData.apellidomat || null,
-        carnet: formData.carnet || null,
-        id_roles: parseInt(formData.id_roles) || null,
-      };
-
-      if (editingUser) {
-        await updateUser(editingUser.id, dataToSend);
-      } else {
-        await saveUser(dataToSend);
-      }
-      const usersData = await getUsersWithRoles();
-      setUsers(Array.isArray(usersData) ? usersData : (usersData?.data || []));
-      setFormData({
-        user_name: "",
-        email: "",
-        nombres: "",
-        apellidopat: "",
-        apellidomat: "",
-        carnet: "",
-        id_roles: "",
-      });
-      setEditingUser(null);
-    } catch (err) {
-      setError(err.message);
-    }
+  const openCreate = () => {
+    setFormData({
+      user_name: "",
+      email: "",
+      nombres: "",
+      apellidopat: "",
+      apellidomat: "",
+      carnet: "",
+      id_roles: "",
+    });
+    setShowCreate(true);
   };
 
-  const handleEdit = async (id) => {
+  const openEdit = async (id) => {
     try {
       const userData = await getUser(id);
       setFormData({
@@ -103,32 +86,99 @@ function Usuarios() {
         id_roles: userData.id_roles || "",
       });
       setEditingUser(userData);
+      setShowEdit(true);
     } catch (err) {
       setError(err.message);
+      alert(err.message || "Error al cargar el usuario");
     }
   };
 
-  const handleCancelEdit = () => {
-    setEditingUser(null);
-    setFormData({
-      user_name: "",
-      email: "",
-      nombres: "",
-      apellidopat: "",
-      apellidomat: "",
-      carnet: "",
-      id_roles: "",
-    });
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    setOperationLoading(true);
+    setError(null);
+    try {
+      const dataToSend = {
+        user_name: formData.user_name,
+        email: formData.email,
+        nombres: formData.nombres,
+        apellidopat: formData.apellidopat || null,
+        apellidomat: formData.apellidomat || null,
+        carnet: formData.carnet || null,
+        id_roles: parseInt(formData.id_roles) || null,
+      };
+
+      await saveUser(dataToSend);
+      setShowCreate(false);
+      setFormData({
+        user_name: "",
+        email: "",
+        nombres: "",
+        apellidopat: "",
+        apellidomat: "",
+        carnet: "",
+        id_roles: "",
+      });
+      await fetchData();
+      alert("Usuario creado exitosamente");
+    } catch (err) {
+      setError(err.message);
+      alert(err.message || "Error al crear el usuario");
+    } finally {
+      setOperationLoading(false);
+    }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("¿Estás seguro de eliminar este usuario?")) {
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setOperationLoading(true);
+    setError(null);
+    try {
+      const dataToSend = {
+        user_name: formData.user_name,
+        email: formData.email,
+        nombres: formData.nombres,
+        apellidopat: formData.apellidopat || null,
+        apellidomat: formData.apellidomat || null,
+        carnet: formData.carnet || null,
+        id_roles: parseInt(formData.id_roles) || null,
+      };
+
+      await updateUser(editingUser.id, dataToSend);
+      setShowEdit(false);
+      setEditingUser(null);
+      setFormData({
+        user_name: "",
+        email: "",
+        nombres: "",
+        apellidopat: "",
+        apellidomat: "",
+        carnet: "",
+        id_roles: "",
+      });
+      await fetchData();
+      alert("Usuario actualizado exitosamente");
+    } catch (err) {
+      setError(err.message);
+      alert(err.message || "Error al actualizar el usuario");
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
+  const handleDelete = async (id, userName) => {
+    if (window.confirm(`¿Estás seguro de eliminar al usuario "${userName}"? Esta acción no se puede deshacer.`)) {
+      setOperationLoading(true);
+      setError(null);
       try {
         await deleteUser(id);
-        const usersData = await getUsersWithRoles();
-        setUsers(Array.isArray(usersData) ? usersData : (usersData?.data || []));
+        await fetchData();
+        alert("Usuario eliminado exitosamente");
       } catch (err) {
         setError(err.message);
+        alert(err.message || "Error al eliminar el usuario");
+      } finally {
+        setOperationLoading(false);
       }
     }
   };
@@ -138,11 +188,12 @@ function Usuarios() {
     setError(null);
     try {
       await assignRoleToUser(userId, roleId);
-      const usersData = await getUsersWithRoles();
-      setUsers(Array.isArray(usersData) ? usersData : (usersData?.data || []));
+      await fetchData();
       setShowUserRolesModal(null);
+      alert("Rol asignado exitosamente");
     } catch (err) {
       setError(err.message || "Error al asignar rol");
+      alert(err.message || "Error al asignar rol");
     } finally {
       setOperationLoading(false);
     }
@@ -166,59 +217,22 @@ function Usuarios() {
     }
 
     return (
-      <div style={{
-        position: "fixed",
-        inset: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 50,
-        padding: "16px",
-      }}>
-        <div style={{
-          backgroundColor: "#2d3748",
-          borderRadius: "12px",
-          padding: "24px",
-          maxWidth: "800px",
-          width: "100%",
-          maxHeight: "90vh",
-          overflowY: "auto",
-        }}>
-          <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "24px",
-          }}>
-            <h3 style={{
-              fontSize: "24px",
-              fontWeight: "bold",
-              color: "#ffffff",
-            }}>
-              Asignar Rol a: {user.user_name} ({user.nombres} {user.apellidopat})
-            </h3>
-            <button
-              onClick={() => setShowUserRolesModal(null)}
-              style={{
-                color: "#a0aec0",
-                fontSize: "24px",
-                cursor: "pointer",
-              }}
-            >
-              ×
-            </button>
-          </div>
+      <div className="modal-overlay" onClick={() => setShowUserRolesModal(null)}>
+        <div className="modal-content modal-content-large" onClick={(e) => e.stopPropagation()}>
+          <h2>Asignar Rol a: {user.user_name}</h2>
 
-          {error && <p className="errorText">Error: {error}</p>}
+          {error && <p style={TallerStyles.errorMessage}>Error: {error}</p>}
 
           <div style={{ marginBottom: "24px" }}>
-            <p style={{ color: "#e2e8f0", fontSize: "14px" }}>
+            <p style={{ color: "#c0c9c9ff", fontSize: "14px" }}>
+              Usuario: <strong>{user.nombres} {user.apellidopat} {user.apellidomat}</strong>
+            </p>
+            <p style={{ color: "#c0c9c9ff", fontSize: "14px", marginTop: "8px" }}>
               Selecciona un rol para asignarlo al usuario. Solo se puede asignar un rol por usuario.
             </p>
           </div>
 
-          <div style={{ display: "grid", gap: "12px" }}>
+          <div style={{ display: "grid", gap: "16px" }}>
             {roles.map((role) => (
               <label
                 key={role.id}
@@ -228,9 +242,9 @@ function Usuarios() {
                   justifyContent: "space-between",
                   padding: "16px",
                   borderRadius: "8px",
-                  border: "1px solid #4a5568",
+                  border: "1px solid #030e21ff",
                   cursor: "pointer",
-                  backgroundColor: isRoleAssignedToUser(showUserRolesModal, role.id) ? "#4a5568" : "transparent",
+                  backgroundColor: isRoleAssignedToUser(showUserRolesModal, role.id) ? "#4a5568" : "#1a1a2e",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -242,41 +256,43 @@ function Usuarios() {
                     style={{
                       width: "20px",
                       height: "20px",
-                      backgroundColor: "#2d3748",
-                      borderColor: "#4a5568",
-                      borderRadius: "4px",
                     }}
                   />
                   <div>
-                    <span style={{ color: "#ffffff", fontWeight: "medium" }}>{role.name}</span>
-                    <p style={{ color: "#a0aec0", fontSize: "12px" }}>
+                    <span style={{ color: "#ffffff", fontWeight: "600", fontSize: "16px" }}>
+                      {role.name}
+                    </span>
+                    <p style={{ color: "#a0aec0", fontSize: "13px", marginTop: "4px" }}>
                       {role.descripcion || "Sin descripción"}
                     </p>
-                    <p style={{ color: "#a0aec0", fontSize: "12px" }}>Ruta: {role.start_path}</p>
+                    <p style={{ color: "#a0aec0", fontSize: "12px", marginTop: "2px" }}>
+                      Ruta: <code style={{ backgroundColor: "#2d3748", padding: "2px 6px", borderRadius: "4px" }}>
+                        {role.start_path}
+                      </code>
+                    </p>
                   </div>
                 </div>
-                <span style={{
-                  padding: "4px 8px",
-                  borderRadius: "9999px",
-                  fontSize: "12px",
-                  fontWeight: "medium",
-                  backgroundColor: role.is_default ? "rgba(34, 197, 94, 0.2)" : "rgba(107, 114, 128, 0.2)",
-                  color: role.is_default ? "#34d399" : "#a0aec0",
-                }}>
+                <span
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "20px",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                    backgroundColor: role.is_default ? "rgba(34, 197, 94, 0.2)" : "rgba(107, 114, 128, 0.2)",
+                    color: role.is_default ? "#34d399" : "#a0aec0",
+                  }}
+                >
                   {role.is_default ? "Por defecto" : "Opcional"}
                 </span>
               </label>
             ))}
           </div>
 
-          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "24px" }}>
+          <div className="modal-actions">
             <button
               onClick={() => setShowUserRolesModal(null)}
               disabled={operationLoading}
-              style={{
-                ...TallerStyles.cancelButton,
-                ...(operationLoading ? { opacity: 0.5, cursor: "not-allowed" } : {}),
-              }}
+              className="btn-close"
             >
               Cerrar
             </button>
@@ -287,47 +303,55 @@ function Usuarios() {
   };
 
   return (
-    <div className="bg-gray-900 min-h-screen p-4 " style={{color: "white"}}>
-      <h2 className="title">Gestión de Usuarios</h2>
+    <div className="proyectos-container">
+      <header className="proyectos-header">
+        <h2 style={TallerStyles.title}>Gestión de Usuarios</h2>
+        <div className="header-actions" style={{ padding: 15 }}>
+          <button className="btn-search" onClick={buildPDFAdmin} style={{ marginRight: "10px" }}>
+            Generar PDF
+          </button>
+          <button className="btn-create" onClick={openCreate}>
+            + Nuevo Usuario
+          </button>
+        </div>
+      </header>
 
-      {loading && <p className="loadingText">Cargando usuarios...</p>}
-      {error && <p className="errorText">Error: {error}</p>}
+      {loading && <p className="loading">Cargando usuarios...</p>}
+      {error && <div className="error">Error: {error}</div>}
 
       {!loading && !error && (
         <>
-        <div className="stats-container">
-            <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTotal }}>
-              <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTotal }}>
-                Total Usuarios
-              </h4>
-              <p className="statValue">{users.length}</p>
+          {/* ESTADÍSTICAS */}
+          <div className="stats-container">
+            <div className="stat-card stat-total">
+              <h4>Total Usuarios</h4>
+              <p>{users.length}</p>
             </div>
-            <div style={{ ...TallerStyles.statCard, ...TallerStyles.statCardTipos }}>
-              <h4 style={{ ...TallerStyles.statTitle, ...TallerStyles.statTitleTipos }}>
-                Roles Únicos
-              </h4>
-              <p className="statValue">{uniqueRoles.length}</p>
+            <div className="stat-card stat-completed">
+              <h4>Roles Únicos</h4>
+              <p>{uniqueRoles.length}</p>
+            </div>
+            <div className="stat-card stat-pending">
+              <h4>Con Email</h4>
+              <p>{users.filter((u) => u.email).length}</p>
+            </div>
+            <div className="stat-card stat-overdue">
+              <h4>Con Carnet</h4>
+              <p>{users.filter((u) => u.carnet).length}</p>
             </div>
           </div>
-          <div className="formContainer">
-            <button style={{...TallerStyles.cancelButton,...(operationLoading ? { opacity: 0.5, cursor: "not-allowed" } : {}),}} 
-                onClick={buildPDFAdmin}
-                >
-                  PDF
-            </button>
-          </div>
-          
-          <div className="tableContainer">
-            <table className="table">
-              <thead className="tableHead">
+
+          {/* TABLA */}
+          <div style={TallerStyles.rolesTableContainer}>
+            <table style={TallerStyles.table}>
+              <thead style={TallerStyles.tableHead}>
                 <tr>
-                  <th className="tableHeader">Usuario</th>
-                  <th className="tableHeader">Nombre</th>
-                  <th className="tableHeader">Apellido Paterno</th>
-                  <th className="tableHeader">Apellido Materno</th>
-                  <th className="tableHeader">Rol</th>
-                  <th className="tableHeader">Email</th>
-                  <th className="tableHeader">Acciones</th>
+                  <th style={TallerStyles.tableHeader}>Usuario</th>
+                  <th style={TallerStyles.tableHeader}>Nombre Completo</th>
+                  <th style={TallerStyles.tableHeader}>Email</th>
+                  <th style={TallerStyles.tableHeader}>Carnet</th>
+                  <th style={TallerStyles.tableHeader}>Rol</th>
+                  <th style={TallerStyles.tableHeaderCenter}>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -340,39 +364,50 @@ function Usuarios() {
                         ...(index % 2 === 0 ? TallerStyles.tableRowAlternate : {}),
                       }}
                     >
-                      <td className="tableCellBold">{user.user_name}</td>
-                      <td className="tableCell">{user.nombres}</td>
-                      <td className="tableCell">{user.apellidopat || "-"}</td>
-                      <td className="tableCell">{user.apellidomat || "-"}</td>
-                      <td className="tableCell">{user.role_name || "-"}</td>
-                      <td className="tableCell">{user.email}</td>
-                      <td className="tableCell">
-                        <div className="actionContainer">
-                          <button
-                            onClick={() => handleEdit(user.id)}
-                            className="editButton"
-                          >
-                            <AiFillEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(user.id)}
-                            className="deleteButton"
-                          >
-                            <AiFillDelete />
-                          </button>
-                          <button
-                            onClick={() => setShowUserRolesModal(user.id)}
-                            className="editButton"
-                          >
-                            <MdManageAccounts />
-                          </button>
-                        </div>
+                      <td style={TallerStyles.tableCellBold}>{user.user_name}</td>
+                      <td style={TallerStyles.tableCell}>
+                        {user.nombres} {user.apellidopat} {user.apellidomat}
+                      </td>
+                      <td style={TallerStyles.tableCell}>{user.email}</td>
+                      <td style={TallerStyles.tableCell}>{user.carnet || "-"}</td>
+                      <td style={TallerStyles.tableCell}>
+                        <span
+                          style={{
+                            ...TallerStyles.statusBadge,
+                            ...TallerStyles.statusDefault,
+                          }}
+                        >
+                          {user.role_name || "Sin rol"}
+                        </span>
+                      </td>
+                      <td style={TallerStyles.tableCellCenter}>
+                        <button
+                          onClick={() => openEdit(user.id)}
+                          disabled={operationLoading}
+                          style={operationLoading ? styles.editButtonDisabled : styles.editButton}
+                        >
+                          <AiFillEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(user.id, user.user_name)}
+                          disabled={operationLoading}
+                          style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
+                        >
+                          <AiFillDelete />
+                        </button>
+                        <button
+                          onClick={() => setShowUserRolesModal(user.id)}
+                          disabled={operationLoading}
+                          style={operationLoading ? styles.manageButtonDisabled : styles.manageButton}
+                        >
+                          <MdManageAccounts />
+                        </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td className="noDataText" colSpan="8">
+                    <td style={TallerStyles.noDataText} colSpan="6">
                       No hay usuarios registrados
                     </td>
                   </tr>
@@ -380,90 +415,113 @@ function Usuarios() {
               </tbody>
             </table>
           </div>
+        </>
+      )}
 
-          <div className="formContainer">
-            <h3 className="formTitle">
-              {editingUser ? "Editar Usuario" : "Agregar Nuevo Usuario"}
-            </h3>
-            <form onSubmit={handleSubmit}>
-              <div className="formGrid">
+      {/* MODAL CREAR */}
+      {showCreate && (
+        <div className="modal-overlay" onClick={() => setShowCreate(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Agregar Nuevo Usuario</h2>
+
+            <form onSubmit={handleCreate}>
+              {error && <div style={TallerStyles.errorMessage}>Error: {error}</div>}
+
+              <div className="form-row">
                 <div>
-                  <label className="formLabel">Nombre de Usuario:</label>
+                  <label style={TallerStyles.formLabel}>Nombre de Usuario:</label>
                   <input
+                    className="InputProyecto"
                     type="text"
                     name="user_name"
-                    placeholder="Nombre de usuario"
+                    placeholder="Ej: jperez"
                     value={formData.user_name}
                     onChange={handleInputChange}
                     required
-                    className="formInput"
+                    disabled={operationLoading}
                   />
                 </div>
+
                 <div>
-                  <label className="formLabel">Email:</label>
+                  <label style={TallerStyles.formLabel}>Email:</label>
                   <input
+                    className="InputProyecto"
                     type="email"
                     name="email"
-                    placeholder="Email"
+                    placeholder="ejemplo@correo.com"
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="formInput"
+                    disabled={operationLoading}
                   />
                 </div>
+              </div>
+
+              <div className="form-row-3">
                 <div>
-                  <label className="formLabel">Nombres:</label>
+                  <label style={TallerStyles.formLabel}>Nombres:</label>
                   <input
+                    className="InputProyecto"
                     type="text"
                     name="nombres"
                     placeholder="Nombres"
                     value={formData.nombres}
                     onChange={handleInputChange}
                     required
-                    className="formInput"
+                    disabled={operationLoading}
                   />
                 </div>
+
                 <div>
-                  <label className="formLabel">Apellido Paterno:</label>
+                  <label style={TallerStyles.formLabel}>Apellido Paterno:</label>
                   <input
+                    className="InputProyecto"
                     type="text"
                     name="apellidopat"
                     placeholder="Apellido Paterno"
                     value={formData.apellidopat}
                     onChange={handleInputChange}
-                    className="formInput"
+                    disabled={operationLoading}
                   />
                 </div>
+
                 <div>
-                  <label className="formLabel">Apellido Materno:</label>
+                  <label style={TallerStyles.formLabel}>Apellido Materno:</label>
                   <input
+                    className="InputProyecto"
                     type="text"
                     name="apellidomat"
                     placeholder="Apellido Materno"
                     value={formData.apellidomat}
                     onChange={handleInputChange}
-                    className="formInput"
+                    disabled={operationLoading}
                   />
                 </div>
+              </div>
+
+              <div className="form-row">
                 <div>
-                  <label className="formLabel">Carnet:</label>
+                  <label style={TallerStyles.formLabel}>Carnet:</label>
                   <input
+                    className="InputProyecto"
                     type="text"
                     name="carnet"
-                    placeholder="Carnet"
+                    placeholder="Ej: 12345678"
                     value={formData.carnet}
                     onChange={handleInputChange}
-                    className="formInput"
+                    disabled={operationLoading}
                   />
                 </div>
+
                 <div>
-                  <label className="formLabel">Rol:</label>
+                  <label style={TallerStyles.formLabel}>Rol:</label>
                   <select
+                    className="InputProyecto"
                     name="id_roles"
                     value={formData.id_roles}
                     onChange={handleInputChange}
                     required
-                    className="formInput"
+                    disabled={operationLoading}
                   >
                     <option value="">Selecciona Rol</option>
                     {roles.length > 0 ? (
@@ -478,34 +536,171 @@ function Usuarios() {
                   </select>
                 </div>
               </div>
-              <div className="formButtonContainer">
+
+              <div className="modal-actions">
                 <button
                   type="submit"
-                  className={`submitButton ${
-                    editingUser ? "submitButtonUpdate" : "submitButtonCreate"
-                  }`}
+                  disabled={operationLoading}
+                  className="btn-create"
                 >
-                  {editingUser ? "Actualizar Usuario" : "Agregar Usuario"}
+                  {operationLoading ? "Procesando..." : "Crear Usuario"}
                 </button>
-                
-                {editingUser && (
-                  <button
-                    type="button"
-                    onClick={handleCancelEdit}
-                    className="cancelButton"
-                  >
-                    Cancelar Edición
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setShowCreate(false)}
+                  disabled={operationLoading}
+                  className="btn-close"
+                >
+                  Cancelar
+                </button>
               </div>
             </form>
           </div>
-          
-          
-
-          {renderUserRolesModal()}
-        </>
+        </div>
       )}
+
+      {/* MODAL EDITAR */}
+      {showEdit && (
+        <div className="modal-overlay" onClick={() => setShowEdit(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Editar Usuario</h2>
+
+            <form onSubmit={handleUpdate}>
+              {error && <div style={TallerStyles.errorMessage}>Error: {error}</div>}
+
+              <div className="form-row">
+                <div>
+                  <label style={TallerStyles.formLabel}>Nombre de Usuario:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="user_name"
+                    placeholder="Ej: jperez"
+                    value={formData.user_name}
+                    onChange={handleInputChange}
+                    required
+                    disabled={operationLoading}
+                  />
+                </div>
+
+                <div>
+                  <label style={TallerStyles.formLabel}>Email:</label>
+                  <input
+                    className="InputProyecto"
+                    type="email"
+                    name="email"
+                    placeholder="ejemplo@correo.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    disabled={operationLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row-3">
+                <div>
+                  <label style={TallerStyles.formLabel}>Nombres:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="nombres"
+                    placeholder="Nombres"
+                    value={formData.nombres}
+                    onChange={handleInputChange}
+                    required
+                    disabled={operationLoading}
+                  />
+                </div>
+
+                <div>
+                  <label style={TallerStyles.formLabel}>Apellido Paterno:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="apellidopat"
+                    placeholder="Apellido Paterno"
+                    value={formData.apellidopat}
+                    onChange={handleInputChange}
+                    disabled={operationLoading}
+                  />
+                </div>
+
+                <div>
+                  <label style={TallerStyles.formLabel}>Apellido Materno:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="apellidomat"
+                    placeholder="Apellido Materno"
+                    value={formData.apellidomat}
+                    onChange={handleInputChange}
+                    disabled={operationLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div>
+                  <label style={TallerStyles.formLabel}>Carnet:</label>
+                  <input
+                    className="InputProyecto"
+                    type="text"
+                    name="carnet"
+                    placeholder="Ej: 12345678"
+                    value={formData.carnet}
+                    onChange={handleInputChange}
+                    disabled={operationLoading}
+                  />
+                </div>
+
+                <div>
+                  <label style={TallerStyles.formLabel}>Rol:</label>
+                  <select
+                    className="InputProyecto"
+                    name="id_roles"
+                    value={formData.id_roles}
+                    onChange={handleInputChange}
+                    required
+                    disabled={operationLoading}
+                  >
+                    <option value="">Selecciona Rol</option>
+                    {roles.length > 0 ? (
+                      roles.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>No hay roles disponibles</option>
+                    )}
+                  </select>
+                </div>
+              </div>
+
+              <div className="modal-actions">
+                <button
+                  type="submit"
+                  disabled={operationLoading}
+                  className="btn-edit"
+                >
+                  {operationLoading ? "Procesando..." : "Actualizar Usuario"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowEdit(false)}
+                  disabled={operationLoading}
+                  className="btn-close"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {renderUserRolesModal()}
     </div>
   );
 }
