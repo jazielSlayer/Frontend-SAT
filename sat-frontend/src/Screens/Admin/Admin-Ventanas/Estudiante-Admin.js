@@ -175,9 +175,9 @@ function AdminEstudiantes() {
   const filteredEstudiantes = estudiantes.filter((estudiante) => {
     const searchLower = searchTerm.toLowerCase();
     const fullName = `${estudiante.nombres} ${estudiante.apellidopat} ${estudiante.apellidomat}`.toLowerCase();
-    const matricula = (estudiante.numero_matricula || "").toLowerCase();
+    const registro = String(estudiante.ru || "").toLowerCase();
     
-    return fullName.includes(searchLower) || matricula.includes(searchLower);
+    return fullName.includes(searchLower) || registro.includes(searchLower);
   });
 
   return (
@@ -194,6 +194,21 @@ function AdminEstudiantes() {
 
       {!loading && !error && (
         <div>
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre o ru..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
           <div className="stats-container">
             <div style={{ ...EstudianteStyles.statCard, ...EstudianteStyles.statCardTotal }}>
               <h4 style={{ ...EstudianteStyles.statTitle, ...EstudianteStyles.statTitleTotal }}>
@@ -221,22 +236,7 @@ function AdminEstudiantes() {
             </div>
           </div>
 
-          {/* BUSCADOR */}
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre o matrícula..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
-          </div>
+          
 
           <div style={EstudianteStyles.tableContainer}>
             <table style={EstudianteStyles.table}>

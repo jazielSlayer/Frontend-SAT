@@ -212,6 +212,21 @@ function DocenteAdmin() {
 
       {!loading && !error && (
         <div>
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre o número de item..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
           <div className="stats-container">
             <div style={{ ...DocenteStyles.statCard, ...DocenteStyles.statCardTotal }}>
               <h4 style={{ ...DocenteStyles.statTitle, ...DocenteStyles.statTitleTotal }}>
@@ -248,22 +263,7 @@ function DocenteAdmin() {
             </div>
           </div>
 
-          {/* BUSCADOR */}
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre o número de item..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
-          </div>
+          
 
           <div style={DocenteStyles.tableContainer}>
             <table style={DocenteStyles.table}>

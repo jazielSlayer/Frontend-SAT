@@ -334,6 +334,22 @@ function Usuarios() {
 
       {!loading && !error && (
         <>
+        {/* BUSCADOR */}
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre, carnet o usuario..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
           {/* ESTADÍSTICAS */}
           <div className="stats-container">
             <div className="stat-card stat-total">
@@ -352,23 +368,6 @@ function Usuarios() {
               <h4>Con Carnet</h4>
               <p>{users.filter((u) => u.carnet).length}</p>
             </div>
-          </div>
-
-          {/* BUSCADOR */}
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre, carnet o usuario..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
           </div>
 
           {/* TABLA */}

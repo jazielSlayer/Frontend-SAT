@@ -354,6 +354,21 @@ function RolesAdmin() {
 
       {!loading && !error && (
         <div>
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre de rol, descripción o ruta..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
           <div className="stats-container">
             <div style={{ ...styles.statCard, ...styles.statCardRoles }}>
               <h4 style={{ ...styles.statTitle, ...styles.statTitleRoles }}>Total Roles</h4>
@@ -371,23 +386,6 @@ function RolesAdmin() {
               </h4>
               <p style={styles.statValue}>{roles.filter((r) => r.is_default).length}</p>
             </div>
-          </div>
-
-          {/* BUSCADOR */}
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre de rol, descripción o ruta..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
           </div>
 
           <div style={styles.rolesTableContainer}>

@@ -210,6 +210,22 @@ function Talleres() {
 
       {!loading && !error && (
         <>
+        {/* BUSCADOR */}
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por título, tipo, metodología o resultado..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
           {/* ESTADÍSTICAS */}
           <div className="stats-container">
             <div className="stat-card stat-total">
@@ -230,22 +246,7 @@ function Talleres() {
             </div>
           </div>
 
-          {/* BUSCADOR */}
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por título, tipo, metodología o resultado..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
-          </div>
+          
 
           {/* TABLA */}
           <div style={TallerStyles.rolesTableContainer}>

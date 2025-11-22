@@ -58,6 +58,7 @@ function Login() {
   return (
     <div style={styles.container}>
       <div style={styles.formWrapper}>
+        <img src="logousb.png" alt="Logo Univesidad Salesiana de Bolivia" style={{ width: '150px',height: 'auto'}} />
         <h2 style={styles.title}>Iniciar Sesión</h2>
         <p style={styles.subtitle}>Por favor, ingresa tus credenciales.</p>
         

@@ -113,6 +113,7 @@ function AutenticacionLogin() {
   return (
     <div style={styles.container}>
       <div style={styles.formWrapper}>
+        <img src="logousb.png" alt="Logo Univesidad Salesiana de Bolivia" style={{ width: '150px',height: 'auto'}} />
         <h2 style={styles.title}>Autenticacion de correo</h2>
         <p style={styles.subtitle}>
           Verifica tu correo electrónico para {nombres}
