@@ -9,6 +9,7 @@ function AdminEstudiantes() {
   const [loading, setLoading] = useState(true);
   const [operationLoading, setOperationLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   
   // Modales
   const [showCreate, setShowCreate] = useState(false);
@@ -170,6 +171,15 @@ function AdminEstudiantes() {
     }
   };
 
+  // Función para filtrar estudiantes por nombre y matrícula
+  const filteredEstudiantes = estudiantes.filter((estudiante) => {
+    const searchLower = searchTerm.toLowerCase();
+    const fullName = `${estudiante.nombres} ${estudiante.apellidopat} ${estudiante.apellidomat}`.toLowerCase();
+    const matricula = (estudiante.numero_matricula || "").toLowerCase();
+    
+    return fullName.includes(searchLower) || matricula.includes(searchLower);
+  });
+
   return (
     <div className="proyectos-container">
       <header className="proyectos-header">
@@ -211,6 +221,23 @@ function AdminEstudiantes() {
             </div>
           </div>
 
+          {/* BUSCADOR */}
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre o matrícula..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+
           <div style={EstudianteStyles.tableContainer}>
             <table style={EstudianteStyles.table}>
               <thead style={EstudianteStyles.tableHead}>
@@ -224,8 +251,8 @@ function AdminEstudiantes() {
                 </tr>
               </thead>
               <tbody>
-                {estudiantes.length > 0 ? (
-                  estudiantes.map((estudiante, index) => (
+                {filteredEstudiantes.length > 0 ? (
+                  filteredEstudiantes.map((estudiante, index) => (
                     <tr
                       key={estudiante.id}
                       style={{
@@ -270,7 +297,7 @@ function AdminEstudiantes() {
                 ) : (
                   <tr>
                     <td style={EstudianteStyles.noDataText} colSpan="6">
-                      No hay estudiantes registrados
+                      {searchTerm ? "No se encontraron resultados" : "No hay estudiantes registrados"}
                     </td>
                   </tr>
                 )}

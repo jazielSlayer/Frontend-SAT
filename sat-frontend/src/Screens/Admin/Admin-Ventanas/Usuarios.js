@@ -14,6 +14,7 @@ function Usuarios() {
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showUserRolesModal, setShowUserRolesModal] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
     user_name: "",
     email: "",
@@ -204,6 +205,18 @@ function Usuarios() {
     return user?.id_roles === roleId;
   };
 
+  // Función para filtrar usuarios
+  const filteredUsers = users.filter((user) => {
+    const searchLower = searchTerm.toLowerCase();
+    const fullName = `${user.nombres} ${user.apellidopat} ${user.apellidomat}`.toLowerCase();
+    const carnet = (user.carnet || "").toLowerCase();
+    const userName = (user.user_name || "").toLowerCase();
+    
+    return fullName.includes(searchLower) || 
+           carnet.includes(searchLower) || 
+           userName.includes(searchLower);
+  });
+
   const uniqueRoles = [...new Set(users.map((u) => u.id_roles).filter(Boolean))];
 
   const renderUserRolesModal = () => {
@@ -341,6 +354,23 @@ function Usuarios() {
             </div>
           </div>
 
+          {/* BUSCADOR */}
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre, carnet o usuario..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+
           {/* TABLA */}
           <div style={TallerStyles.rolesTableContainer}>
             <table style={TallerStyles.table}>
@@ -355,8 +385,8 @@ function Usuarios() {
                 </tr>
               </thead>
               <tbody>
-                {users.length > 0 ? (
-                  users.map((user, index) => (
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((user, index) => (
                     <tr
                       key={user.id}
                       style={{
@@ -408,7 +438,7 @@ function Usuarios() {
                 ) : (
                   <tr>
                     <td style={TallerStyles.noDataText} colSpan="6">
-                      No hay usuarios registrados
+                      {searchTerm ? "No se encontraron resultados" : "No hay usuarios registrados"}
                     </td>
                   </tr>
                 )}

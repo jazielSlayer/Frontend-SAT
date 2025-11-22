@@ -21,6 +21,7 @@ function RolesAdmin() {
   const [loading, setLoading] = useState(true);
   const [operationLoading, setOperationLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   
   // Modales
   const [showCreate, setShowCreate] = useState(false);
@@ -237,6 +238,18 @@ function RolesAdmin() {
     return categories;
   };
 
+  // Función para filtrar roles
+  const filteredRoles = roles.filter((role) => {
+    const searchLower = searchTerm.toLowerCase();
+    const name = (role.name || "").toLowerCase();
+    const descripcion = (role.descripcion || "").toLowerCase();
+    const startPath = (role.start_path || "").toLowerCase();
+    
+    return name.includes(searchLower) || 
+           descripcion.includes(searchLower) || 
+           startPath.includes(searchLower);
+  });
+
   const renderPermissionsModal = () => {
     if (!showPermissionsModal) return null;
 
@@ -359,6 +372,24 @@ function RolesAdmin() {
               <p style={styles.statValue}>{roles.filter((r) => r.is_default).length}</p>
             </div>
           </div>
+
+          {/* BUSCADOR */}
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre de rol, descripción o ruta..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+
           <div style={styles.rolesTableContainer}>
             <table style={styles.table}>
               <thead style={styles.tableHead}>
@@ -373,8 +404,8 @@ function RolesAdmin() {
                 </tr>
               </thead>
               <tbody>
-                {roles.length > 0 ? (
-                  roles.map((role, index) => (
+                {filteredRoles.length > 0 ? (
+                  filteredRoles.map((role, index) => (
                     <tr
                       key={role.id}
                       style={{
@@ -428,7 +459,7 @@ function RolesAdmin() {
                 ) : (
                   <tr>
                     <td style={styles.noDataText} colSpan="7">
-                      No hay roles registrados
+                      {searchTerm ? "No se encontraron resultados" : "No hay roles registrados"}
                     </td>
                   </tr>
                 )}
