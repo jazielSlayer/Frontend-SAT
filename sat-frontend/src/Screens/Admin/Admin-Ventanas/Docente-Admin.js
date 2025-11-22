@@ -166,6 +166,29 @@ function DocenteAdmin() {
 
       {!loading && !error && (
         <>
+          {/* ESTADÍSTICAS ARRIBA */}
+          <div className="statsContainer" style={{ marginBottom: '30px' }}>
+            <div className="statCard statCardTotal">
+              <h4 className="statTitle statTitleTotal">Total Docentes</h4>
+              <p className="statValue">{docentes.length}</p>
+            </div>
+
+            <div className="statCard statCardTipos">
+              <h4 className="statTitle statTitleTipos">Docentes Activos</h4>
+              <p className="statValue">
+                {docentes.filter((d) => d.estado).length}
+              </p>
+            </div>
+
+            <div className="statCard statCardPermanente">
+              <h4 className="statTitle statTitlePermanente">Permanentes</h4>
+              <p className="statValue">
+                {docentes.filter((d) => d.tipo_contrato === "permanente").length}
+              </p>
+            </div>
+          </div>
+
+          {/* TABLA DE DATOS */}
           <div className="tableContainer">
             <table className="table">
               <thead className="tableHead">
@@ -235,27 +258,6 @@ function DocenteAdmin() {
                 )}
               </tbody>
             </table>
-          </div>
-
-          <div className="statsContainer">
-            <div className="statCard statCardTotal">
-              <h4 className="statTitle statTitleTotal">Total Docentes</h4>
-              <p className="statValue">{docentes.length}</p>
-            </div>
-
-            <div className="statCard statCardTipos">
-              <h4 className="statTitle statTitleTipos">Docentes Activos</h4>
-              <p className="statValue">
-                {docentes.filter((d) => d.estado).length}
-              </p>
-            </div>
-
-            <div className="statCard statCardPermanente">
-              <h4 className="statTitle statTitlePermanente">Permanentes</h4>
-              <p className="statValue">
-                {docentes.filter((d) => d.tipo_contrato === "permanente").length}
-              </p>
-            </div>
           </div>
         </>
       )}
@@ -374,7 +376,7 @@ function DocenteAdmin() {
         </div>
       )}
 
-      {/* ----------- ESTILOS (sin cambios excepto botón) ------------ */}
+      {/* ----------- ESTILOS ------------ */}
       <style jsx>{`
         .modal-overlay-emergente {
           position: fixed;
