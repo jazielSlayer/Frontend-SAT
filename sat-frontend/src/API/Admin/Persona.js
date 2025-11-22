@@ -44,7 +44,7 @@ export async function getPersona(id) {
 // Creamos una nueva persona
 export async function createPersona(data) {
   try {
-    const response = await fetch(`${API_URL}/personas`, {
+    const response = await fetch(`${API_URL}/persona/crear`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
