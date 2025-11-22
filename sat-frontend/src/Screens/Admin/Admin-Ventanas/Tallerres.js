@@ -11,6 +11,7 @@ function Talleres() {
   const [editingTaller, setEditingTaller] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
     titulo: "",
     id_metodologia: "",
@@ -172,12 +173,26 @@ function Talleres() {
     }
   };
 
-  const uniqueTipos = [...new Set(talleres.map(t => t.tipo_taller).filter(Boolean))];
-
   const getMetodologiaNombre = (id) => {
     const metodologia = metodologias.find(m => m.id === id);
     return metodologia ? metodologia.nombre : id;
   };
+
+  // Función para filtrar talleres
+  const filteredTalleres = talleres.filter((taller) => {
+    const searchLower = searchTerm.toLowerCase();
+    const titulo = (taller.titulo || "").toLowerCase();
+    const tipoTaller = (taller.tipo_taller || "").toLowerCase();
+    const metodologiaNombre = getMetodologiaNombre(taller.id_metodologia).toLowerCase();
+    const resultado = (taller.resultado || "").toLowerCase();
+    
+    return titulo.includes(searchLower) || 
+           tipoTaller.includes(searchLower) || 
+           metodologiaNombre.includes(searchLower) ||
+           resultado.includes(searchLower);
+  });
+
+  const uniqueTipos = [...new Set(talleres.map(t => t.tipo_taller).filter(Boolean))];
 
   return (
     <div className="proyectos-container">
@@ -215,6 +230,23 @@ function Talleres() {
             </div>
           </div>
 
+          {/* BUSCADOR */}
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por título, tipo, metodología o resultado..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+
           {/* TABLA */}
           <div style={TallerStyles.rolesTableContainer}>
             <table style={TallerStyles.table}>
@@ -231,8 +263,8 @@ function Talleres() {
                 </tr>
               </thead>
               <tbody>
-                {talleres.length > 0 ? (
-                  talleres.map((taller, index) => (
+                {filteredTalleres.length > 0 ? (
+                  filteredTalleres.map((taller, index) => (
                     <tr
                       key={taller.id}
                       style={{
@@ -279,7 +311,7 @@ function Talleres() {
                 ) : (
                   <tr>
                     <td style={TallerStyles.noDataText} colSpan="8">
-                      No hay talleres registrados
+                      {searchTerm ? "No se encontraron resultados" : "No hay talleres registrados"}
                     </td>
                   </tr>
                 )}
