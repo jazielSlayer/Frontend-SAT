@@ -1,12 +1,15 @@
-// ...existing code...
 import { useState, useEffect } from "react";
-import {  getAllModulos, createModulo, updateModulo, deleteModulo } from "../../../API/Admin/Modulo";
+import { getAllModulos, createModulo, updateModulo, deleteModulo } from "../../../API/Admin/Modulo";
+import { getDocentes } from "../../../API/Admin/Docente_admin";
+import { getAllMetodologias } from "../../../API/Admin/Metodologia";
 import { styles } from "../../Components screens/Styles";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 
 
 export default function Modulos() {
   const [modulos, setModulos] = useState([]);
+  const [docentes, setDocentes] = useState([]);
+  const [metodologias, setMetodologias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -25,10 +28,8 @@ export default function Modulos() {
     fecha_finalizacion: "",
   });
 
-  // Nuevo: estado para búsqueda y estadísticas
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Cargar todos los módulos al montar
   useEffect(() => {
     cargarModulos();
   }, []);
@@ -36,11 +37,17 @@ export default function Modulos() {
   const cargarModulos = async () => {
     try {
       setLoading(true);
-      const data = await getAllModulos();
-      setModulos(data);
+      const [modulosData, docentesData, metodologiasData] = await Promise.all([
+        getAllModulos(),
+        getDocentes(),
+        getAllMetodologias()
+      ]);
+      setModulos(modulosData || []);
+      setDocentes(docentesData || []);
+      setMetodologias(metodologiasData || []);
       setError(null);
     } catch (err) {
-      setError("Error al cargar los módulos");
+      setError("Error al cargar los módulos / docentes / metodologías");
       console.error(err);
     } finally {
       setLoading(false);
@@ -66,8 +73,8 @@ export default function Modulos() {
       setFormData({
         codigo: modulo.codigo || "",
         nombre: modulo.nombre || "",
-        id_docente: modulo.id_docente || "",
-        id_metodologia: modulo.id_metodologia || "",
+        id_docente: modulo.id_docente ?? "" ,
+        id_metodologia: modulo.id_metodologia ?? "" ,
         duracion: modulo.duracion || "",
         descripcion: modulo.descripcion || "",
         fecha_inicio: modulo.fecha_inicio ? modulo.fecha_inicio.split("T")[0] : "",
@@ -115,7 +122,6 @@ export default function Modulos() {
     }
   };
 
-  // Filtrado por término de búsqueda (código, nombre, docente, metodología)
   const filteredModulos = modulos.filter((m) => {
     const q = searchTerm.trim().toLowerCase();
     if (!q) return true;
@@ -129,7 +135,6 @@ export default function Modulos() {
     );
   });
 
-  // Estadísticas simples
   const totalModulos = modulos.length;
   const uniqueMetodologias = new Set(modulos.map(m => m.metodologia_nombre).filter(Boolean)).size;
   const uniqueDocentes = new Set(modulos.map(m => {
@@ -200,7 +205,8 @@ export default function Modulos() {
                   <th style={styles.tableHeader}>Docente</th>
                   <th style={styles.tableHeader}>Metodología</th>
                   <th style={styles.tableHeader}>Duración</th>
-                  <th style={styles.tableHeader}>Fechas</th>
+                  <th style={styles.tableHeader}>Fecha Inicio</th>
+                  <th style={styles.tableHeader}>Fecha Fin</th>
                   <th style={styles.tableHeaderCenter}>Acciones</th>
                 </tr>
               </thead>
@@ -222,19 +228,12 @@ export default function Modulos() {
                       <td style={styles.tableCell}>{modulo.metodologia_nombre}</td>
                       <td style={styles.tableCell}>{modulo.duracion}</td>
                       <td style={styles.tableCell}>
-                        <code style={styles.code}>
-                          {modulo.fecha_inicio} → {modulo.fecha_finalizacion}
-                        </code>
+                        <code style={styles.code}>{modulo.fecha_inicio}</code>
+                      </td>
+                      <td style={styles.tableCell}>
+                        <code style={styles.code}>{modulo.fecha_finalizacion}</code>
                       </td>
                       <td style={styles.tableCellCenter}>
-                        <button
-                          className="btn-view"
-                          onClick={() => abrirModal("ver", modulo)}
-                          title="Ver detalle"
-                          style={styles.manageButton}
-                        >
-                          Ver
-                        </button>
                         <button
                           className="btn-edit"
                           onClick={() => abrirModal("editar", modulo)}
@@ -256,7 +255,7 @@ export default function Modulos() {
                   ))
                 ) : (
                   <tr>
-                    <td style={styles.noDataText} colSpan="7">
+                    <td style={styles.noDataText} colSpan="8">
                       {searchTerm ? "No se encontraron resultados" : "No hay módulos registrados aún."}
                     </td>
                   </tr>
@@ -319,26 +318,36 @@ export default function Modulos() {
 
                 <div className="form-row" style={{ gap: 12, marginTop: 12 }}>
                   <div style={{ flex: 1 }}>
-                    <label style={styles.formLabel}>ID Docente</label>
-                    <input
+                    <label style={styles.formLabel}>Docente</label>
+                    <select
                       className="InputProyecto"
-                      type="number"
-                      placeholder="ID Docente"
                       value={formData.id_docente}
                       onChange={(e) => setFormData({ ...formData, id_docente: e.target.value })}
                       required
-                    />
+                    >
+                      <option value="">Seleccione un docente</option>
+                      {docentes.map(d => (
+                        <option key={d.id ?? d.ID ?? d.ID_DOCENTE} value={d.id ?? d.ID ?? d.ID_DOCENTE}>
+                          {`${d.nombres || ""} ${d.apellidopat || ""} ${d.apellidomat || ""}`.trim()}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <label style={styles.formLabel}>ID Metodología</label>
-                    <input
+                    <label style={styles.formLabel}>Metodología</label>
+                    <select
                       className="InputProyecto"
-                      type="number"
-                      placeholder="ID Metodología"
                       value={formData.id_metodologia}
                       onChange={(e) => setFormData({ ...formData, id_metodologia: e.target.value })}
                       required
-                    />
+                    >
+                      <option value="">Seleccione una metodología</option>
+                      {metodologias.map(m => (
+                        <option key={m.id ?? m.ID} value={m.id ?? m.ID}>
+                          {m.nombre}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div style={{ flex: 1 }}>
                     <label style={styles.formLabel}>Duración</label>

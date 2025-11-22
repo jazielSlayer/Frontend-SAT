@@ -39,16 +39,14 @@ function AdminNav({ user, onLogout }) {
     return () => document.removeEventListener("click", handleDocumentClick);
   }, [collapsed]);
 
-  // Detectar scroll para ocultar/mostrar navegación en móvil
   useEffect(() => {
     const handleScroll = () => {
       const isMobile = window.innerWidth <= 768;
       
-      if (!isMobile) return; // Solo funciona en móvil
+      if (!isMobile) return; 
       
       const currentScrollY = window.scrollY;
       
-      // Si el scroll es hacia abajo y ha pasado de 10px, ocultar
       if (currentScrollY > lastScrollY && currentScrollY > 10) {
         setIsVisible(false);
         setCollapsed(false); // Cerrar el menú si está abierto
