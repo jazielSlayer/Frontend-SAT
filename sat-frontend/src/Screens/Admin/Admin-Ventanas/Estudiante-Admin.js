@@ -19,7 +19,7 @@ function AdminEstudiantes() {
   const [formData, setFormData] = useState({
     per_id: "",
     id_programa_academico: "",
-    numero_matricula: "",
+    ru: "",
     fecha_inscripcion: "",
     estado: 1,
   });
@@ -50,8 +50,8 @@ function AdminEstudiantes() {
     if (!data.id_programa_academico) {
       errors.id_programa_academico = "El ID de programa es obligatorio";
     }
-    if (!data.numero_matricula.trim()) {
-      errors.numero_matricula = "El número de matrícula es obligatorio";
+    if (!data.ru.trim()) {
+      errors.ru = "El número de matrícula es obligatorio";
     }
     if (!data.fecha_inscripcion) {
       errors.fecha_inscripcion = "La fecha de inscripción es obligatoria";
@@ -69,7 +69,7 @@ function AdminEstudiantes() {
     setFormData({
       per_id: "",
       id_programa_academico: "",
-      numero_matricula: "",
+      ru: "",
       fecha_inscripcion: "",
       estado: 1,
     });
@@ -82,7 +82,7 @@ function AdminEstudiantes() {
     setFormData({
       per_id: estudiante.per_id,
       id_programa_academico: estudiante.id_programa_academico,
-      numero_matricula: estudiante.numero_matricula,
+      ru: estudiante.ru,
       fecha_inscripcion: estudiante.fecha_inscripcion,
       estado: estudiante.estado,
     });
@@ -107,7 +107,7 @@ function AdminEstudiantes() {
       setFormData({
         per_id: "",
         id_programa_academico: "",
-        numero_matricula: "",
+        ru: "",
         fecha_inscripcion: "",
         estado: 1,
       });
@@ -139,7 +139,7 @@ function AdminEstudiantes() {
       setFormData({
         per_id: "",
         id_programa_academico: "",
-        numero_matricula: "",
+        ru: "",
         fecha_inscripcion: "",
         estado: 1,
       });
@@ -236,7 +236,7 @@ function AdminEstudiantes() {
                       <td style={EstudianteStyles.tableCellBold}>
                         {estudiante.nombres} {estudiante.apellidopat} {estudiante.apellidomat}
                       </td>
-                      <td style={EstudianteStyles.tableCell}>{estudiante.numero_matricula}</td>
+                      <td style={EstudianteStyles.tableCell}>{estudiante.ru}</td>
                       <td style={EstudianteStyles.tableCell}>{estudiante.nombre_programa}</td>
                       <td style={EstudianteStyles.tableCell}>{estudiante.fecha_inscripcion}</td>
                       <td style={EstudianteStyles.tableCell}>
@@ -326,15 +326,15 @@ function AdminEstudiantes() {
                       <input
                         className="InputProyecto"
                         type="text"
-                        name="numero_matricula"
+                        name="ru"
                         placeholder="Ej: 2024001"
-                        value={formData.numero_matricula}
+                        value={formData.ru}
                         onChange={handleChange}
                         required
                         disabled={operationLoading}
                       />
-                      {formErrors.numero_matricula && (
-                        <p style={EstudianteStyles.formErrorText}>{formErrors.numero_matricula}</p>
+                      {formErrors.ru && (
+                        <p style={EstudianteStyles.formErrorText}>{formErrors.ru}</p>
                       )}
                     </div>
 
@@ -439,15 +439,15 @@ function AdminEstudiantes() {
                       <input
                         className="InputProyecto"
                         type="text"
-                        name="numero_matricula"
+                        name="ru"
                         placeholder="Ej: 2024001"
-                        value={formData.numero_matricula}
+                        value={formData.ru}
                         onChange={handleChange}
                         required
                         disabled={operationLoading}
                       />
-                      {formErrors.numero_matricula && (
-                        <p style={EstudianteStyles.formErrorText}>{formErrors.numero_matricula}</p>
+                      {formErrors.ru && (
+                        <p style={EstudianteStyles.formErrorText}>{formErrors.ru}</p>
                       )}
                     </div>
 

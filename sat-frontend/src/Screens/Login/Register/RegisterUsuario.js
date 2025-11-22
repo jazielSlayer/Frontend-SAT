@@ -17,7 +17,7 @@ function RegisterUsuario() {
   const [roleData, setRoleData] = useState({
     // Para estudiante
     id_programa_academico: '',
-    numero_matricula: '',
+    ru: '',
     fecha_inscripcion: new Date().toISOString().split('T')[0],
     // Para docente
     numero_item: '',
@@ -117,7 +117,7 @@ function RegisterUsuario() {
 
       // Crear registro específico según el rol
       if (role === 'estudiante') {
-        if (!roleData.id_programa_academico || !roleData.numero_matricula) {
+        if (!roleData.id_programa_academico || !roleData.ru) {
           setError('Complete todos los campos requeridos para estudiante');
           setLoading(false);
           return;
@@ -126,7 +126,7 @@ function RegisterUsuario() {
         await createEstudiante({
           per_id: personaId,
           id_programa_academico: parseInt(roleData.id_programa_academico),
-          numero_matricula: roleData.numero_matricula,
+          ru: roleData.ru,
           fecha_inscripcion: roleData.fecha_inscripcion,
           estado: true
         });
@@ -247,9 +247,9 @@ function RegisterUsuario() {
               
               <input
                 type="text"
-                name="numero_matricula"
+                name="ru"
                 placeholder="Número de matrícula"
-                value={roleData.numero_matricula}
+                value={roleData.ru}
                 onChange={handleRoleChange}
                 style={styles.input}
                 required

@@ -105,7 +105,6 @@ function RegisterPersona() {
         
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.inputRow}>
-            {/** que solo permita letras y no numeros */}
             <input
               type="text"
               name="nombres"
