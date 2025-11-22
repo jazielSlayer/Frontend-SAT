@@ -4,8 +4,7 @@ import {
   getProyectoById,
   createProyecto,
   updateProyecto,
-  deleteProyecto,
-  searchProyectos
+  deleteProyecto
 } from '../../../API/Admin/Proyecto';
 
 // === SERVICIOS OFICIALES ===
@@ -18,17 +17,27 @@ const ProyectosView = () => {
   const [docentes, setDocentes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredProyectos = proyectos.filter((proyecto) => {
+    const searchLower = searchTerm.toLowerCase();
+    const name = (proyecto.titulo || "").toLowerCase();
+    const descripcion = (proyecto.linea_investigacion || "").toLowerCase();
+    const startPath = (proyecto.area_conocimiento || "").toLowerCase();
+    
+    return name.includes(searchLower) || 
+           descripcion.includes(searchLower) || 
+           startPath.includes(searchLower);
+  });
 
   // Modales
   const [showDetails, setShowDetails] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
 
   // Datos
   const [selectedProyecto, setSelectedProyecto] = useState(null);
   const [formData, setFormData] = useState({});
-  const [searchFilters, setSearchFilters] = useState({});
 
   // Búsqueda en selects
   const [estSearch, setEstSearch] = useState('');
@@ -150,16 +159,6 @@ const ProyectosView = () => {
     }
   };
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    try {
-      const result = await searchProyectos(searchFilters);
-      setProyectos(result.data || result);
-      setShowSearch(false);
-    } catch (err) {
-      alert('No se encontraron resultados');
-    }
-  };
 
   if (loading) return <div className="loading">Cargando...</div>;
   if (error) return <div className="error">{error}</div>;
@@ -169,24 +168,45 @@ const ProyectosView = () => {
       <header className="proyectos-header">
         <h1 style={{ padding: 15 }}>Proyectos de Grado</h1>
         <div className="header-actions" style={{ padding: 15 }}>
-          <button className="btn-search" onClick={() => setShowSearch(true)}>Buscar</button>
           <button className="btn-create" onClick={() => setShowCreate(true)}>+ Nuevo Proyecto</button>
         </div>
       </header>
-
+       <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre de rol, descripción o ruta..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
       <div className="stats-container">
         <div className="stat-card stat-total"><h4>Total</h4><p>{stats.total}</p></div>
         <div className="stat-card stat-completed"><h4>Calificados</h4><p>{stats.calificados}</p></div>
         <div className="stat-card stat-pending"><h4>En Curso</h4><p>{stats.enCurso}</p></div>
         <div className="stat-card stat-overdue"><h4>Retrasados</h4><p>{stats.retrasados}</p></div>
       </div>
-
       <div className="proyectos-grid">
-        {proyectos.length === 0 ? (
-          <p className="no-data">No hay proyectos registrados</p>
+        {filteredProyectos.length === 0 ? (
+          <div className="no-data full-width">
+            {searchTerm === "" 
+              ? "No hay proyectos registrados" 
+              : `No se encontraron proyectos que coincidan con "${searchTerm}"`
+            }
+          </div>
         ) : (
-          proyectos.map((proyecto) => (
-            <div key={proyecto.id} className="proyecto-card" onClick={() => openDetails(proyecto.id)}>
+          filteredProyectos.map((proyecto) => (
+            <div 
+              key={proyecto.id} 
+              className="proyecto-card" 
+              onClick={() => openDetails(proyecto.id)}
+            >
               <div className="card-header">
                 <h3>{proyecto.titulo}</h3>
                 <span className={`status ${proyecto.calificacion ? 'completed' : 'pending'}`}>
@@ -196,13 +216,12 @@ const ProyectosView = () => {
               <div className="card-body">
                 <p><strong>Estudiante:</strong> {proyecto.estudiante_nombres} {proyecto.estudiante_apellidopat}</p>
                 <p><strong>Área:</strong> {proyecto.area_conocimiento}</p>
-                <p><strong>Entrega:</strong> {proyecto.fecha_entrega || 'Sin fecha'}</p>
+                <p><strong>Entrega:</strong> {proyecto.fecha_entrega?.split('T')[0] || 'Sin fecha'}</p>
               </div>
             </div>
           ))
         )}
       </div>
-
       {/* MODAL DETALLES */}
       {showDetails && selectedProyecto && (
         <div className="modal-overlay" onClick={() => setShowDetails(false)}>
@@ -383,29 +402,6 @@ const ProyectosView = () => {
         </div>
       )}
 
-      {/* MODAL BUSCAR */}
-      {showSearch && (
-        <div className="modal-overlay" onClick={() => setShowSearch(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h2>Buscar Proyectos</h2>
-            <form onSubmit={handleSearch}>
-              <div className="form-full">
-                <input className="InputProyecto" placeholder="Título" onChange={e => setSearchFilters({...searchFilters, titulo: e.target.value})} />
-              </div>
-              <div className="form-full">
-                <input className="InputProyecto" placeholder="Área de conocimiento" onChange={e => setSearchFilters({...searchFilters, area_conocimiento: e.target.value})} />
-              </div>
-              <div className="form-full">
-                <input className="InputProyecto" placeholder="Estudiante" onChange={e => setSearchFilters({...searchFilters, estudiante: e.target.value})} />
-              </div>
-              <div className="modal-actions">
-                <button type="submit" className="btn-search">Buscar</button>
-                <button type="button" className="btn-close" onClick={() => setShowSearch(false)}>Cancelar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
