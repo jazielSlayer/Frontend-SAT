@@ -1,7 +1,7 @@
 import { API_URL } from "../Api.js";
 
 // Obtenemos todos los datos de modulos
-export async function getAllModulos() {
+export async function getAllModulos () {
   try {
     const response = await fetch(`${API_URL}/modulos`, {
       method: 'GET',

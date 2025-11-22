@@ -4,7 +4,7 @@ import { logo } from "./NavStyles";
 
 import { FaCircleUser } from "react-icons/fa6";
 import { FaBars } from "react-icons/fa";
-import { MdHomeFilled } from "react-icons/md";
+import { MdHomeFilled, MdViewModule } from "react-icons/md";
 import { FaUserTie } from "react-icons/fa";
 import { PiStudentFill } from "react-icons/pi";
 import { GiScrollUnfurled } from "react-icons/gi";
@@ -166,6 +166,12 @@ function AdminNav({ user, onLogout }) {
           <Link className="nav-link" to="/proyectos/admin" onClick={onNavLinkClick}>
             <PiProjectorScreenChartFill  className="nav-icon"/>
             <span className="nav-text">Proyectos</span>
+          </Link>
+        </li>
+        <li>
+          <Link className="nav-link" to="/admin/modulo" onClick={onNavLinkClick}>
+            <MdViewModule  className="nav-icon"/>
+            <span className="nav-text">Modulos</span>
           </Link>
         </li>
         <li>

@@ -23,6 +23,8 @@ import ProyectosAdmin from "./Screens/Admin/Admin-Ventanas/AdminProyects";
 import Taller1 from "./Screens/Users/Estudiante/Taller1";
 import Taller2 from "./Screens/Users/Estudiante/Taller2";
 import Taller3 from "./Screens/Users/Estudiante/Taller3";
+import Modulos from "./Screens/Admin/Admin-Ventanas/Modulos";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -191,6 +193,14 @@ createRoot(document.getElementById("root")).render(
               element={
                 <ProtectedRoute requiredRole="admin">
                   <Taller3 />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/modulo"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Modulos />
                 </ProtectedRoute>
               }
             />

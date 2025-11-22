@@ -45,6 +45,7 @@ function Navegacion() {
     "/usuarios",
     "/AdminUser",
     "/proyectos/admin",
+    "/admin/modulo",
     
   ].includes(location.pathname); 
 
