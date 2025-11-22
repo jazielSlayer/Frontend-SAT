@@ -24,6 +24,8 @@ import Taller1 from "./Screens/Users/Estudiante/Taller1";
 import Taller2 from "./Screens/Users/Estudiante/Taller2";
 import Taller3 from "./Screens/Users/Estudiante/Taller3";
 import Modulos from "./Screens/Admin/Admin-Ventanas/Modulos";
+import Persona from "./Screens/Admin/Admin-Ventanas/Persona";
+import Metodologia from "./Screens/Admin/Admin-Ventanas/Metodologia";
 
 const AuthContext = createContext();
 
@@ -121,6 +123,22 @@ createRoot(document.getElementById("root")).render(
               element={
                 <ProtectedRoute requiredRole="admin">
                   <Usuarios />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/persona"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Persona />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/metodologia"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Metodologia />
                 </ProtectedRoute>
               }
             />

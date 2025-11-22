@@ -7,8 +7,8 @@ import { PiStudentFill, PiStudentBold, PiProjectorScreenChartFill } from "react-
 import { GiScrollUnfurled, GiTeacher } from "react-icons/gi";
 import { GrWorkshop } from "react-icons/gr";
 import { IoLogOut } from "react-icons/io5";
+import logo from "./Config/logousb.png"
 
-const logo = "logousb.png";
 
 
 function AdminNav({ user, onLogout }) {
@@ -153,15 +153,21 @@ function AdminNav({ user, onLogout }) {
                 </Link>
               </li>
               <li>
-                <Link className="nav-link" to="/roles-admin" onClick={onNavLinkClick}>
-                  <GiScrollUnfurled className="nav-icon" />
-                  <span className="nav-text">Roles</span>
-                </Link>
-              </li>
-              <li>
                 <Link className="nav-link" to="/usuarios" onClick={onNavLinkClick}>
                   <FaUsersGear className="nav-icon"/>
                   <span className="nav-text">Usuarios</span>
+                </Link>
+              </li>
+              <li>
+                <Link className="nav-link" to="/admin/persona" onClick={onNavLinkClick}>
+                  <FaUsersGear className="nav-icon"/>
+                  <span className="nav-text">Persona</span>
+                </Link>
+              </li>
+              <li>
+                <Link className="nav-link" to="/roles-admin" onClick={onNavLinkClick}>
+                  <GiScrollUnfurled className="nav-icon" />
+                  <span className="nav-text">Roles</span>
                 </Link>
               </li>
             </ul>
@@ -183,6 +189,12 @@ function AdminNav({ user, onLogout }) {
             <Link className="nav-link" to="/admin/modulo" onClick={onNavLinkClick}>
               <MdViewModule className="nav-icon"/>
               <span className="nav-text">Modulos</span>
+            </Link>
+          </li>
+          <li>
+            <Link className="nav-link" to="/admin/metodologia" onClick={onNavLinkClick}>
+              <MdViewModule className="nav-icon"/>
+              <span className="nav-text">Metodologia</span>
             </Link>
           </li>
           <li>

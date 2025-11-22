@@ -551,7 +551,7 @@
         }
 
 .logoutButtonStyle {
-  background: #9807077d;
+  background: none;
   border: none;
   color: white;
   cursor: pointer;
