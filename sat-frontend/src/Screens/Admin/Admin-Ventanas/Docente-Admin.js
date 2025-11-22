@@ -253,8 +253,8 @@ function DocenteAdmin() {
               </p>
             </div>
 
-            <div style={{ ...DocenteStyles.statCard, ...DocenteStyles.statCardTemporal }}>
-              <h4 style={{ ...DocenteStyles.statTitle, ...DocenteStyles.statTitleTemporal }}>
+            <div style={{ ...DocenteStyles.statCard, ...DocenteStyles.statCardPermanente }}>
+              <h4 style={{ ...DocenteStyles.statTitle, ...DocenteStyles.statTitlePermanente }}>
                 Temporales
               </h4>
               <p style={DocenteStyles.statValue}>
