@@ -83,6 +83,8 @@ export async function createProyecto(data) {
         resumen: data.resumen || null,
         observacion: data.observacion || null,
         calificacion: data.calificacion || null,
+        calificacion2: data.calificacion2 || null,
+        calificacion_final: data.calificacion_final || null,
       }),
     });
 
@@ -112,6 +114,8 @@ export async function updateProyecto(id, data) {
         linea_investigacion: data.linea_investigacion,
         area_conocimiento: data.area_conocimiento,
         calificacion: data.calificacion,
+        calificacion2: data.calificacion2,
+        calificacion_final: data.calificacion_final,
         fecha_entrega: data.fecha_entrega,
         fecha_defensa: data.fecha_defensa,
         resumen: data.resumen,
