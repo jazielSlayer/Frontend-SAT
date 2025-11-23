@@ -26,6 +26,9 @@ import Taller3 from "./Screens/Users/Estudiante/Taller3";
 import Modulos from "./Screens/Admin/Admin-Ventanas/Modulos";
 import Persona from "./Screens/Admin/Admin-Ventanas/Persona";
 import Metodologia from "./Screens/Admin/Admin-Ventanas/Metodologia";
+import ProgramaAcademico from "./Screens/Admin/Admin-Ventanas/Programa_academico";
+import AvanceEstudiante from "./Screens/Admin/Admin-Ventanas/Avance_estudiante";
+import Observacion from "./Screens/Admin/Admin-Ventanas/Observacion";
 
 const AuthContext = createContext();
 
@@ -131,6 +134,38 @@ createRoot(document.getElementById("root")).render(
               element={
                 <ProtectedRoute requiredRole="admin">
                   <Persona />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/metodologia"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Metodologia />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/estudiante/observacion"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Observacion />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/estudiante/avance"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AvanceEstudiante />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/programa/academico"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <ProgramaAcademico />
                 </ProtectedRoute>
               }
             />

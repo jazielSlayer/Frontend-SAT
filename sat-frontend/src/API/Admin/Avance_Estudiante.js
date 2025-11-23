@@ -44,7 +44,7 @@ export async function getAvance(id) {
 // Creamos un avanse
 export async function createAvance(data) {
   try {
-    const response = await fetch(`${API_URL}/avances`, {
+    const response = await fetch(`${API_URL}/avances/create`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ export async function createAvance(data) {
 // Actualizamos el dato del estudiante por id
 export async function updateAvance(id, data) {
   try {
-    const response = await fetch(`${API_URL}/avances/${id}`, {
+    const response = await fetch(`${API_URL}/avances/update/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export async function updateAvance(id, data) {
 // Eliminamo el estudiante por ID
 export async function deleteAvance(id) {
   try {
-    const response = await fetch(`${API_URL}/avances/${id}`, {
+    const response = await fetch(`${API_URL}/avances/delete/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

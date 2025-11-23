@@ -7,7 +7,7 @@ import {
   deleteProyecto
 } from '../../../API/Admin/Proyecto';
 
-// === SERVICIOS OFICIALES ===
+
 import { getEstudiantes } from '../../../API/Admin/Estudiante_admin';
 import { getDocentes } from '../../../API/Admin/Docente_admin';
 

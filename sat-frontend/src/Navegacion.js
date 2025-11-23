@@ -48,6 +48,9 @@ function Navegacion() {
     "/admin/modulo",
     "/admin/metodologia",
     "/admin/persona",
+    "/admin/estudiante/observacion",
+    "/admin/estudiante/avance",
+    "/admin/programa/academico",
     
   ].includes(location.pathname); 
 

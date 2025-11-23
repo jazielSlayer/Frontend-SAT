@@ -170,6 +170,18 @@ const closeMobileMenu = () => {
               </Link>
             </li>
             <li>
+              <Link className="nav-link" to="/admin/estudiante/observacion" onClick={closeMobileMenu}>
+                <PiStudentFill className="nav-icon" />
+                <span className="nav-text">Observaciones</span>
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/admin/estudiante/avance" onClick={closeMobileMenu}>
+                <PiStudentFill className="nav-icon" />
+                <span className="nav-text">Avances</span>
+              </Link>
+            </li>
+            <li>
               <Link className="nav-link" to="/usuarios" onClick={closeMobileMenu}>
                 <FaUsersGear className="nav-icon" />
                 <span className="nav-text">Usuarios</span>
@@ -215,6 +227,12 @@ const closeMobileMenu = () => {
               <Link className="nav-link" to="/proyectos/admin" onClick={closeMobileMenu}>
                 <PiProjectorScreenChartFill className="nav-icon" />
                 <span className="nav-text">Proyectos</span>
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/admin/programa/academico" onClick={closeMobileMenu}>
+                <PiProjectorScreenChartFill className="nav-icon" />
+                <span className="nav-text">Programa Academico</span>
               </Link>
             </li>
             <li>

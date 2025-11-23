@@ -44,7 +44,7 @@ export async function getObservacion(id) {
 // Creamos una nueva observacion
 export async function createObservacion(data) {
   try {
-    const response = await fetch(`${API_URL}/observaciones`, {
+    const response = await fetch(`${API_URL}/observaciones/create`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ export async function createObservacion(data) {
 // Actualizamos una observacion por ID
 export async function updateObservacion(id, data) {
   try {
-    const response = await fetch(`${API_URL}/observaciones/${id}`, {
+    const response = await fetch(`${API_URL}/observaciones/update/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ export async function updateObservacion(id, data) {
 // Eliminamos una observacion por ID
 export async function deleteObservacion(id) {
   try {
-    const response = await fetch(`${API_URL}/observaciones/${id}`, {
+    const response = await fetch(`${API_URL}/observaciones/delete/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

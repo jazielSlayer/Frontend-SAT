@@ -44,7 +44,7 @@ export async function getPrograma(id) {
 // Creamos un nuevo programa
 export async function createPrograma(data) {
   try {
-    const response = await fetch(`${API_URL}/programas`, {
+    const response = await fetch(`${API_URL}/programa/create`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export async function createPrograma(data) {
 // Actalizamos un programa por ID
 export async function updatePrograma(id, data) {
   try {
-    const response = await fetch(`${API_URL}/programas/${id}`, {
+    const response = await fetch(`${API_URL}/programas/update/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export async function updatePrograma(id, data) {
 // Eliminamos un programa por ID
 export async function deletePrograma(id) {
   try {
-    const response = await fetch(`${API_URL}/programas/${id}`, {
+    const response = await fetch(`${API_URL}/programas/delete/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
