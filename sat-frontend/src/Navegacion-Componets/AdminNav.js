@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { FaCircleUser, FaBars, FaUserTie, FaUsersGear, FaChevronDown } from "react-icons/fa6";
-import { MdHomeFilled, MdViewModule } from "react-icons/md";
+import { FaCircleUser, FaBars, FaUserTie, FaUsersGear, FaChevronDown, FaPersonFalling  } from "react-icons/fa6";
+import { MdHomeFilled, MdViewModule, MdManageAccounts  } from "react-icons/md";
 import { PiStudentFill, PiStudentBold, PiProjectorScreenChartFill } from "react-icons/pi";
-import { GiScrollUnfurled, GiTeacher } from "react-icons/gi";
+import { GiScrollUnfurled, GiTeacher, GiProcessor } from "react-icons/gi";
 import { GrWorkshop } from "react-icons/gr";
 import { IoLogOut } from "react-icons/io5";
+
 import logo from "./Config/logousb.png"
 
 
@@ -15,18 +16,15 @@ function AdminNav({ user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [submenuOpen, setSubmenuOpen] = useState(false);
+  const [openGestion, setOpenGestion] = useState(false);
+  const [openProcesos, setOpenProcesos] = useState(false);
   const navRef = useRef(null);
 
   const toggleMenu = () => {
     setCollapsed((s) => !s);
   };
 
-  const toggleSubmenu = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSubmenuOpen((s) => !s);
-  };
+
 
   useEffect(() => {
     function handleDocumentClick(e) {
@@ -97,6 +95,23 @@ function AdminNav({ user, onLogout }) {
     return () => window.removeEventListener('resize', handleResize);
   }, [collapsed, isVisible]);
 
+  const toggleGestion = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpenGestion((prev) => !prev);
+  };
+
+  const toggleProcesos = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpenProcesos((prev) => !prev);
+  };
+
+
+const closeMobileMenu = () => {
+    if (window.innerWidth <= 768) setCollapsed(false);
+  };
+
   const onNavLinkClick = () => {
     setCollapsed(false);
   };
@@ -127,76 +142,96 @@ function AdminNav({ user, onLogout }) {
             </Link>
           </li>
 
-          {/* Submenú de Gestión */}
-          <li>
-            <button 
-              className={`nav-submenu-trigger ${submenuOpen ? 'active' : ''}`}
-              onClick={toggleSubmenu}
-            >
-              <div className="submenu-trigger-content">
-                <FaUsersGear className="nav-icon" />
-                <span className="nav-text">Gestión</span>
-              </div>
-              <FaChevronDown className="submenu-chevron" />
-            </button>
-            <ul className={`nav-submenu ${submenuOpen ? 'open' : ''}`}>
-              <li>
-                <Link className="nav-link" to="/docenteadmin" onClick={onNavLinkClick}>
-                  <FaUserTie className="nav-icon" />
-                  <span className="nav-text">Docentes</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="nav-link" to="/Estudiante-Admin" onClick={onNavLinkClick}>
-                  <PiStudentFill className="nav-icon" />
-                  <span className="nav-text">Estudiantes</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="nav-link" to="/usuarios" onClick={onNavLinkClick}>
-                  <FaUsersGear className="nav-icon"/>
-                  <span className="nav-text">Usuarios</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="nav-link" to="/admin/persona" onClick={onNavLinkClick}>
-                  <FaUsersGear className="nav-icon"/>
-                  <span className="nav-text">Persona</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="nav-link" to="/roles-admin" onClick={onNavLinkClick}>
-                  <GiScrollUnfurled className="nav-icon" />
-                  <span className="nav-text">Roles</span>
-                </Link>
-              </li>
-            </ul>
-          </li>
+          {/* Gestión */}
+        <li className="nav-submenu-item">
+          <button
+            className={`nav-submenu-trigger ${openGestion ? "active" : ""}`}
+            onClick={toggleGestion}
+            aria-expanded={openGestion}
+          >
+            <div className="submenu-trigger-content">
+              <MdManageAccounts className="nav-icon" />
+              <span className="nav-text">Gestión</span>
+            </div>
+            <FaChevronDown className="submenu-chevron" />
+          </button>
 
-          <li>
-            <Link className="nav-link" to="/talleres" onClick={onNavLinkClick}>
-              <GrWorkshop className="nav-icon" />
-              <span className="nav-text">Talleres</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link" to="/proyectos/admin" onClick={onNavLinkClick}>
-              <PiProjectorScreenChartFill className="nav-icon"/>
-              <span className="nav-text">Proyectos</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link" to="/admin/modulo" onClick={onNavLinkClick}>
-              <MdViewModule className="nav-icon"/>
-              <span className="nav-text">Modulos</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link" to="/admin/metodologia" onClick={onNavLinkClick}>
-              <MdViewModule className="nav-icon"/>
-              <span className="nav-text">Metodologia</span>
-            </Link>
-          </li>
+          <ul className={`nav-submenu ${openGestion ? "open" : ""}`}>
+            <li>
+              <Link className="nav-link" to="/docenteadmin" onClick={closeMobileMenu}>
+                <FaUserTie className="nav-icon" />
+                <span className="nav-text">Docentes</span>
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/Estudiante-Admin" onClick={closeMobileMenu}>
+                <PiStudentFill className="nav-icon" />
+                <span className="nav-text">Estudiantes</span>
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/usuarios" onClick={closeMobileMenu}>
+                <FaUsersGear className="nav-icon" />
+                <span className="nav-text">Usuarios</span>
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/admin/persona" onClick={closeMobileMenu}>
+                <FaPersonFalling  className="nav-icon" />
+                <span className="nav-text">Persona</span>
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/roles-admin" onClick={closeMobileMenu}>
+                <GiScrollUnfurled className="nav-icon" />
+                <span className="nav-text">Roles</span>
+              </Link>
+            </li>
+          </ul>
+        </li>
+
+          {/* Procesos */}
+        <li className="nav-submenu-item">
+          <button
+            className={`nav-submenu-trigger ${openProcesos ? "active" : ""}`}
+            onClick={toggleProcesos}
+            aria-expanded={openProcesos}
+          >
+            <div className="submenu-trigger-content">
+              <GiProcessor className="nav-icon" />
+              <span className="nav-text">Procesos</span>
+            </div>
+            <FaChevronDown className="submenu-chevron" />
+          </button>
+
+          <ul className={`nav-submenu ${openProcesos ? "open" : ""}`}>
+            <li>
+              <Link className="nav-link" to="/talleres" onClick={closeMobileMenu}>
+                <GrWorkshop className="nav-icon" />
+                <span className="nav-text">Talleres</span>
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/proyectos/admin" onClick={closeMobileMenu}>
+                <PiProjectorScreenChartFill className="nav-icon" />
+                <span className="nav-text">Proyectos</span>
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/admin/modulo" onClick={closeMobileMenu}>
+                <MdViewModule className="nav-icon" />
+                <span className="nav-text">Módulos</span>
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/admin/metodologia" onClick={closeMobileMenu}>
+                <MdViewModule className="nav-icon" />
+                <span className="nav-text">Metodología</span>
+              </Link>
+            </li>
+          </ul>
+        </li>
+
           <li>
             <Link className="nav-link" to="/estudiante-view" onClick={onNavLinkClick}>
               <PiStudentBold className="nav-icon"/>
