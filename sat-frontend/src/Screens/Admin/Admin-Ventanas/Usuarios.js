@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getUser, saveUser, updateUser, deleteUser } from "../../../API/Admin/Users_Admin";
+import { getUser, saveUser, updateUser } from "../../../API/Admin/Users_Admin";
 import { getUsersWithRoles, getAllRoles, assignRoleToUser } from "../../../API/Admin/Roles.js";
 import { TallerStyles } from "../../Components screens/Styles.js";
-import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+import { AiFillEdit } from "react-icons/ai";
 import { MdManageAccounts } from "react-icons/md";
 import { buildPDFAdmin } from "../../../API/Admin/PDFs.js";
 import { styles } from "../../Components screens/Styles";
@@ -167,23 +167,6 @@ function Usuarios() {
     }
   };
 
-  const handleDelete = async (id, userName) => {
-    if (window.confirm(`¿Estás seguro de eliminar al usuario "${userName}"? Esta acción no se puede deshacer.`)) {
-      setOperationLoading(true);
-      setError(null);
-      try {
-        await deleteUser(id);
-        await fetchData();
-        alert("Usuario eliminado exitosamente");
-      } catch (err) {
-        setError(err.message);
-        alert(err.message || "Error al eliminar el usuario");
-      } finally {
-        setOperationLoading(false);
-      }
-    }
-  };
-
   const handleUserRoleToggle = async (userId, roleId) => {
     setOperationLoading(true);
     setError(null);
@@ -334,22 +317,6 @@ function Usuarios() {
 
       {!loading && !error && (
         <>
-        {/* BUSCADOR */}
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre, carnet o usuario..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
-          </div>
           {/* ESTADÍSTICAS */}
           <div className="stats-container">
             <div className="stat-card stat-total">
@@ -368,6 +335,23 @@ function Usuarios() {
               <h4>Con Carnet</h4>
               <p>{users.filter((u) => u.carnet).length}</p>
             </div>
+          </div>
+
+          {/* BUSCADOR */}
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre, carnet o usuario..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
           </div>
 
           {/* TABLA */}
@@ -416,13 +400,6 @@ function Usuarios() {
                           style={operationLoading ? styles.editButtonDisabled : styles.editButton}
                         >
                           <AiFillEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user.id, user.user_name)}
-                          disabled={operationLoading}
-                          style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
-                        >
-                          <AiFillDelete />
                         </button>
                         <button
                           onClick={() => setShowUserRolesModal(user.id)}
