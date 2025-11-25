@@ -279,6 +279,10 @@ function Metodologias() {
                   <label style={TallerStyles.formLabel}>Nombre:</label>
                   <input className="InputProyecto" type="text" name="nombre" value={formData.nombre} onChange={handleInputChange} required disabled={operationLoading} />
                 </div>
+                <div>
+                  <label style={TallerStyles.formLabel}>Número de Módulos:</label>
+                  <input className="InputProyecto" type="number" name="numero_modulos" value={formData.numero_modulos} onChange={handleInputChange} min="1" disabled={operationLoading} />
+                </div>
               </div>
 
               <div className="form-row">
@@ -294,15 +298,12 @@ function Metodologias() {
                     disabled={operationLoading}
                   />
                 </div>
-              </div>
-
-              <div className="form-row">
                 <div style={{ width: "100%" }}>
                   <label style={TallerStyles.formLabel}>Objetivos:</label>
                   <textarea
                     className="InputProyecto"
                     name="objetivos"
-                    rows="4"
+                    rows="3"
                     value={formData.objetivos}
                     onChange={handleInputChange}
                     style={{ resize: "vertical" }}
@@ -311,11 +312,9 @@ function Metodologias() {
                 </div>
               </div>
 
+              
               <div className="form-row">
-                <div>
-                  <label style={TallerStyles.formLabel}>Número de Módulos:</label>
-                  <input className="InputProyecto" type="number" name="numero_modulos" value={formData.numero_modulos} onChange={handleInputChange} min="1" disabled={operationLoading} />
-                </div>
+                
                 <div>
                   <label style={TallerStyles.formLabel}>Fecha Inicio:</label>
                   <input className="InputProyecto" type="date" name="fecha_inicio" value={formData.fecha_inicio} onChange={handleInputChange} disabled={operationLoading} />
@@ -352,6 +351,10 @@ function Metodologias() {
                   <label style={TallerStyles.formLabel}>Nombre:</label>
                   <input className="InputProyecto" type="text" name="nombre" value={formData.nombre} onChange={handleInputChange} required disabled={operationLoading} />
                 </div>
+                <div>
+                  <label style={TallerStyles.formLabel}>Número de Módulos:</label>
+                  <input className="InputProyecto" type="number" name="numero_modulos" value={formData.numero_modulos} onChange={handleInputChange} min="1" disabled={operationLoading} />
+                </div>
               </div>
 
               <div className="form-row">
@@ -359,20 +362,16 @@ function Metodologias() {
                   <label style={TallerStyles.formLabel}>Descripción:</label>
                   <textarea className="InputProyecto" name="descripcion" rows="3" value={formData.descripcion} onChange={handleInputChange} style={{ resize: "vertical" }} disabled={operationLoading} />
                 </div>
-              </div>
-
-              <div className="form-row">
                 <div style={{ width: "100%" }}>
                   <label style={TallerStyles.formLabel}>Objetivos:</label>
-                  <textarea className="InputProyecto" name="objetivos" rows="4" value={formData.objetivos} onChange={handleInputChange} style={{ resize: "vertical" }} disabled={operationLoading} />
+                  <textarea className="InputProyecto" name="objetivos" rows="3" value={formData.objetivos} onChange={handleInputChange} style={{ resize: "vertical" }} disabled={operationLoading} />
                 </div>
               </div>
 
+              
+
               <div className="form-row">
-                <div>
-                  <label style={TallerStyles.formLabel}>Número de Módulos:</label>
-                  <input className="InputProyecto" type="number" name="numero_modulos" value={formData.numero_modulos} onChange={handleInputChange} min="1" disabled={operationLoading} />
-                </div>
+                
                 <div>
                   <label style={TallerStyles.formLabel}>Fecha Inicio:</label>
                   <input className="InputProyecto" type="date" name="fecha_inicio" value={formData.fecha_inicio} onChange={handleInputChange} disabled={operationLoading} />

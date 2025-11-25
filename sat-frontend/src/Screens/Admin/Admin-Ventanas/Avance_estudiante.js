@@ -66,7 +66,7 @@ const AvancesEstudiantesView = () => {
   const stats = {
     total: avances.length,
     completados: avances.filter(a => a.estado?.toLowerCase() === "completado").length,
-    enCurso: avances.filter(a => a.estado?.toLowerCase() === "en curso").length,
+    enCurso: avances.filter(a => a.estado?.toLowerCase() === "en progreso").length,
     estudiantesConAvance: new Set(avances.map(a => a.id_estudiante)).size
   };
 
