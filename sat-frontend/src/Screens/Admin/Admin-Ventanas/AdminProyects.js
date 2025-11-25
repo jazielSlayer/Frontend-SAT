@@ -216,7 +216,7 @@ const ProyectosView = () => {
               <div className="card-body">
                 <p><strong>Estudiante:</strong> {proyecto.estudiante_nombres} {proyecto.estudiante_apellidopat}</p>
                 <p><strong>Área:</strong> {proyecto.area_conocimiento}</p>
-                <p><strong>Entrega:</strong> {proyecto.fecha_entrega?.split('T')[0] || 'Sin fecha'}</p>
+                <p><strong>Entrega:</strong> {new Date(proyecto.fecha_entrega).toLocaleDateString('es-ES')}</p>
               </div>
             </div>
           ))
@@ -241,8 +241,8 @@ const ProyectosView = () => {
                 <p><strong>Calificación:</strong> {selectedProyecto.calificacion || 'Sin calificar'}</p>
                 <p><strong>Calificación 2:</strong> {selectedProyecto.calificacion2 || 'Sin calificar'}</p>
                 <p><strong>Calificación final:</strong> {selectedProyecto.calificacion_final || 'Sin calificar'}</p>
-                <p><strong>Entrega:</strong> {selectedProyecto.fecha_entrega}</p>
-                <p><strong>Defensa:</strong> {selectedProyecto.fecha_defensa || 'No programada'}</p>
+                <p><strong>Entrega:</strong> {new Date(selectedProyecto.fecha_entrega).toLocaleDateString('es-ES')}</p>
+                <p><strong>Defensa:</strong> {selectedProyecto.fecha_defensa ? new Date(selectedProyecto.fecha_defensa).toLocaleDateString('es-ES') : 'No programada'}</p>
               </div>
             </div>
             {selectedProyecto.resumen && <div className="resumen"><p><strong>Resumen:</strong></p><p>{selectedProyecto.resumen}</p></div>}
