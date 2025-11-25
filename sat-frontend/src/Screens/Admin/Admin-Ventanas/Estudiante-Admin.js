@@ -247,7 +247,7 @@ function AdminEstudiantes() {
                       </td>
                       <td style={EstudianteStyles.tableCell}>{estudiante.ru}</td>
                       <td style={EstudianteStyles.tableCell}>{estudiante.nombre_programa}</td>
-                      <td style={EstudianteStyles.tableCell}>{estudiante.fecha_inscripcion}</td>
+                      <td style={EstudianteStyles.tableCell}>{new Date(estudiante.fecha_inscripcion).toLocaleDateString('es-ES')}</td>
                       <td style={EstudianteStyles.tableCell}>
                         <span
                           style={{
