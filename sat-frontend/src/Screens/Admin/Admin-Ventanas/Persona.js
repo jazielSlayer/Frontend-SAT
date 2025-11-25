@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { TallerStyles } from "../../Components screens/Styles.js";
 import { styles } from "../../Components screens/Styles";
-import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+import { 
+  //AiFillDelete,
+  AiFillEdit } from "react-icons/ai";
 import { buildPDFAdmin } from "../../../API/Admin/PDFs.js";
-import { getAllPersonas, getPersona, createPersona, updatePersona, deletePersona } from "../../../API/Admin/Persona.js";
+import { getAllPersonas, getPersona, createPersona, updatePersona, 
+  //deletePersona 
+} from "../../../API/Admin/Persona.js";
 
 function Personas() {
   const [personas, setPersonas] = useState([]);
@@ -120,7 +124,7 @@ function Personas() {
     }
   };
 
-  const handleDelete = async (id, nombreCompleto) => {
+  /*const handleDelete = async (id, nombreCompleto) => {
     if (window.confirm(`¿Estás seguro de eliminar a "${nombreCompleto}"? Esta acción no se puede deshacer.`)) {
       setOperationLoading(true);
       try {
@@ -133,7 +137,7 @@ function Personas() {
         setOperationLoading(false);
       }
     }
-  };
+  }; */
 
   // Filtro de búsqueda
   const filteredPersonas = personas.filter((p) => {
@@ -249,13 +253,13 @@ function Personas() {
                         >
                           <AiFillEdit />
                         </button>
-                        <button
+                        {/*<button
                           onClick={() => handleDelete(persona.id, `${persona.nombres} ${persona.apellidopat}`)}
                           disabled={operationLoading}
                           style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
                         >
                           <AiFillDelete />
-                        </button>
+                        </button> */}
                       </td>
                     </tr>
                   ))

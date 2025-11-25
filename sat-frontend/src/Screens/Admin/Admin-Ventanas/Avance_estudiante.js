@@ -3,7 +3,7 @@ import {
   getAllAvances,
   createAvance,
   updateAvance,
-  deleteAvance
+  //deleteAvance
 } from '../../../API/Admin/Avance_Estudiante.js';
 import { getEstudiantes } from '../../../API/Admin/Estudiante_admin.js';
 
@@ -129,7 +129,7 @@ const AvancesEstudiantesView = () => {
     }
   };
 
-  const handleDelete = async () => {
+ /* const handleDelete = async () => {
     if (!window.confirm("¿Eliminar este avance permanentemente?")) return;
     try {
       await deleteAvance(selectedAvance.id);
@@ -139,7 +139,7 @@ const AvancesEstudiantesView = () => {
     } catch (err) {
       alert("Error al eliminar");
     }
-  };
+  }; */
 
   const getEstudianteNombre = (id_estudiante) => {
     const est = estudiantes.find(e => e.id === id_estudiante);
@@ -230,7 +230,7 @@ const AvancesEstudiantesView = () => {
             </div>
             <div className="modal-actions">
               <button className="btn-edit" onClick={openEdit}>Editar</button>
-              <button className="btn-delete" onClick={handleDelete}>Eliminar</button>
+              {/**<button className="btn-delete" onClick={handleDelete}>Eliminar</button>*/}
               <button className="btn-close" onClick={() => setShowDetails(false)}>Cerrar</button>
             </div>
           </div>

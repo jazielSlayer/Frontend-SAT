@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
-import { getAllModulos, createModulo, updateModulo, deleteModulo } from "../../../API/Admin/Modulo";
+import { getAllModulos, createModulo, updateModulo, 
+  //deleteModulo 
+} from "../../../API/Admin/Modulo";
 import { getDocentes } from "../../../API/Admin/Docente_admin";
 import { getAllMetodologias } from "../../../API/Admin/Metodologia";
 import { styles } from "../../Components screens/Styles";
-import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+import { 
+  //AiFillDelete, 
+  AiFillEdit } from "react-icons/ai";
 
 
 export default function Modulos() {
@@ -110,7 +114,7 @@ export default function Modulos() {
     }
   };
 
-  const handleDelete = async (id) => {
+ /* const handleDelete = async (id) => {
     if (!window.confirm("¿Estás seguro de eliminar este módulo?")) return;
 
     try {
@@ -120,7 +124,7 @@ export default function Modulos() {
     } catch (err) {
       alert("Error al eliminar el módulo");
     }
-  };
+  }; */
 
   const filteredModulos = modulos.filter((m) => {
     const q = searchTerm.trim().toLowerCase();
@@ -242,14 +246,14 @@ export default function Modulos() {
                         >
                           <AiFillEdit/>
                         </button>
-                        <button
+                       {/* <button
                           className="btn-delete"
                           onClick={() => handleDelete(modulo.id)}
                           title="Eliminar"
                           style={styles.deleteButton}
                         >
                           <AiFillDelete/>
-                        </button>
+                        </button> */}
                       </td>
                     </tr>
                   ))

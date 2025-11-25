@@ -4,7 +4,7 @@ import {
   getTaller,
   createTaller,
   updateTaller,
-  deleteTaller
+  //deleteTaller
 } from '../../../API/Admin/Taller';
 import { getAllMetodologias } from '../../../API/Admin/Metodologia.js';
 
@@ -134,7 +134,7 @@ const Talleres = () => {
     }
   };
 
-  const handleDelete = async () => {
+ /* const handleDelete = async () => {
     if (!window.confirm('¿Eliminar este taller?')) return;
     try {
       await deleteTaller(selectedTaller.id);
@@ -144,7 +144,7 @@ const Talleres = () => {
     } catch (err) {
       alert(err.message || 'Error al eliminar');
     }
-  };
+  }; */
 
   if (loading) return <div className="loading">Cargando...</div>;
   if (error) return <div className="error">{error}</div>;
@@ -196,7 +196,7 @@ const Talleres = () => {
               <div className="card-header">
                 <h3>{taller.titulo}</h3>
                 <span className={`status ${taller.evaluacion_final ? 'completed' : 'pending'}`}>
-                  {taller.evaluacion_final ? `Eval: ${taller.evaluacion_final}` : 'Pendiente'}
+                  {taller.evaluacion_final ? ` ${taller.evaluacion_final}` : 'Pendiente'}
                 </span>
               </div>
               <div className="card-body">
@@ -227,7 +227,7 @@ const Talleres = () => {
             </div>
             <div className="modal-actions">
               <button className="btn-edit" onClick={openEdit}>Editar</button>
-              <button className="btn-delete" onClick={handleDelete}>Eliminar</button>
+              { /*<button className="btn-delete" onClick={handleDelete}>Eliminar</button> */}
               <button className="btn-close" onClick={() => setShowDetails(false)}>Cerrar</button>
             </div>
           </div>

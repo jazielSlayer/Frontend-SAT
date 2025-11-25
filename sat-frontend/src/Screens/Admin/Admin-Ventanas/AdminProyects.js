@@ -4,7 +4,7 @@ import {
   getProyectoById,
   createProyecto,
   updateProyecto,
-  deleteProyecto
+  //deleteProyecto
 } from '../../../API/Admin/Proyecto';
 
 
@@ -147,7 +147,7 @@ const ProyectosView = () => {
     }
   };
 
-  const handleDelete = async () => {
+  /* const handleDelete = async () => {
     if (!window.confirm('¿Eliminar este proyecto?')) return;
     try {
       await deleteProyecto(selectedProyecto.id);
@@ -157,7 +157,7 @@ const ProyectosView = () => {
     } catch (err) {
       alert(err.message || 'Error al eliminar');
     }
-  };
+  }; */
 
 
   if (loading) return <div className="loading">Cargando...</div>;
@@ -249,7 +249,7 @@ const ProyectosView = () => {
             {selectedProyecto.observacion && <div className="resumen"><p><strong>Observación:</strong></p><p>{selectedProyecto.observacion}</p></div>}
             <div className="modal-actions">
               <button className="btn-edit" onClick={openEdit}>Editar</button>
-              <button className="btn-delete" onClick={handleDelete}>Eliminar</button>
+              { /*<button className="btn-delete" onClick={handleDelete}>Eliminar</button> */}
               <button className="btn-close" onClick={() => setShowDetails(false)}>Cerrar</button>
             </div>
           </div>

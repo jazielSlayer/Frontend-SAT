@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { TallerStyles } from "../../Components screens/Styles.js";
 import { styles } from "../../Components screens/Styles";
-import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+import { 
+  // AiFillDelete, 
+  AiFillEdit } from "react-icons/ai";
 import { buildPDFAdmin } from "../../../API/Admin/PDFs.js";
 import {
   getAllMetodologias,
   getMetodologia,
   createMetodologia,
   updateMetodologia,
-  deleteMetodologia,
+  //deleteMetodologia,
 } from "../../../API/Admin/Metodologia.js"; // Ruta exacta que tú usas
 
 function Metodologias() {
@@ -123,7 +125,7 @@ function Metodologias() {
     }
   };
 
-  const handleDelete = async (id, nombre) => {
+  /* const handleDelete = async (id, nombre) => {
     if (window.confirm(`¿Estás seguro de eliminar la metodología "${nombre}"?`)) {
       setOperationLoading(true);
       try {
@@ -136,7 +138,7 @@ function Metodologias() {
         setOperationLoading(false);
       }
     }
-  };
+  }; */
 
   // Filtro de búsqueda
   const filtered = metodologias.filter((m) => {
@@ -243,13 +245,13 @@ function Metodologias() {
                         >
                           <AiFillEdit />
                         </button>
-                        <button
+                        {/* <button
                           onClick={() => handleDelete(met.id, met.nombre)}
                           disabled={operationLoading}
                           style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
                         >
                           <AiFillDelete />
-                        </button>
+                        </button> */}
                       </td>
                     </tr>
                   ))

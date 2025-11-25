@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { TallerStyles } from "../../Components screens/Styles.js";
 import { styles } from "../../Components screens/Styles";
-import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+import { 
+  //AiFillDelete, 
+  AiFillEdit } from "react-icons/ai";
 import { buildPDFAdmin } from "../../../API/Admin/PDFs.js";
 import {
   getAllProgramas,
   getPrograma,
   createPrograma,
   updatePrograma,
-  deletePrograma,
+  //deletePrograma,
 } from "../../../API/Admin/Programa_Academico.js"; // Ajusta si la ruta es diferente
 
 function ProgramasAcademicos() {
@@ -117,7 +119,7 @@ function ProgramasAcademicos() {
     }
   };
 
-  const handleDelete = async (id, nombre) => {
+ /* const handleDelete = async (id, nombre) => {
     if (window.confirm(`¿Estás seguro de eliminar el programa "${nombre}"?`)) {
       setOperationLoading(true);
       try {
@@ -130,7 +132,7 @@ function ProgramasAcademicos() {
         setOperationLoading(false);
       }
     }
-  };
+  }; */
 
   // Filtro de búsqueda
   const filtered = programas.filter((p) => {
@@ -250,13 +252,13 @@ function ProgramasAcademicos() {
                           >
                             <AiFillEdit />
                           </button>
-                          <button
+                         {/*} <button
                             onClick={() => handleDelete(prog.id, prog.nombre_programa)}
                             disabled={operationLoading}
                             style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
                           >
                             <AiFillDelete />
-                          </button>
+                          </button> */}
                         </td>
                       </tr>
                     );

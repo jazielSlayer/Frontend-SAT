@@ -3,7 +3,7 @@ import {
   getAllObservaciones,
   createObservacion,
   updateObservacion,
-  deleteObservacion
+  // deleteObservacion
 } from '../../../API/Admin/Observacion.js';
 import { getEstudiantes } from '../../../API/Admin/Estudiante_admin.js';
 
@@ -127,7 +127,7 @@ const ObservacionesView = () => {
     }
   };
 
-  const handleDelete = async () => {
+ /* const handleDelete = async () => {
     if (!window.confirm("¿Eliminar esta observación permanentemente?")) return;
     try {
       await deleteObservacion(selectedObs.id);
@@ -137,7 +137,7 @@ const ObservacionesView = () => {
     } catch (err) {
       alert("Error al eliminar");
     }
-  };
+  }; */
 
   const getEstudianteNombre = (id_estudiante) => {
     const est = estudiantes.find(e => e.id === id_estudiante);
@@ -219,7 +219,7 @@ const ObservacionesView = () => {
             </div>
             <div className="modal-actions">
               <button className="btn-edit" onClick={openEdit}>Editar</button>
-              <button className="btn-delete" onClick={handleDelete}>Eliminar</button>
+              {/*<button className="btn-delete" onClick={handleDelete}>Eliminar</button>*/}
               <button className="btn-close" onClick={() => setShowDetails(false)}>Cerrar</button>
             </div>
           </div>
