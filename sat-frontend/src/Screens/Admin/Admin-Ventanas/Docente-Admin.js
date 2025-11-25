@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { AiFillDelete, AiFillEdit } from "react-icons/ai";
-import { getDocentes, createDocente, updateDocente, deleteDocente } from "../../../API/Admin/Docente_admin";
+import { AiFillEdit } from "react-icons/ai";
+import { getDocentes, createDocente, updateDocente } from "../../../API/Admin/Docente_admin";
 import { getAllPersonas } from "../../../API/Admin/Persona";
 import { DocenteStyles } from "../../Components screens/Styles";
 import { styles } from "../../Components screens/Styles";
@@ -160,23 +160,6 @@ function DocenteAdmin() {
     }
   };
 
-  const handleDelete = async (id, docenteName) => {
-    if (window.confirm(`¿Estás seguro de que quieres eliminar al docente "${docenteName}"? Esta acción no se puede deshacer.`)) {
-      setOperationLoading(true);
-      setError(null);
-      try {
-        await deleteDocente(id);
-        await fetchData();
-        alert("Docente eliminado exitosamente");
-      } catch (err) {
-        setError(err.message || "Error al eliminar el docente");
-        alert(err.message || "Error al eliminar el docente");
-      } finally {
-        setOperationLoading(false);
-      }
-    }
-  };
-
   const getPersonaName = (per_id) => {
     const persona = personas.find((p) => p.id === per_id);
     return persona ? `${persona.nombres} ${persona.apellidopat} ${persona.apellidomat}` : "N/A";
@@ -212,21 +195,6 @@ function DocenteAdmin() {
 
       {!loading && !error && (
         <div>
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre o número de item..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
-          </div>
           <div className="stats-container">
             <div style={{ ...DocenteStyles.statCard, ...DocenteStyles.statCardTotal }}>
               <h4 style={{ ...DocenteStyles.statTitle, ...DocenteStyles.statTitleTotal }}>
@@ -263,7 +231,21 @@ function DocenteAdmin() {
             </div>
           </div>
 
-          
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre o número de item..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
 
           <div style={DocenteStyles.tableContainer}>
             <table style={DocenteStyles.table}>
@@ -323,13 +305,6 @@ function DocenteAdmin() {
                           style={operationLoading ? styles.editButtonDisabled : styles.editButton}
                         >
                           <AiFillEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(docente.id, getPersonaName(docente.per_id))}
-                          disabled={operationLoading}
-                          style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
-                        >
-                          <AiFillDelete />
                         </button>
                       </td>
                     </tr>

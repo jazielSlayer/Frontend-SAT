@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { AiFillDelete, AiFillEdit } from "react-icons/ai";
-import { getEstudiantes, createEstudiante, updateEstudiante, deleteEstudiante } from "../../../API/Admin/Estudiante_admin";
+import { AiFillEdit } from "react-icons/ai";
+import { getEstudiantes, createEstudiante, updateEstudiante } from "../../../API/Admin/Estudiante_admin";
 import { EstudianteStyles } from "../../Components screens/Styles";
 import { styles } from "../../Components screens/Styles";
 
@@ -154,23 +154,6 @@ function AdminEstudiantes() {
     }
   };
 
-  const handleDelete = async (id, nombreCompleto) => {
-    if (window.confirm(`¿Estás seguro de que quieres eliminar al estudiante "${nombreCompleto}"? Esta acción no se puede deshacer.`)) {
-      setOperationLoading(true);
-      setError(null);
-      try {
-        await deleteEstudiante(id);
-        await fetchEstudiantes();
-        alert("Estudiante eliminado exitosamente");
-      } catch (err) {
-        setError(err.message || "Error al eliminar el estudiante");
-        alert(err.message || "Error al eliminar el estudiante");
-      } finally {
-        setOperationLoading(false);
-      }
-    }
-  };
-
   // Función para filtrar estudiantes por nombre y matrícula
   const filteredEstudiantes = estudiantes.filter((estudiante) => {
     const searchLower = searchTerm.toLowerCase();
@@ -194,21 +177,6 @@ function AdminEstudiantes() {
 
       {!loading && !error && (
         <div>
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre o ru..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
-          </div>
           <div className="stats-container">
             <div style={{ ...EstudianteStyles.statCard, ...EstudianteStyles.statCardTotal }}>
               <h4 style={{ ...EstudianteStyles.statTitle, ...EstudianteStyles.statTitleTotal }}>
@@ -236,7 +204,21 @@ function AdminEstudiantes() {
             </div>
           </div>
 
-          
+          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
+            <input
+              type="text"
+              placeholder="Buscar por nombre o ru..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="InputProyecto"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                padding: "12px 16px",
+                fontSize: "14px",
+              }}
+            />
+          </div>
 
           <div style={EstudianteStyles.tableContainer}>
             <table style={EstudianteStyles.table}>
@@ -283,13 +265,6 @@ function AdminEstudiantes() {
                           style={operationLoading ? styles.editButtonDisabled : styles.editButton}
                         >
                           <AiFillEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(estudiante.id, `${estudiante.nombres} ${estudiante.apellidopat}`)}
-                          disabled={operationLoading}
-                          style={operationLoading ? styles.deleteButtonDisabled : styles.deleteButton}
-                        >
-                          <AiFillDelete />
                         </button>
                       </td>
                     </tr>
