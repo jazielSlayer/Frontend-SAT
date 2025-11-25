@@ -228,10 +228,10 @@ export default function Modulos() {
                       <td style={styles.tableCell}>{modulo.metodologia_nombre}</td>
                       <td style={styles.tableCell}>{modulo.duracion}</td>
                       <td style={styles.tableCell}>
-                        <code style={styles.code}>{modulo.fecha_inicio}</code>
+                        {new Date(modulo.fecha_inicio).toLocaleDateString('es-ES')}
                       </td>
                       <td style={styles.tableCell}>
-                        <code style={styles.code}>{modulo.fecha_finalizacion}</code>
+                        {new Date(modulo.fecha_finalizacion).toLocaleDateString('es-ES')}
                       </td>
                       <td style={styles.tableCellCenter}>
                         <button

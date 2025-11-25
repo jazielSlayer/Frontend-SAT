@@ -290,7 +290,7 @@ function Talleres() {
                       <td style={TallerStyles.tableCell}>{taller.evaluacion_final || "-"}</td>
                       <td style={TallerStyles.tableCell}>{taller.duracion || "-"}</td>
                       <td style={TallerStyles.tableCell}>{taller.resultado || "-"}</td>
-                      <td style={TallerStyles.tableCell}>{taller.fecha_realizacion}</td>
+                      <td style={TallerStyles.tableCell}>{new Date(taller.fecha_realizacion).toLocaleDateString('es-ES')}</td>
                       <td style={TallerStyles.tableCellCenter}>
                         <button
                           onClick={() => openEdit(taller.id)}
