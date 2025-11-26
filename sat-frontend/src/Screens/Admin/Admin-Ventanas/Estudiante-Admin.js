@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { AiFillEdit } from "react-icons/ai";
 import { getEstudiantes, createEstudiante, updateEstudiante } from "../../../API/Admin/Estudiante_admin";
+import { getAllPersonas } from "../../../API/Admin/Persona";
+import { getAllProgramas } from "../../../API/Admin/Programa_Academico";
 import { EstudianteStyles } from "../../Components screens/Styles";
 import { styles } from "../../Components screens/Styles";
 
 function AdminEstudiantes() {
   const [estudiantes, setEstudiantes] = useState([]);
+  const [personas, setPersonas] = useState([]);
+  const [programas, setProgramas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [operationLoading, setOperationLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Búsqueda en selectores
+  const [personaSearch, setPersonaSearch] = useState("");
+  const [programaSearch, setProgramaSearch] = useState("");
   
   // Modales
   const [showCreate, setShowCreate] = useState(false);
@@ -27,15 +35,21 @@ function AdminEstudiantes() {
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
-    fetchEstudiantes();
+    fetchAllData();
   }, []);
 
-  const fetchEstudiantes = async () => {
+  const fetchAllData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getEstudiantes();
-      setEstudiantes(data);
+      const [estudiantesData, personasData, programasData] = await Promise.all([
+        getEstudiantes(),
+        getAllPersonas(),
+        getAllProgramas()
+      ]);
+      setEstudiantes(estudiantesData);
+      setPersonas(personasData);
+      setProgramas(programasData);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -44,30 +58,24 @@ function AdminEstudiantes() {
   };
 
   const validateForm = (data) => {
-  const errors = {};
-  
-  if (!data.per_id) {
-    errors.per_id = "El ID de persona es obligatorio";
-  }
-  
-  if (!data.id_programa_academico) {
-    errors.id_programa_academico = "El ID de programa es obligatorio";
-  }
-  
-  // Validar RU
-  const ru = String(data.ru || "").trim();
-  if (!ru) {
-    errors.ru = "El número de matrícula es obligatorio";
-  } else if (isNaN(ru) || Number(ru) <= 0) {
-    errors.ru = "El RU debe ser un número válido mayor a 0";
-  }
-  
-  if (!data.fecha_inscripcion) {
-    errors.fecha_inscripcion = "La fecha de inscripción es obligatoria";
-  }
-  
-  return errors;
-};
+    const errors = {};
+    if (!data.per_id) {
+      errors.per_id = "Debe seleccionar una persona";
+    }
+    if (!data.id_programa_academico) {
+      errors.id_programa_academico = "Debe seleccionar un programa académico";
+    }
+    
+    const ru = String(data.ru || "").trim();
+    if (!ru) {
+      errors.ru = "El número de matrícula es obligatorio";
+    }
+    
+    if (!data.fecha_inscripcion) {
+      errors.fecha_inscripcion = "La fecha de inscripción es obligatoria";
+    }
+    return errors;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -84,21 +92,42 @@ function AdminEstudiantes() {
       estado: 1,
     });
     setFormErrors({});
+    setPersonaSearch("");
+    setProgramaSearch("");
     setShowCreate(true);
   };
 
-  const openEdit = (estudiante) => {
-    setEditingEstudiante(estudiante);
-    setFormData({
-      per_id: estudiante.per_id,
-      id_programa_academico: estudiante.id_programa_academico,
-      ru: estudiante.ru,
-      fecha_inscripcion: estudiante.fecha_inscripcion,
-      estado: estudiante.estado,
-    });
-    setFormErrors({});
-    setShowEdit(true);
-  };
+ const openEdit = (estudiante) => {
+  setEditingEstudiante(estudiante);
+  
+  // Formatear la fecha correctamente
+  let fechaFormateada = "";
+  if (estudiante.fecha_inscripcion) {
+    try {
+      // Opción 1: Split simple
+      fechaFormateada = estudiante.fecha_inscripcion.split('T')[0].split(' ')[0];
+      
+      // Opción 2: Usar Date (más seguro si viene en diferentes formatos)
+      // const fecha = new Date(estudiante.fecha_inscripcion);
+      // fechaFormateada = fecha.toISOString().split('T')[0];
+    } catch (error) {
+      console.error("Error al formatear fecha:", error);
+      fechaFormateada = "";
+    }
+  }
+  
+  setFormData({
+    per_id: estudiante.per_id,
+    id_programa_academico: estudiante.id_programa_academico,
+    ru: estudiante.ru,
+    fecha_inscripcion: fechaFormateada,
+    estado: estudiante.estado,
+  });
+  setFormErrors({});
+  setPersonaSearch("");
+  setProgramaSearch("");
+  setShowEdit(true);
+};
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -121,7 +150,9 @@ function AdminEstudiantes() {
         fecha_inscripcion: "",
         estado: 1,
       });
-      await fetchEstudiantes();
+      setPersonaSearch("");
+      setProgramaSearch("");
+      await fetchAllData();
       alert("Estudiante creado exitosamente");
     } catch (err) {
       setError(err.message || "Error al crear el estudiante");
@@ -153,7 +184,9 @@ function AdminEstudiantes() {
         fecha_inscripcion: "",
         estado: 1,
       });
-      await fetchEstudiantes();
+      setPersonaSearch("");
+      setProgramaSearch("");
+      await fetchAllData();
       alert("Estudiante actualizado exitosamente");
     } catch (err) {
       setError(err.message || "Error al actualizar el estudiante");
@@ -162,6 +195,22 @@ function AdminEstudiantes() {
       setOperationLoading(false);
     }
   };
+
+  // Filtrar personas por búsqueda
+  const filteredPersonas = personas.filter(persona => {
+    const search = personaSearch.toLowerCase();
+    const nombreCompleto = `${persona.nombres} ${persona.apellidopat || ''} ${persona.apellidomat || ''}`.toLowerCase();
+    const carnet = String(persona.carnet || "").toLowerCase();
+    return nombreCompleto.includes(search) || carnet.includes(search);
+  });
+
+  // Filtrar programas por búsqueda
+  const filteredProgramas = programas.filter(programa => {
+    const search = programaSearch.toLowerCase();
+    const nombre = (programa.nombre_programa || "").toLowerCase();
+    const codigo = (programa.codigo || "").toLowerCase();
+    return nombre.includes(search) || codigo.includes(search);
+  });
 
   // Función para filtrar estudiantes por nombre y matrícula
   const filteredEstudiantes = estudiantes.filter((estudiante) => {
@@ -298,33 +347,71 @@ function AdminEstudiantes() {
                   {error && <div style={EstudianteStyles.errorMessage}>Error: {error}</div>}
                   
                   <div className="form-row">
-                    <div>
-                      <label style={EstudianteStyles.formLabel}>ID Persona:</label>
+                    {/* SELECTOR DE PERSONA */}
+                    <div style={{ flex: 1 }}>
+                      <label style={EstudianteStyles.formLabel}>Persona: *</label>
                       <input
                         className="InputProyecto"
-                        type="number"
+                        type="text"
+                        placeholder="Buscar persona por nombre o carnet..."
+                        value={personaSearch}
+                        onChange={(e) => setPersonaSearch(e.target.value)}
+                        style={{ marginBottom: "8px" }}
+                        disabled={operationLoading}
+                      />
+                      <select
+                        className="InputProyecto"
                         name="per_id"
-                        placeholder="Ej: 1, 2, 3"
                         value={formData.per_id}
                         onChange={handleChange}
                         required
                         disabled={operationLoading}
-                      />
+                        style={{ 
+                          maxHeight: "200px",
+                          overflowY: "auto"
+                        }}
+                      >
+                        <option value="">-- Seleccionar Persona --</option>
+                        {filteredPersonas.map(persona => (
+                          <option key={persona.id} value={persona.id}>
+                            {persona.nombres} {persona.apellidopat} {persona.apellidomat || ''} - CI: {persona.carnet}
+                          </option>
+                        ))}
+                      </select>
                       {formErrors.per_id && <p style={EstudianteStyles.formErrorText}>{formErrors.per_id}</p>}
                     </div>
 
-                    <div>
-                      <label style={EstudianteStyles.formLabel}>ID Programa:</label>
+                    {/* SELECTOR DE PROGRAMA */}
+                    <div style={{ flex: 1 }}>
+                      <label style={EstudianteStyles.formLabel}>Programa Académico: *</label>
                       <input
                         className="InputProyecto"
-                        type="number"
+                        type="text"
+                        placeholder="Buscar programa..."
+                        value={programaSearch}
+                        onChange={(e) => setProgramaSearch(e.target.value)}
+                        style={{ marginBottom: "8px" }}
+                        disabled={operationLoading}
+                      />
+                      <select
+                        className="InputProyecto"
                         name="id_programa_academico"
-                        placeholder="Ej: 1, 2, 3"
                         value={formData.id_programa_academico}
                         onChange={handleChange}
                         required
                         disabled={operationLoading}
-                      />
+                        style={{ 
+                          maxHeight: "200px",
+                          overflowY: "auto"
+                        }}
+                      >
+                        <option value="">-- Seleccionar Programa --</option>
+                        {filteredProgramas.map(programa => (
+                          <option key={programa.id} value={programa.id}>
+                            {programa.codigo} - {programa.nombre_programa}
+                          </option>
+                        ))}
+                      </select>
                       {formErrors.id_programa_academico && (
                         <p style={EstudianteStyles.formErrorText}>{formErrors.id_programa_academico}</p>
                       )}
@@ -333,7 +420,7 @@ function AdminEstudiantes() {
 
                   <div className="form-row">
                     <div>
-                      <label style={EstudianteStyles.formLabel}>R.U</label>
+                      <label style={EstudianteStyles.formLabel}>R.U *</label>
                       <input
                         className="InputProyecto"
                         type="text"
@@ -350,7 +437,7 @@ function AdminEstudiantes() {
                     </div>
 
                     <div>
-                      <label style={EstudianteStyles.formLabel}>Fecha Inscripción:</label>
+                      <label style={EstudianteStyles.formLabel}>Fecha Inscripción: *</label>
                       <input
                         className="InputProyecto"
                         type="date"
@@ -390,7 +477,11 @@ function AdminEstudiantes() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setShowCreate(false)}
+                      onClick={() => {
+                        setShowCreate(false);
+                        setPersonaSearch("");
+                        setProgramaSearch("");
+                      }}
                       disabled={operationLoading}
                       className="btn-close"
                     >
@@ -411,33 +502,71 @@ function AdminEstudiantes() {
                   {error && <div style={EstudianteStyles.errorMessage}>Error: {error}</div>}
                   
                   <div className="form-row">
-                    <div>
-                      <label style={EstudianteStyles.formLabel}>ID Persona:</label>
+                    {/* SELECTOR DE PERSONA */}
+                    <div style={{ flex: 1 }}>
+                      <label style={EstudianteStyles.formLabel}>Persona: *</label>
                       <input
                         className="InputProyecto"
-                        type="number"
+                        type="text"
+                        placeholder="Buscar persona por nombre o carnet..."
+                        value={personaSearch}
+                        onChange={(e) => setPersonaSearch(e.target.value)}
+                        style={{ marginBottom: "8px" }}
+                        disabled={operationLoading}
+                      />
+                      <select
+                        className="InputProyecto"
                         name="per_id"
-                        placeholder="Ej: 1, 2, 3"
                         value={formData.per_id}
                         onChange={handleChange}
                         required
                         disabled={operationLoading}
-                      />
+                        style={{ 
+                          maxHeight: "200px",
+                          overflowY: "auto"
+                        }}
+                      >
+                        <option value="">-- Seleccionar Persona --</option>
+                        {filteredPersonas.map(persona => (
+                          <option key={persona.id} value={persona.id}>
+                            {persona.nombres} {persona.apellidopat} {persona.apellidomat || ''} - CI: {persona.carnet}
+                          </option>
+                        ))}
+                      </select>
                       {formErrors.per_id && <p style={EstudianteStyles.formErrorText}>{formErrors.per_id}</p>}
                     </div>
 
-                    <div>
-                      <label style={EstudianteStyles.formLabel}>ID Programa:</label>
+                    {/* SELECTOR DE PROGRAMA */}
+                    <div style={{ flex: 1 }}>
+                      <label style={EstudianteStyles.formLabel}>Programa Académico: *</label>
                       <input
                         className="InputProyecto"
-                        type="number"
+                        type="text"
+                        placeholder="Buscar programa..."
+                        value={programaSearch}
+                        onChange={(e) => setProgramaSearch(e.target.value)}
+                        style={{ marginBottom: "8px" }}
+                        disabled={operationLoading}
+                      />
+                      <select
+                        className="InputProyecto"
                         name="id_programa_academico"
-                        placeholder="Ej: 1, 2, 3"
                         value={formData.id_programa_academico}
                         onChange={handleChange}
                         required
                         disabled={operationLoading}
-                      />
+                        style={{ 
+                          maxHeight: "200px",
+                          overflowY: "auto"
+                        }}
+                      >
+                        <option value="">-- Seleccionar Programa --</option>
+                        {filteredProgramas.map(programa => (
+                          <option key={programa.id} value={programa.id}>
+                            {programa.codigo} - {programa.nombre_programa}
+                          </option>
+                        ))}
+                      </select>
                       {formErrors.id_programa_academico && (
                         <p style={EstudianteStyles.formErrorText}>{formErrors.id_programa_academico}</p>
                       )}
@@ -446,7 +575,7 @@ function AdminEstudiantes() {
 
                   <div className="form-row">
                     <div>
-                      <label style={EstudianteStyles.formLabel}>R.U.</label>
+                      <label style={EstudianteStyles.formLabel}>R.U. *</label>
                       <input
                         className="InputProyecto"
                         type="text"
@@ -463,7 +592,7 @@ function AdminEstudiantes() {
                     </div>
 
                     <div>
-                      <label style={EstudianteStyles.formLabel}>Fecha Inscripción:</label>
+                      <label style={EstudianteStyles.formLabel}>Fecha Inscripción: *</label>
                       <input
                         className="InputProyecto"
                         type="date"
@@ -503,7 +632,11 @@ function AdminEstudiantes() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setShowEdit(false)}
+                      onClick={() => {
+                        setShowEdit(false);
+                        setPersonaSearch("");
+                        setProgramaSearch("");
+                      }}
                       disabled={operationLoading}
                       className="btn-close"
                     >
