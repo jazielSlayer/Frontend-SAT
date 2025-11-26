@@ -168,35 +168,35 @@ const ProyectosView = () => {
   return (
     <div className="proyectos-container">
       <header className="proyectos-header">
-  <h1>Proyectos de Grado</h1>
-  
-  <div className="header-actions">
-    <div className="search-container">
-      <button 
-        className="search-toggle-btn"
-        onClick={() => setIsExpanded(!isExpanded)}
-        aria-label="Toggle search"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="11" cy="11" r="8"/>
-          <path d="m21 21-4.35-4.35"/>
-        </svg>
-      </button>
-      
-      <input
-        type="text"
-        placeholder="Buscar proyectos..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className={`search-input ${isExpanded ? 'expanded' : ''}`}
-      />
-    </div>
-    
-    <button className="btn-create" onClick={() => setShowCreate(true)}>
-      + Nuevo Proyecto
-    </button>
-  </div>
-</header>
+        <h1>Proyectos de Grado</h1>
+        
+        <div className="header-actions">
+          <div className="search-container">
+            <button 
+              className="search-toggle-btn"
+              onClick={() => setIsExpanded(!isExpanded)}
+              aria-label="Toggle search"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </button>
+            
+            <input
+              type="text"
+              placeholder="Buscar proyectos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`search-input ${isExpanded ? 'expanded' : ''}`}
+            />
+          </div>
+          
+          <button className="btn-create" onClick={() => setShowCreate(true)}>
+            + Nuevo Proyecto
+          </button>
+        </div>
+      </header>
       <div className="stats-container">
         <div className="stat-card stat-total"><h4>Total</h4><p>{stats.total}</p></div>
         <div className="stat-card stat-completed"><h4>Calificados</h4><p>{stats.calificados}</p></div>

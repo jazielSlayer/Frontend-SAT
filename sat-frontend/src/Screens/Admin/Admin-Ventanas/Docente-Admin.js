@@ -5,6 +5,7 @@ import { getAllPersonas } from "../../../API/Admin/Persona";
 import { DocenteStyles } from "../../Components screens/Styles";
 import { styles } from "../../Components screens/Styles";
 
+
 function DocenteAdmin() {
   const [docentes, setDocentes] = useState([]);
   const [personas, setPersonas] = useState([]);
@@ -12,6 +13,7 @@ function DocenteAdmin() {
   const [operationLoading, setOperationLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
   
   // Modales
   const [showCreate, setShowCreate] = useState(false);
@@ -185,7 +187,28 @@ function DocenteAdmin() {
     <div className="proyectos-container">
       <header className="proyectos-header">
         <h2 style={DocenteStyles.title}>Administración de Docentes</h2>
-        <div className="header-actions" style={{ padding: 15 }}>
+        <div className="header-actions">
+          <div className="search-container">
+            <button 
+              className="search-toggle-btn"
+              onClick={() => setIsExpanded(!isExpanded)}
+              aria-label="Toggle search"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </button>
+            
+            <input
+              type="text"
+              placeholder="Buscar por nombre o número de item..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`search-input ${isExpanded ? 'expanded' : ''}`}
+            />
+          </div>
+          
           <button className="btn-create" onClick={openCreate}>+ Nuevo Docente</button>
         </div>
       </header>
@@ -229,22 +252,6 @@ function DocenteAdmin() {
                 {docentes.filter((d) => d.tipo_contrato === "temporal").length}
               </p>
             </div>
-          </div>
-
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre o número de item..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
           </div>
 
           <div style={DocenteStyles.tableContainer}>

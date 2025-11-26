@@ -14,6 +14,7 @@ function AdminEstudiantes() {
   const [operationLoading, setOperationLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
   
   // Búsqueda en selectores
   const [personaSearch, setPersonaSearch] = useState("");
@@ -225,10 +226,32 @@ function AdminEstudiantes() {
     <div className="proyectos-container">
       <header className="proyectos-header">
         <h2 style={EstudianteStyles.title}>Administración de Estudiantes</h2>
-        <div className="header-actions" style={{ padding: 15 }}>
+        <div className="header-actions" >
+          <div className="search-container">
+            <button 
+              className="search-toggle-btn"
+              onClick={() => setIsExpanded(!isExpanded)}
+              aria-label="Toggle search"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </button>
+            
+            <input
+              type="text"
+              placeholder="Buscar por nombre o ru..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`search-input ${isExpanded ? 'expanded' : ''}`}
+            />
+          </div>
+          
           <button className="btn-create" onClick={openCreate}>+ Nuevo Estudiante</button>
         </div>
       </header>
+      
 
       {loading && <p style={EstudianteStyles.loadingText}>Cargando estudiantes...</p>}
       {error && <div style={EstudianteStyles.errorMessage}>Error: {error}</div>}
@@ -262,21 +285,7 @@ function AdminEstudiantes() {
             </div>
           </div>
 
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre o ru..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
-          </div>
+          
 
           <div style={EstudianteStyles.tableContainer}>
             <table style={EstudianteStyles.table}>
