@@ -225,7 +225,7 @@ function AdminEstudiantes() {
               <thead style={EstudianteStyles.tableHead}>
                 <tr>
                   <th style={EstudianteStyles.tableHeader}>Nombre Completo</th>
-                  <th style={EstudianteStyles.tableHeader}>Matrícula</th>
+                  <th style={EstudianteStyles.tableHeader}>R.U.</th>
                   <th style={EstudianteStyles.tableHeader}>Programa</th>
                   <th style={EstudianteStyles.tableHeader}>Fecha Inscripción</th>
                   <th style={EstudianteStyles.tableHeader}>Estado</th>
@@ -324,7 +324,7 @@ function AdminEstudiantes() {
 
                   <div className="form-row">
                     <div>
-                      <label style={EstudianteStyles.formLabel}>Número Matrícula:</label>
+                      <label style={EstudianteStyles.formLabel}>R.U</label>
                       <input
                         className="InputProyecto"
                         type="text"
@@ -437,7 +437,7 @@ function AdminEstudiantes() {
 
                   <div className="form-row">
                     <div>
-                      <label style={EstudianteStyles.formLabel}>Número Matrícula:</label>
+                      <label style={EstudianteStyles.formLabel}>R.U.</label>
                       <input
                         className="InputProyecto"
                         type="text"

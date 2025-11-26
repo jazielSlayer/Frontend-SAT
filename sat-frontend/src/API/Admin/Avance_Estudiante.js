@@ -19,6 +19,24 @@ export async function getAllAvances() {
   }
 }
 
+export async function getAvancesProcentaje() {
+  try {
+    const response = await fetch(`${API_URL}/avances/resumen`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Error fetching avances: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error in getAllAvances:', error);
+    throw error;
+  }
+}
+
 // Obtenemos el dato del estudiante por ID
 export async function getAvance(id) {
   try {

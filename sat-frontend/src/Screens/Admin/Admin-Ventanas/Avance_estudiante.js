@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
-  getAllAvances,
+  getAvancesProcentaje,
   createAvance,
   updateAvance,
-  //deleteAvance
 } from '../../../API/Admin/Avance_Estudiante.js';
 import { getEstudiantes } from '../../../API/Admin/Estudiante_admin.js';
 
 const AvancesEstudiantesView = () => {
-  const [avances, setAvances] = useState([]);
+  const [avancesResumen, setAvancesResumen] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,99 +17,92 @@ const AvancesEstudiantesView = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const [selectedAvance, setSelectedAvance] = useState(null);
+  const [selectedEstudiante, setSelectedEstudiante] = useState(null);
   const [formData, setFormData] = useState({
     id_estudiante: "",
     id_modulo: "",
     responsable: "",
     fecha: new Date().toISOString().split('T')[0],
-    estado: "pendiente"  // ← valor válido para el backend
-    });
+    estado: "pendiente"
+  });
 
   // Búsqueda en select
   const [estSearch, setEstSearch] = useState("");
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const [avancesData, estudiantesData] = await Promise.all([
-          getAllAvances(),
-          getEstudiantes()
-        ]);
-        setAvances(avancesData || []);
-        setEstudiantes(estudiantesData || []);
-      } catch (err) {
-        setError('Error al cargar avances');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadData();
   }, []);
 
-
-  const filteredAvances = avances.filter(av => {
-    const search = searchTerm.toLowerCase();
-    const estudiante = estudiantes.find(e => e.id === av.id_estudiante);
-    const nombre = estudiante ? `${estudiante.nombres} ${estudiante.apellidopat}`.toLowerCase() : '';
-    const modulo = (av.id_modulo || "").toString();
-    const responsable = (av.responsable || "").toLowerCase();
-    const estado = (av.estado || "").toLowerCase();
-
-    return nombre.includes(search) || modulo.includes(search) || responsable.includes(search) || estado.includes(search);
-  });
-
-  // Estadísticas
-  const stats = {
-    total: avances.length,
-    completados: avances.filter(a => a.estado?.toLowerCase() === "completado").length,
-    enCurso: avances.filter(a => a.estado?.toLowerCase() === "en progreso").length,
-    estudiantesConAvance: new Set(avances.map(a => a.id_estudiante)).size
-  };
-
-  const loadAvances = async () => {
+  const loadData = async () => {
     try {
-      const data = await getAllAvances();
-      setAvances(data || []);
+      setLoading(true);
+      // Usa getAvancesProcentaje() del archivo Avance_Estudiante.js
+      const [resumenData, estudiantesData] = await Promise.all([
+        getAvancesProcentaje(), // ← Esta función viene de tu API
+        getEstudiantes()
+      ]);
+      
+      // La respuesta de getAvancesProcentaje() es: { success: true, data: [...], total_estudiantes: N }
+      console.log('Datos de resumen:', resumenData); // Para debug
+      setAvancesResumen(resumenData.data || []);
+      setEstudiantes(estudiantesData || []);
     } catch (err) {
-      console.error(err);
+      setError('Error al cargar datos de avances');
+      console.error('Error detallado:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const openDetails = (avance) => {
-    setSelectedAvance(avance);
+  const filteredAvances = avancesResumen.filter(av => {
+    const search = searchTerm.toLowerCase();
+    const nombre = (av.nombre_completo || "").toLowerCase();
+    const ru = (av.ru || "").toString();
+    
+    return nombre.includes(search) || ru.includes(search);
+  });
+
+  // Estadísticas globales
+  const stats = {
+    totalEstudiantes: avancesResumen.length,
+    promedioAvance: avancesResumen.length > 0 
+      ? (avancesResumen.reduce((sum, est) => sum + parseFloat(est.porcentaje_avance || 0), 0) / avancesResumen.length).toFixed(1)
+      : 0,
+    estudiantesCompletados: avancesResumen.filter(e => parseFloat(e.porcentaje_avance) === 100).length,
+    estudiantesEnProgreso: avancesResumen.filter(e => parseFloat(e.porcentaje_avance) > 0 && parseFloat(e.porcentaje_avance) < 100).length
+  };
+
+  const openDetails = (estudiante) => {
+    setSelectedEstudiante(estudiante);
     setShowDetails(true);
   };
 
   const openEdit = () => {
-  setFormData({
-    id_estudiante: selectedAvance.id_estudiante || "",
-    id_modulo: selectedAvance.id_modulo || "",
-    responsable: selectedAvance.responsable || "",
-    fecha: selectedAvance.fecha?.split('T')[0] || new Date().toISOString().split('T')[0],
-    estado: selectedAvance.estado?.toLowerCase() || "pendiente"  // ← aquí estaba el problema
-  });
-  setShowEdit(true);
-  setShowDetails(false);
-};
+    setFormData({
+      id_estudiante: selectedEstudiante.id_estudiante || "",
+      id_modulo: "",
+      responsable: "",
+      fecha: new Date().toISOString().split('T')[0],
+      estado: "pendiente"
+    });
+    setShowEdit(true);
+    setShowDetails(false);
+  };
 
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
       await createAvance(formData);
       setShowCreate(false);
-      // En el reset del formulario después de crear:
-        setFormData({ 
+      setFormData({ 
         id_estudiante: "", 
         id_modulo: "", 
         responsable: "", 
         fecha: new Date().toISOString().split('T')[0], 
-        estado: "pendiente"  // ← no "En curso"
-        });
+        estado: "pendiente"
+      });
       setEstSearch("");
-      loadAvances();
+      loadData();
       alert("Avance registrado exitosamente");
     } catch (err) {
       alert(err.message || "Error al crear avance");
@@ -120,38 +112,21 @@ const AvancesEstudiantesView = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await updateAvance(selectedAvance.id, formData);
+      await updateAvance(selectedEstudiante.id_estudiante, formData);
       setShowEdit(false);
-      loadAvances();
+      loadData();
       alert("Avance actualizado");
     } catch (err) {
       alert(err.message || "Error al actualizar");
     }
   };
 
- /* const handleDelete = async () => {
-    if (!window.confirm("¿Eliminar este avance permanentemente?")) return;
-    try {
-      await deleteAvance(selectedAvance.id);
-      setShowDetails(false);
-      loadAvances();
-      alert("Avance eliminado");
-    } catch (err) {
-      alert("Error al eliminar");
-    }
-  }; */
-
-  const getEstudianteNombre = (id_estudiante) => {
-    const est = estudiantes.find(e => e.id === id_estudiante);
-    return est ? `${est.nombres} ${est.apellidopat} ${est.apellidomat || ''}` : "Estudiante desconocido";
-  };
-
-  const getEstadoColor = (estado) => {
-    const e = estado?.toLowerCase();
-    if (e === "completado") return "#34d399";
-    if (e === "en curso") return "#fbbf24";
-    if (e === "pendiente") return "#ef4444";
-    return "#94a3b8";
+  const getProgressColor = (porcentaje) => {
+    const pct = parseFloat(porcentaje);
+    if (pct >= 75) return "#34d399"; // Verde
+    if (pct >= 50) return "#fbbf24"; // Amarillo
+    if (pct >= 25) return "#fb923c"; // Naranja
+    return "#ef4444"; // Rojo
   };
 
   if (loading) return <div className="loading">Cargando avances...</div>;
@@ -172,7 +147,7 @@ const AvancesEstudiantesView = () => {
       <div style={{ marginBottom: "20px", padding: "0 15px" }}>
         <input
           type="text"
-          placeholder="Buscar por estudiante, módulo, responsable o estado..."
+          placeholder="Buscar por nombre o RU..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="InputProyecto"
@@ -182,186 +157,357 @@ const AvancesEstudiantesView = () => {
 
       {/* ESTADÍSTICAS */}
       <div className="stats-container">
-        <div className="stat-card stat-total"><h4>Total Avances</h4><p>{stats.total}</p></div>
-        <div className="stat-card stat-completed"><h4>Completados</h4><p>{stats.completados}</p></div>
-        <div className="stat-card stat-pending"><h4>En Curso</h4><p>{stats.enCurso}</p></div>
-        <div className="stat-card stat-overdue"><h4>Estudiantes con Avance</h4><p>{stats.estudiantesConAvance}</p></div>
+        <div className="stat-card stat-total">
+          <h4>Total Estudiantes</h4>
+          <p>{stats.totalEstudiantes}</p>
+        </div>
+        <div className="stat-card stat-completed">
+          <h4>Promedio General</h4>
+          <p>{stats.promedioAvance}%</p>
+        </div>
+        <div className="stat-card stat-pending">
+          <h4>Completados (100%)</h4>
+          <p>{stats.estudiantesCompletados}</p>
+        </div>
+        <div className="stat-card stat-overdue">
+          <h4>En Progreso</h4>
+          <p>{stats.estudiantesEnProgreso}</p>
+        </div>
       </div>
 
-      {/* GRID DE TARJETAS */}
+      {/* GRID DE TARJETAS POR ESTUDIANTE */}
       <div className="proyectos-grid">
         {filteredAvances.length === 0 ? (
           <div className="no-data full-width">
-            {searchTerm === "" ? "No hay avances registrados" : `No se encontraron avances para "${searchTerm}"`}
+            {searchTerm === "" ? "No hay estudiantes con avances registrados" : `No se encontraron estudiantes para "${searchTerm}"`}
           </div>
         ) : (
-          filteredAvances.map((avance) => (
-            <div key={avance.id} className="proyecto-card" onClick={() => openDetails(avance)}>
-              <div className="card-header">
-                <h3>{getEstudianteNombre(avance.id_estudiante)}</h3>
-                <span className="status" style={{ backgroundColor: getEstadoColor(avance.estado) + "30", color: getEstadoColor(avance.estado) }}>
-                  {avance.estado || "Sin estado"}
-                </span>
+          filteredAvances.map((estudiante) => {
+            const porcentaje = parseFloat(estudiante.porcentaje_avance || 0);
+            const progressColor = getProgressColor(porcentaje);
+            
+            return (
+              <div key={estudiante.id_estudiante} className="proyecto-card" onClick={() => openDetails(estudiante)}>
+                <div className="card-header">
+                  <h3>{estudiante.nombre_completo}</h3>
+                  <span className="status" style={{ 
+                    backgroundColor: progressColor + "30", 
+                    color: progressColor,
+                    fontWeight: "bold"
+                  }}>
+                    {porcentaje.toFixed(1)}%
+                  </span>
+                </div>
+                
+                {/* Barra de progreso */}
+                <div style={{ 
+                  width: "100%", 
+                  height: "8px", 
+                  backgroundColor: "#e5e7eb", 
+                  borderRadius: "4px",
+                  margin: "12px 0",
+                  overflow: "hidden"
+                }}>
+                  <div style={{
+                    width: `${porcentaje}%`,
+                    height: "100%",
+                    backgroundColor: progressColor,
+                    transition: "width 0.3s ease"
+                  }}></div>
+                </div>
+
+                <div className="card-body">
+                  <p><strong>RU:</strong> {estudiante.ru || "—"}</p>
+                  <p><strong>Total Módulos:</strong> {estudiante.total_modulos || 0}</p>
+                  <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+                    <span style={{ fontSize: "12px", color: "#34d399" }}>
+                      ✓ {estudiante.modulos_completados || 0} completados
+                    </span>
+                    <span style={{ fontSize: "12px", color: "#fbbf24" }}>
+                      ⟳ {estudiante.modulos_en_progreso || 0} en progreso
+                    </span>
+                    <span style={{ fontSize: "12px", color: "#ef4444" }}>
+                      ○ {estudiante.modulos_pendientes || 0} pendientes
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="card-body">
-                <p><strong>Módulo:</strong> {avance.id_modulo || "No especificado"}</p>
-                <p><strong>Responsable:</strong> {avance.responsable || "No asignado"}</p>
-                <p><strong>Fecha:</strong> {new Date(avance.fecha).toLocaleDateString('es-ES')}</p>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
       {/* MODAL DETALLES */}
-      {showDetails && selectedAvance && (
+      {showDetails && selectedEstudiante && (
         <div className="modal-overlay" onClick={() => setShowDetails(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h2>Avance - {getEstudianteNombre(selectedAvance.id_estudiante)}</h2>
-            <div className="modal-grid">
-              <div>
-                <p><strong>Módulo:</strong> {selectedAvance.id_modulo || "—"}</p>
-                <p><strong>Estado:</strong> <span style={{ color: getEstadoColor(selectedAvance.estado), fontWeight: "bold" }}>{selectedAvance.estado}</span></p>
+            <h2>Detalles - {selectedEstudiante.nombre_completo}</h2>
+            
+            {/* Contenedor principal con gráfico circular */}
+            <div style={{ 
+              display: "flex", 
+              gap: "30px", 
+              alignItems: "center",
+              marginTop: "20px",
+              marginBottom: "20px",
+              flexWrap: "wrap"
+            }}>
+              {/* GRÁFICO CIRCULAR */}
+              <div style={{ 
+                display: "flex", 
+                flexDirection: "column", 
+                alignItems: "center",
+                minWidth: "200px"
+              }}>
+                <svg width="180" height="180" style={{ transform: "rotate(-90deg)" }}>
+                  {/* Círculo de fondo */}
+                  <circle
+                    cx="90"
+                    cy="90"
+                    r="70"
+                    fill="none"
+                    stroke="#e5e7eb"
+                    strokeWidth="16"
+                  />
+                  {/* Círculo de progreso */}
+                  <circle
+                    cx="90"
+                    cy="90"
+                    r="70"
+                    fill="none"
+                    stroke={getProgressColor(selectedEstudiante.porcentaje_avance)}
+                    strokeWidth="16"
+                    strokeDasharray={`${2 * Math.PI * 70}`}
+                    strokeDashoffset={`${2 * Math.PI * 70 * (1 - parseFloat(selectedEstudiante.porcentaje_avance) / 100)}`}
+                    strokeLinecap="round"
+                    style={{ transition: "stroke-dashoffset 0.5s ease" }}
+                  />
+                  {/* Texto central */}
+                  <text
+                    x="90"
+                    y="90"
+                    textAnchor="middle"
+                    dy="8"
+                    fontSize="32"
+                    fontWeight="bold"
+                    fill={getProgressColor(selectedEstudiante.porcentaje_avance)}
+                    style={{ transform: "rotate(90deg)", transformOrigin: "90px 90px" }}
+                  >
+                    {parseFloat(selectedEstudiante.porcentaje_avance).toFixed(1)}%
+                  </text>
+                </svg>
+                <p style={{ 
+                  marginTop: "12px", 
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  color: "#6b7280"
+                }}>
+                  Progreso General
+                </p>
               </div>
-              <div>
-                <p><strong>Responsable:</strong> {selectedAvance.responsable || "No asignado"}</p>
-                <p><strong>Fecha:</strong> {new Date(selectedAvance.fecha).toLocaleDateString('es-ES')}</p>
+
+              {/* INFORMACIÓN DEL ESTUDIANTE */}
+              <div style={{ flex: 1, minWidth: "250px" }}>
+                <div style={{ marginBottom: "20px" }}>
+                  <h3 style={{ fontSize: "16px", marginBottom: "12px", color: "#374151" }}>
+                    Información Personal
+                  </h3>
+                  <p style={{ marginBottom: "8px" }}><strong>RU:</strong> {selectedEstudiante.ru || "—"}</p>
+                  <p style={{ marginBottom: "8px" }}><strong>Email:</strong> {selectedEstudiante.correo || "—"}</p>
+                  <p style={{ marginBottom: "8px" }}><strong>Teléfono:</strong> {selectedEstudiante.telefono || "—"}</p>
+                </div>
+
+                {/* <div>
+                  <h3 style={{ fontSize: "16px", marginBottom: "12px", color: "#374151" }}>
+                    Estadísticas de Módulos
+                  </h3>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <div style={{ 
+                      display: "flex", 
+                      justifyContent: "space-between",
+                      padding: "8px 12px",
+                      backgroundColor: "#062544ff",
+                      borderRadius: "6px"
+                    }}>
+                      <span>Total Módulos:</span>
+                      <strong>{selectedEstudiante.total_modulos || 0}</strong>
+                    </div>
+                    <div style={{ 
+                      display: "flex", 
+                      justifyContent: "space-between",
+                      padding: "8px 12px",
+                      backgroundColor: "#0c277eff",
+                      borderRadius: "6px"
+                    }}>
+                      <span>✓ Completados:</span>
+                      <strong style={{ color: "#34d399" }}>{selectedEstudiante.modulos_completados || 0}</strong>
+                    </div>
+                    <div style={{ 
+                      display: "flex", 
+                      justifyContent: "space-between",
+                      padding: "8px 12px",
+                      backgroundColor: "#150b89ff",
+                      borderRadius: "6px"
+                    }}>
+                      <span>⟳ En Progreso:</span>
+                      <strong style={{ color: "#fbbf24" }}>{selectedEstudiante.modulos_en_progreso || 0}</strong>
+                    </div>
+                    <div style={{ 
+                      display: "flex", 
+                      justifyContent: "space-between",
+                      padding: "8px 12px",
+                      backgroundColor: "#130d93ff",
+                      borderRadius: "6px"
+                    }}>
+                      <span>○ Pendientes:</span>
+                      <strong style={{ color: "#ef4444" }}>{selectedEstudiante.modulos_pendientes || 0}</strong>
+                    </div>
+                  </div>
+                </div> */}
               </div>
             </div>
+
             <div className="modal-actions">
-              <button className="btn-edit" onClick={openEdit}>Editar</button>
-              {/**<button className="btn-delete" onClick={handleDelete}>Eliminar</button>*/}
+              <button className="btn-edit" onClick={openEdit}>Agregar Avance</button>
               <button className="btn-close" onClick={() => setShowDetails(false)}>Cerrar</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL CREAR - CORREGIDO */}
-{showCreate && (
-  <div className="modal-overlay" onClick={() => setShowCreate(false)}>
-    <div className="modal-content" onClick={e => e.stopPropagation()}>
-      <h2>Registrar Nuevo Avance</h2>
-      <form onSubmit={handleCreate}>
-        <div className="form-full">
-          <input
-            type="text"
-            placeholder="Buscar estudiante..."
-            value={estSearch}
-            onChange={(e) => setEstSearch(e.target.value)}
-            className="InputProyecto"
-            style={{ marginBottom: "10px" }}
-          />
-          {/* SELECT DE ESTUDIANTE (ESTO FALTABA!) */}
-          <select 
-            className="InputProyecto" 
-            value={formData.id_estudiante} 
-            onChange={(e) => setFormData({...formData, id_estudiante: e.target.value})}
-            required
-          >
-            <option value="">Seleccionar estudiante</option>
-            {estudiantes
-              .filter(e => `${e.nombres} ${e.apellidopat} ${e.apellidomat} ${e.numero_matricula || ''}`
-                .toLowerCase()
-                .includes(estSearch.toLowerCase()))
-              .map(est => (
-                <option key={est.id} value={est.id}>
-                  {est.nombres} {est.apellidopat} {est.apellidomat || ''} - {est.numero_matricula}
-                </option>
-              ))}
-          </select>
-        </div>
-
-        <div className="form-row">
-          <input 
-            className="InputProyecto" 
-            placeholder="ID Módulo (ej: 3)" 
-            value={formData.id_modulo} 
-            onChange={(e) => setFormData({...formData, id_modulo: e.target.value})} 
-            required 
-          />
-          <input 
-            className="InputProyecto" 
-            placeholder="Responsable" 
-            value={formData.responsable} 
-            onChange={(e) => setFormData({...formData, responsable: e.target.value})} 
-          />
-        </div>
-
-        <div className="form-row">
-          <input 
-            className="InputProyecto" 
-            type="date" 
-            value={formData.fecha} 
-            onChange={(e) => setFormData({...formData, fecha: e.target.value})} 
-            required 
-          />
-          <select 
-            className="InputProyecto" 
-            value={formData.estado} 
-            onChange={(e) => setFormData({...formData, estado: e.target.value})}
-            required
-          >
-            <option value="pendiente">Pendiente</option>
-            <option value="en progreso">En progreso</option>
-            <option value="completado">Completado</option>
-          </select>
-        </div>
-
-        <div className="modal-actions">
-          <button type="submit" className="btn-create">Registrar Avance</button>
-          <button type="button" class46="btn-close" onClick={() => {
-            setShowCreate(false);
-            setEstSearch("");
-            setFormData({ 
-              id_estudiante: "", 
-              id_modulo: "", 
-              responsable: "", 
-              fecha: new Date().toISOString().split('T')[0], 
-              estado: "pendiente"
-            });
-          }}>Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
-
-      {/* MODAL EDITAR */}
-      {showEdit && (
-        <div className="modal-overlay" onClick={() => setShowEdit(false)}>
+      {/* MODAL CREAR */}
+      {showCreate && (
+        <div className="modal-overlay" onClick={() => setShowCreate(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h2>Editar Avance</h2>
-            <form onSubmit={handleUpdate}>
+            <h2>Registrar Nuevo Avance</h2>
+            <form onSubmit={handleCreate}>
               <div className="form-full">
+                <input
+                  type="text"
+                  placeholder="Buscar estudiante..."
+                  value={estSearch}
+                  onChange={(e) => setEstSearch(e.target.value)}
+                  className="InputProyecto"
+                  style={{ marginBottom: "10px" }}
+                />
                 <select 
-                    className="InputProyecto" 
-                    value={formData.estado} 
-                    onChange={(e) => setFormData({...formData, estado: e.target.value})}
-                    required
-                    >
-                    <option value="pendiente">Pendiente</option>
-                    <option value="en progreso">En progreso</option>
-                    <option value="completado">Completado</option>
+                  className="InputProyecto" 
+                  value={formData.id_estudiante} 
+                  onChange={(e) => setFormData({...formData, id_estudiante: e.target.value})}
+                  required
+                >
+                  <option value="">Seleccionar estudiante</option>
+                  {estudiantes
+                    .filter(e => `${e.nombres} ${e.apellidopat} ${e.apellidomat} ${e.ru || ''}`
+                      .toLowerCase()
+                      .includes(estSearch.toLowerCase()))
+                    .map(est => (
+                      <option key={est.id} value={est.id}>
+                        {est.nombres} {est.apellidopat} {est.apellidomat || ''} - RU: {est.ru}
+                      </option>
+                    ))}
                 </select>
               </div>
 
               <div className="form-row">
-                <input className="InputProyecto" value={formData.id_modulo} onChange={(e) => setFormData({...formData, id_modulo: e.target.value})} required />
-                <input className="InputProyecto" value={formData.responsable} onChange={(e) => setFormData({...formData, responsable: e.target.value})} required />
+                <input 
+                  className="InputProyecto" 
+                  placeholder="ID Módulo" 
+                  value={formData.id_modulo} 
+                  onChange={(e) => setFormData({...formData, id_modulo: e.target.value})} 
+                  required 
+                />
+                <input 
+                  className="InputProyecto" 
+                  placeholder="Responsable" 
+                  value={formData.responsable} 
+                  onChange={(e) => setFormData({...formData, responsable: e.target.value})} 
+                />
               </div>
 
               <div className="form-row">
-                <input className="InputProyecto" type="date" value={formData.fecha} onChange={(e) => setFormData({...formData, fecha: e.target.value})} required />
-                <select className="InputProyecto" value={formData.estado} onChange={(e) => setFormData({...formData, estado: e.target.value})} required>
+                <input 
+                  className="InputProyecto" 
+                  type="date" 
+                  value={formData.fecha} 
+                  onChange={(e) => setFormData({...formData, fecha: e.target.value})} 
+                  required 
+                />
+                <select 
+                  className="InputProyecto" 
+                  value={formData.estado} 
+                  onChange={(e) => setFormData({...formData, estado: e.target.value})}
+                  required
+                >
                   <option value="pendiente">Pendiente</option>
-                  <option value="en progreso">En curso</option>
+                  <option value="en progreso">En progreso</option>
                   <option value="completado">Completado</option>
                 </select>
               </div>
 
               <div className="modal-actions">
-                <button type="submit" className="btn-edit">Guardar Cambios</button>
+                <button type="submit" className="btn-create">Registrar Avance</button>
+                <button type="button" className="btn-close" onClick={() => {
+                  setShowCreate(false);
+                  setEstSearch("");
+                  setFormData({ 
+                    id_estudiante: "", 
+                    id_modulo: "", 
+                    responsable: "", 
+                    fecha: new Date().toISOString().split('T')[0], 
+                    estado: "pendiente"
+                  });
+                }}>Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL EDITAR (Agregar avance a estudiante seleccionado) */}
+      {showEdit && (
+        <div className="modal-overlay" onClick={() => setShowEdit(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h2>Agregar Avance - {selectedEstudiante?.nombre_completo}</h2>
+            <form onSubmit={handleUpdate}>
+              <div className="form-row">
+                <input 
+                  className="InputProyecto" 
+                  placeholder="ID Módulo"
+                  value={formData.id_modulo} 
+                  onChange={(e) => setFormData({...formData, id_modulo: e.target.value})} 
+                  required 
+                />
+                <input 
+                  className="InputProyecto" 
+                  placeholder="Responsable"
+                  value={formData.responsable} 
+                  onChange={(e) => setFormData({...formData, responsable: e.target.value})} 
+                />
+              </div>
+
+              <div className="form-row">
+                <input 
+                  className="InputProyecto" 
+                  type="date" 
+                  value={formData.fecha} 
+                  onChange={(e) => setFormData({...formData, fecha: e.target.value})} 
+                  required 
+                />
+                <select 
+                  className="InputProyecto" 
+                  value={formData.estado} 
+                  onChange={(e) => setFormData({...formData, estado: e.target.value})} 
+                  required
+                >
+                  <option value="pendiente">Pendiente</option>
+                  <option value="en progreso">En progreso</option>
+                  <option value="completado">Completado</option>
+                </select>
+              </div>
+
+              <div className="modal-actions">
+                <button type="submit" className="btn-edit">Guardar Avance</button>
                 <button type="button" className="btn-close" onClick={() => setShowEdit(false)}>Cancelar</button>
               </div>
             </form>
