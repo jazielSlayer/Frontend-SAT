@@ -44,21 +44,30 @@ function AdminEstudiantes() {
   };
 
   const validateForm = (data) => {
-    const errors = {};
-    if (!data.per_id) {
-      errors.per_id = "El ID de persona es obligatorio";
-    }
-    if (!data.id_programa_academico) {
-      errors.id_programa_academico = "El ID de programa es obligatorio";
-    }
-    if (!data.ru.trim()) {
-      errors.ru = "El número de matrícula es obligatorio";
-    }
-    if (!data.fecha_inscripcion) {
-      errors.fecha_inscripcion = "La fecha de inscripción es obligatoria";
-    }
-    return errors;
-  };
+  const errors = {};
+  
+  if (!data.per_id) {
+    errors.per_id = "El ID de persona es obligatorio";
+  }
+  
+  if (!data.id_programa_academico) {
+    errors.id_programa_academico = "El ID de programa es obligatorio";
+  }
+  
+  // Validar RU
+  const ru = String(data.ru || "").trim();
+  if (!ru) {
+    errors.ru = "El número de matrícula es obligatorio";
+  } else if (isNaN(ru) || Number(ru) <= 0) {
+    errors.ru = "El RU debe ser un número válido mayor a 0";
+  }
+  
+  if (!data.fecha_inscripcion) {
+    errors.fecha_inscripcion = "La fecha de inscripción es obligatoria";
+  }
+  
+  return errors;
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;

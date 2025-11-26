@@ -1,4 +1,3 @@
-
 import { API_URL } from "../Api.js";
 
 // Obtener todos los estudiantes
