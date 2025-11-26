@@ -5,6 +5,7 @@ import {
   createProyecto,
   updateProyecto,
   //deleteProyecto
+  //crear vista para estadistica de cuales son los modulos mas utilizado y metodologias mas usadas
 } from '../../../API/Admin/Proyecto';
 
 
@@ -18,6 +19,7 @@ const ProyectosView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const filteredProyectos = proyectos.filter((proyecto) => {
     const searchLower = searchTerm.toLowerCase();
@@ -166,26 +168,35 @@ const ProyectosView = () => {
   return (
     <div className="proyectos-container">
       <header className="proyectos-header">
-        <h1 style={{ padding: 15 }}>Proyectos de Grado</h1>
-        <div className="header-actions" style={{ padding: 15 }}>
-          <button className="btn-create" onClick={() => setShowCreate(true)}>+ Nuevo Proyecto</button>
-        </div>
-      </header>
-       <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre de rol, descripción o ruta..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
-          </div>
+  <h1>Proyectos de Grado</h1>
+  
+  <div className="header-actions">
+    <div className="search-container">
+      <button 
+        className="search-toggle-btn"
+        onClick={() => setIsExpanded(!isExpanded)}
+        aria-label="Toggle search"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+      
+      <input
+        type="text"
+        placeholder="Buscar proyectos..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className={`search-input ${isExpanded ? 'expanded' : ''}`}
+      />
+    </div>
+    
+    <button className="btn-create" onClick={() => setShowCreate(true)}>
+      + Nuevo Proyecto
+    </button>
+  </div>
+</header>
       <div className="stats-container">
         <div className="stat-card stat-total"><h4>Total</h4><p>{stats.total}</p></div>
         <div className="stat-card stat-completed"><h4>Calificados</h4><p>{stats.calificados}</p></div>

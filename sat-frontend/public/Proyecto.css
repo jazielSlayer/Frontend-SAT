@@ -84,6 +84,7 @@
 .header-actions {
   display: flex;
   gap: 1rem;
+  align-items: center;
 }
 
 .btn-create, .btn-search, .btn-edit, .btn-delete, .btn-close {
@@ -271,6 +272,76 @@
   color: #fff;
 }
 
+/* Estilos para el buscador con despliegue lateral */
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: 45px;
+}
+
+.search-toggle-btn {
+  position: relative;
+  z-index: 10;
+  background: #46454545;
+  border: 1px solid #444;
+  color: #ecf0f1;
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.search-toggle-btn:hover {
+  background: #3498db;
+  border-color: #3498db;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.search-input {
+  position: absolute;
+  right: 0;
+  width: 45px;
+  padding: 12px 16px;
+  padding-right: 55px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #46454545;
+  color: #ecf0f1;
+  box-sizing: border-box;
+}
+
+.search-input.expanded {
+  width: 350px;
+  /* max-width: 500px; */
+  opacity: 1;
+  pointer-events: all;
+}
+
+.search-input::placeholder {
+  color: #95a5a6;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+  background: #1a1a1a;
+  color: #fff;
+}
+
 /* Textarea */
 .modal-content textarea {
   min-height: 100px;
@@ -392,7 +463,18 @@
 
   .header-actions {
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .search-container {
+    order: -1;
+    margin-bottom: 0.5rem;
+  }
+
+  .search-input.expanded {
+    width: calc(100vw - 80px);
+    max-width: 350px;
   }
 
   .stats-container {
@@ -406,6 +488,10 @@
 
   .modal-grid {
     grid-template-columns: 1fr;
+  }
+
+  .btn-create {
+    width: 100%;
   }
 
   .form-row,
