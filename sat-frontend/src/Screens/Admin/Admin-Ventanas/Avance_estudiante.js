@@ -5,10 +5,12 @@ import {
   updateAvance,
 } from '../../../API/Admin/Avance_Estudiante.js';
 import { getEstudiantes } from '../../../API/Admin/Estudiante_admin.js';
+import { getAllModulos } from '../../../API/Admin/Modulo.js';
 
 const AvancesEstudiantesView = () => {
   const [avancesResumen, setAvancesResumen] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
+  const [modulos, setModulos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,6 +30,7 @@ const AvancesEstudiantesView = () => {
 
   // Búsqueda en select
   const [estSearch, setEstSearch] = useState("");
+  const [modSearch, setModSearch] = useState("");
 
   useEffect(() => {
     loadData();
@@ -37,15 +40,17 @@ const AvancesEstudiantesView = () => {
     try {
       setLoading(true);
       // Usa getAvancesProcentaje() del archivo Avance_Estudiante.js
-      const [resumenData, estudiantesData] = await Promise.all([
+      const [resumenData, estudiantesData, modulosData] = await Promise.all([
         getAvancesProcentaje(), // ← Esta función viene de tu API
-        getEstudiantes()
+        getEstudiantes(),
+        getAllModulos()
       ]);
       
       // La respuesta de getAvancesProcentaje() es: { success: true, data: [...], total_estudiantes: N }
       console.log('Datos de resumen:', resumenData); // Para debug
       setAvancesResumen(resumenData.data || []);
       setEstudiantes(estudiantesData || []);
+      setModulos(modulosData || []);
     } catch (err) {
       setError('Error al cargar datos de avances');
       console.error('Error detallado:', err);
@@ -102,6 +107,7 @@ const AvancesEstudiantesView = () => {
         estado: "pendiente"
       });
       setEstSearch("");
+      setModSearch("");
       loadData();
       alert("Avance registrado exitosamente");
     } catch (err) {
@@ -317,7 +323,7 @@ const AvancesEstudiantesView = () => {
                   <p style={{ marginBottom: "8px" }}><strong>Teléfono:</strong> {selectedEstudiante.telefono || "—"}</p>
                 </div>
 
-                {/* <div>
+                {/*  <div>
                   <h3 style={{ fontSize: "16px", marginBottom: "12px", color: "#374151" }}>
                     Estadísticas de Módulos
                   </h3>
@@ -326,7 +332,7 @@ const AvancesEstudiantesView = () => {
                       display: "flex", 
                       justifyContent: "space-between",
                       padding: "8px 12px",
-                      backgroundColor: "#062544ff",
+                      backgroundColor: "#150767ff",
                       borderRadius: "6px"
                     }}>
                       <span>Total Módulos:</span>
@@ -336,7 +342,7 @@ const AvancesEstudiantesView = () => {
                       display: "flex", 
                       justifyContent: "space-between",
                       padding: "8px 12px",
-                      backgroundColor: "#0c277eff",
+                      backgroundColor: "#1f1272ff",
                       borderRadius: "6px"
                     }}>
                       <span>✓ Completados:</span>
@@ -346,7 +352,7 @@ const AvancesEstudiantesView = () => {
                       display: "flex", 
                       justifyContent: "space-between",
                       padding: "8px 12px",
-                      backgroundColor: "#150b89ff",
+                      backgroundColor: "#300a7bff",
                       borderRadius: "6px"
                     }}>
                       <span>⟳ En Progreso:</span>
@@ -356,7 +362,7 @@ const AvancesEstudiantesView = () => {
                       display: "flex", 
                       justifyContent: "space-between",
                       padding: "8px 12px",
-                      backgroundColor: "#130d93ff",
+                      backgroundColor: "#120861ff",
                       borderRadius: "6px"
                     }}>
                       <span>○ Pendientes:</span>
@@ -382,6 +388,9 @@ const AvancesEstudiantesView = () => {
             <h2>Registrar Nuevo Avance</h2>
             <form onSubmit={handleCreate}>
               <div className="form-full">
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "500" }}>
+                  Estudiante *
+                </label>
                 <input
                   type="text"
                   placeholder="Buscar estudiante..."
@@ -409,30 +418,67 @@ const AvancesEstudiantesView = () => {
                 </select>
               </div>
 
-              <div className="form-row">
-                <input 
+              <div className="form-full" style={{ marginTop: "15px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "500" }}>
+                  Módulo *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Buscar módulo..."
+                  value={modSearch}
+                  onChange={(e) => setModSearch(e.target.value)}
+                  className="InputProyecto"
+                  style={{ marginBottom: "10px" }}
+                />
+                <select 
                   className="InputProyecto" 
-                  placeholder="ID Módulo" 
                   value={formData.id_modulo} 
                   onChange={(e) => setFormData({...formData, id_modulo: e.target.value})} 
-                  required 
-                />
-                <input 
-                  className="InputProyecto" 
-                  placeholder="Responsable" 
-                  value={formData.responsable} 
-                  onChange={(e) => setFormData({...formData, responsable: e.target.value})} 
-                />
+                  required
+                >
+                  <option value="">Seleccionar módulo</option>
+                  {modulos
+                    .filter(m => `${m.codigo} ${m.nombre} ${m.descripcion || ''}`
+                      .toLowerCase()
+                      .includes(modSearch.toLowerCase()))
+                    .map(mod => (
+                      <option key={mod.id} value={mod.id}>
+                        {mod.codigo} - {mod.nombre}
+                      </option>
+                    ))}
+                </select>
               </div>
 
-              <div className="form-row">
-                <input 
-                  className="InputProyecto" 
-                  type="date" 
-                  value={formData.fecha} 
-                  onChange={(e) => setFormData({...formData, fecha: e.target.value})} 
-                  required 
-                />
+              <div className="form-row" style={{ marginTop: "15px" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "500" }}>
+                    Responsable
+                  </label>
+                  <input 
+                    className="InputProyecto" 
+                    placeholder="Nombre del responsable" 
+                    value={formData.responsable} 
+                    onChange={(e) => setFormData({...formData, responsable: e.target.value})} 
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "500" }}>
+                    Fecha *
+                  </label>
+                  <input 
+                    className="InputProyecto" 
+                    type="date" 
+                    value={formData.fecha} 
+                    onChange={(e) => setFormData({...formData, fecha: e.target.value})} 
+                    required 
+                  />
+                </div>
+              </div>
+
+              <div className="form-full" style={{ marginTop: "15px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "500" }}>
+                  Estado *
+                </label>
                 <select 
                   className="InputProyecto" 
                   value={formData.estado} 
@@ -445,11 +491,12 @@ const AvancesEstudiantesView = () => {
                 </select>
               </div>
 
-              <div className="modal-actions">
+              <div className="modal-actions" style={{ marginTop: "20px" }}>
                 <button type="submit" className="btn-create">Registrar Avance</button>
                 <button type="button" className="btn-close" onClick={() => {
                   setShowCreate(false);
                   setEstSearch("");
+                  setModSearch("");
                   setFormData({ 
                     id_estudiante: "", 
                     id_modulo: "", 
@@ -470,30 +517,67 @@ const AvancesEstudiantesView = () => {
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h2>Agregar Avance - {selectedEstudiante?.nombre_completo}</h2>
             <form onSubmit={handleUpdate}>
-              <div className="form-row">
-                <input 
+              <div className="form-full">
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "500" }}>
+                  Módulo *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Buscar módulo..."
+                  value={modSearch}
+                  onChange={(e) => setModSearch(e.target.value)}
+                  className="InputProyecto"
+                  style={{ marginBottom: "10px" }}
+                />
+                <select 
                   className="InputProyecto" 
-                  placeholder="ID Módulo"
                   value={formData.id_modulo} 
                   onChange={(e) => setFormData({...formData, id_modulo: e.target.value})} 
-                  required 
-                />
-                <input 
-                  className="InputProyecto" 
-                  placeholder="Responsable"
-                  value={formData.responsable} 
-                  onChange={(e) => setFormData({...formData, responsable: e.target.value})} 
-                />
+                  required
+                >
+                  <option value="">Seleccionar módulo</option>
+                  {modulos
+                    .filter(m => `${m.codigo} ${m.nombre} ${m.descripcion || ''}`
+                      .toLowerCase()
+                      .includes(modSearch.toLowerCase()))
+                    .map(mod => (
+                      <option key={mod.id} value={mod.id}>
+                        {mod.codigo} - {mod.nombre}
+                      </option>
+                    ))}
+                </select>
               </div>
 
-              <div className="form-row">
-                <input 
-                  className="InputProyecto" 
-                  type="date" 
-                  value={formData.fecha} 
-                  onChange={(e) => setFormData({...formData, fecha: e.target.value})} 
-                  required 
-                />
+              <div className="form-row" style={{ marginTop: "15px" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "500" }}>
+                    Responsable
+                  </label>
+                  <input 
+                    className="InputProyecto" 
+                    placeholder="Nombre del responsable"
+                    value={formData.responsable} 
+                    onChange={(e) => setFormData({...formData, responsable: e.target.value})} 
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "500" }}>
+                    Fecha *
+                  </label>
+                  <input 
+                    className="InputProyecto" 
+                    type="date" 
+                    value={formData.fecha} 
+                    onChange={(e) => setFormData({...formData, fecha: e.target.value})} 
+                    required 
+                  />
+                </div>
+              </div>
+
+              <div className="form-full" style={{ marginTop: "15px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "500" }}>
+                  Estado *
+                </label>
                 <select 
                   className="InputProyecto" 
                   value={formData.estado} 
@@ -506,9 +590,12 @@ const AvancesEstudiantesView = () => {
                 </select>
               </div>
 
-              <div className="modal-actions">
+              <div className="modal-actions" style={{ marginTop: "20px" }}>
                 <button type="submit" className="btn-edit">Guardar Avance</button>
-                <button type="button" className="btn-close" onClick={() => setShowEdit(false)}>Cancelar</button>
+                <button type="button" className="btn-close" onClick={() => {
+                  setShowEdit(false);
+                  setModSearch("");
+                }}>Cancelar</button>
               </div>
             </form>
           </div>
