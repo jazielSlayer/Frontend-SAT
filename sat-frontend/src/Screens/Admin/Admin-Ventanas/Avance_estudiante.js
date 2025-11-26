@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   getAvancesProcentaje,
   createAvance,
-  updateAvance,
 } from '../../../API/Admin/Avance_Estudiante.js';
 import { getEstudiantes } from '../../../API/Admin/Estudiante_admin.js';
 import { getAllModulos } from '../../../API/Admin/Modulo.js';
@@ -116,16 +115,25 @@ const AvancesEstudiantesView = () => {
   };
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
-    try {
-      await updateAvance(selectedEstudiante.id_estudiante, formData);
-      setShowEdit(false);
-      loadData();
-      alert("Avance actualizado");
-    } catch (err) {
-      alert(err.message || "Error al actualizar");
-    }
-  };
+  e.preventDefault();
+  try {
+    // ✅ Usa createAvance en lugar de updateAvance
+    await createAvance(formData);
+    setShowEdit(false);
+    setFormData({ 
+      id_estudiante: "", 
+      id_modulo: "", 
+      responsable: "", 
+      fecha: new Date().toISOString().split('T')[0], 
+      estado: "pendiente"
+    });
+    setModSearch("");
+    loadData();
+    alert("Avance registrado exitosamente");
+  } catch (err) {
+    alert(err.message || "Error al registrar avance");
+  }
+};
 
   const getProgressColor = (porcentaje) => {
     const pct = parseFloat(porcentaje);
