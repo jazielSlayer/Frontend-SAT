@@ -4,7 +4,7 @@ import { getUsersWithRoles, getAllRoles, assignRoleToUser } from "../../../API/A
 import { TallerStyles } from "../../Components screens/Styles.js";
 import { AiFillEdit } from "react-icons/ai";
 import { MdManageAccounts } from "react-icons/md";
-import { buildPDFAdmin } from "../../../API/Admin/PDFs.js";
+
 import { styles } from "../../Components screens/Styles";
 
 function Usuarios() {
@@ -325,9 +325,7 @@ function Usuarios() {
             />
           </div>
 
-          <button className="btn-search" onClick={buildPDFAdmin} style={{ marginRight: "10px" }}>
-            Generar PDF
-          </button>
+          
           <button className="btn-create" onClick={openCreate}>
             + Nuevo Usuario
           </button>

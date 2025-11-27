@@ -6,6 +6,7 @@ import { getAllTalleres } from "../../API/Admin/Taller.js";
 import { getUserCount } from "../../API/Admin/Users_Admin.js";
 import { getAllMetodologias } from "../../API/Admin/Metodologia.js";
 import { getAllModulos } from "../../API/Admin/Modulo.js";
+import { buildPDFAdmin } from "../../API/Admin/PDFs.js";
 
 function Admin() {
   const [docentes, setDocentes] = useState([]);
@@ -273,6 +274,9 @@ function Admin() {
       <h1 className="admin-title">
         Panel de Administración
       </h1>
+      <button className="btn-search" onClick={buildPDFAdmin} style={{ marginRight: "10px" }}>
+            Generar PDF
+      </button>
 
       {error && (
         <div className="admin-error">
