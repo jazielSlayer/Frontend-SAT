@@ -15,6 +15,7 @@ function Usuarios() {
   const [showEdit, setShowEdit] = useState(false);
   const [showUserRolesModal, setShowUserRolesModal] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
   const [formData, setFormData] = useState({
     user_name: "",
     email: "",
@@ -302,7 +303,28 @@ function Usuarios() {
     <div className="proyectos-container">
       <header className="proyectos-header">
         <h2 style={TallerStyles.title}>Gestión de Usuarios</h2>
-        <div className="header-actions" style={{ padding: 15 }}>
+        <div className="header-actions">
+           <div className="search-container">
+            <button 
+              className="search-toggle-btn"
+              onClick={() => setIsExpanded(!isExpanded)}
+              aria-label="Toggle search"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </button>
+            
+            <input
+              type="text"
+              placeholder="Buscar por nombre, carnet o usuario..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`search-input ${isExpanded ? 'expanded' : ''}`}
+            />
+          </div>
+
           <button className="btn-search" onClick={buildPDFAdmin} style={{ marginRight: "10px" }}>
             Generar PDF
           </button>
@@ -311,6 +333,7 @@ function Usuarios() {
           </button>
         </div>
       </header>
+      
 
       {loading && <p className="loading">Cargando usuarios...</p>}
       {error && <div className="error">Error: {error}</div>}
@@ -335,23 +358,6 @@ function Usuarios() {
               <h4>Con Carnet</h4>
               <p>{users.filter((u) => u.carnet).length}</p>
             </div>
-          </div>
-
-          {/* BUSCADOR */}
-          <div style={{ marginBottom: "20px", padding: "0 15px" }}>
-            <input
-              type="text"
-              placeholder="Buscar por nombre, carnet o usuario..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="InputProyecto"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                padding: "12px 16px",
-                fontSize: "14px",
-              }}
-            />
           </div>
 
           {/* TABLA */}
