@@ -1,0 +1,420 @@
+/* Estilos base para el panel de estudiante - Actualizado */
+
+/* Container principal - SIN background */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+/* Container máximo ancho */
+.max-w-7xl {
+  max-width: 80rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Cards/Tarjetas */
+.bg-white {
+  background-color: #222e5598;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Márgenes */
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+/* Flex layouts */
+.flex {
+  display: flex;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+/* Avatar/Icono circular */
+.w-16 {
+  width: 4rem;
+}
+
+.h-16 {
+  height: 4rem;
+}
+
+.w-8 {
+  width: 2rem;
+}
+
+.h-8 {
+  height: 2rem;
+}
+
+.w-6 {
+  width: 1.5rem;
+}
+
+.h-6 {
+  height: 1.5rem;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
+.h-5 {
+  height: 1.25rem;
+}
+
+.bg-blue-100 {
+  background-color: #dbeafe;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+/* Textos */
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+/* Colores de texto - ACTUALIZADOS PARA TEXTO BLANCO */
+.text-white {
+  color: #ffffff;
+}
+
+.text-gray-300 {
+  color: #d1d5db;
+}
+
+.text-gray-500 {
+  color: #fbfcfd;
+}
+
+.text-gray-600 {
+  color: #ffffff;
+}
+
+.text-gray-800 {
+  color: #7490b8;
+}
+
+.text-gray-900 {
+  color: #f9f9f9;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+.text-green-600 {
+  color: #16a34a;
+}
+
+.text-yellow-600 {
+  color: #ca8a04;
+}
+
+.text-red-600 {
+  color: #dc2626;
+}
+
+.text-green-800 {
+  color: #04f862;
+}
+
+.text-yellow-800 {
+  color: #ff8801;
+}
+
+/* Alineación de texto */
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Grid system */
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Responsive grid */
+@media (min-width: 1024px) {
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Barra de progreso */
+.w-full {
+  width: 100%;
+}
+
+.bg-gray-200 {
+  background-color: #e5e7eb;
+}
+
+.h-4 {
+  height: 1rem;
+}
+
+.bg-blue-600 {
+  background-color: #2563eb;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.duration-500 {
+  transition-duration: 500ms;
+}
+
+/* Backgrounds de colores */
+.bg-gray-50 {
+  background-color: #05438198;
+}
+
+.bg-green-50 {
+  background-color: #05438198;
+}
+
+.bg-yellow-50 {
+  background-color: #05438198;
+}
+
+.bg-blue-50 {
+  background-color: #05438198;
+}
+
+.bg-red-50 {
+  background-color: #05438198;
+}
+
+.bg-green-100 {
+  background-color: #05438198;
+}
+
+.bg-yellow-100 {
+  background-color: #05438198;
+}
+
+.bg-gray-100 {
+  background-color: #05438198;
+}
+
+/* Padding */
+.p-3 {
+  padding: 0.75rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.pt-2 {
+  padding-top: 0.5rem;
+}
+
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+/* Espaciado */
+.space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+/* Bordes */
+.border {
+  border-width: 1px;
+}
+
+.border-gray-200 {
+  border-color: #e5e7eb;
+}
+
+.border-l-4 {
+  border-left-width: 4px;
+}
+
+.border-blue-500 {
+  border-color: #3b82f6;
+}
+
+/* Estados hover */
+.hover\:bg-gray-50:hover {
+  background-color: #05192da8;
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Badges/Etiquetas */
+.inline-flex {
+  display: inline-flex;
+}
+
+/* Utilidades específicas para el componente - ACTUALIZADAS */
+.EstudianteContainer {
+  min-height: 100vh;
+  /* background-color removido - usa el fondo de tu página */
+  padding: 1.5rem;
+}
+
+.Title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff; /* Blanco */
+  margin-bottom: 1.5rem;
+}
+
+.Progress-Section {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.Progress-Bar {
+  width: 100%;
+  height: 2rem;
+  background-color: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+/* Clases adicionales para texto blanco */
+.text-light {
+  color: #d1d5db;
+}
+
+.text-lighter {
+  color: #e5e7eb;
+}
